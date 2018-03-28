@@ -1,122 +1,154 @@
 <template>
     <div id="homeContainer">
       <div class="layout">
-        <div class="layout-ceiling">
-            <div class="layout-logo">
-              放置logo
-            </div>
-            <div class="layout-ceiling-main">
-                <a href="#">注册登录</a> |
-                <a href="#">帮助中心</a> |
-                <a href="#">安全中心</a> |
-                <a href="#">服务大厅</a>
-            </div>
-        </div>
-        <div class="layout-header">
-            <Menu mode="horizontal" :theme="primary" active-key="1">
-                <Menu-item key="1">
-                    <Icon type="search"></Icon>
-                    全局搜索
-                </Menu-item>
-                <Menu-item key="2">
-                    <Icon type="home"></Icon>
-                    配置信息
-                </Menu-item>
-                <!-- <Submenu key="3">
-                    <template slot="title">
-                        <Icon type="stats-bars"></Icon>
-                        统计分析
-                    </template>
-                    <Menu-group title="使用">
-                        <Menu-item key="3-1">新增和启动</Menu-item>
-                        <Menu-item key="3-2">活跃分析</Menu-item>
-                        <Menu-item key="3-3">时段分析</Menu-item>
-                    </Menu-group>
-                    <Menu-group title="留存">
-                        <Menu-item key="3-4">用户留存</Menu-item>
-                        <Menu-item key="3-5">流失用户</Menu-item>
-                    </Menu-group>
-                </Submenu> -->
-                <Menu-item key="3">
-                    <Icon type="map"></Icon>
-                    视图
-                </Menu-item>
-                <Menu-item key="4">
-                    <Icon type="pin"></Icon>
-                    工作流
-                </Menu-item>
-                <Menu-item key="5">
-                    <Icon type="stats-bars"></Icon>
-                    Charts
-                </Menu-item>
-            </Menu>
-        </div>
         <Layout>
-            <Sider ref="side1" hide-trigger collapsible :collapsed-width="78" v-model="isCollapsed">
-                <Menu active-name="1-2" theme="dark" width="auto" :class="menuitemClasses">
-                    <MenuItem name="1-1">
-                        <Icon type="ios-navigate"></Icon>
-                        <span>Option 1</span>
-                    </MenuItem>
-                    <MenuItem name="1-2">
-                        <Icon type="search"></Icon>
-                        <span>Option 2</span>
-                    </MenuItem>
-                    <MenuItem name="1-3">
-                        <Icon type="settings"></Icon>
-                        <span>Option 3</span>
-                    </MenuItem>
+            <Header>
+                <Menu mode="horizontal" theme="dark" active-name="1">
+                    <div class="layout-logo"></div>
+                    <div class="layout-nav">
+                        <MenuItem name="1">
+                            <Icon type="home"></Icon>
+                            配置信息
+                        </MenuItem>
+                        <MenuItem name="2">
+                            <Icon type="map"></Icon>
+                            视图
+                        </MenuItem>
+                        <MenuItem name="3">
+                            <Icon type="pin"></Icon>
+                            工作流
+                        </MenuItem>
+                        <MenuItem name="4">
+                            <Icon type="stats-bars"></Icon>
+                            Charts
+                        </MenuItem>
+                        <MenuItem name="5">
+                            <Icon type="search"></Icon>
+                            全局搜索
+                        </MenuItem>
+                    </div>
                 </Menu>
-            </Sider>
+            </Header>
             <Layout>
-                <Header :style="{padding: 0}" class="layout-header-bar">
-                    <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
-                </Header>
-                <Content :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
-                    Content
-                </Content>
+                <Sider ref="side1" hide-trigger collapsible :collapsed-width="78" v-model="isCollapsed">
+                    <Menu active-name="1-2" theme="dark" width="auto" :class="menuitemClasses" accordion>
+                        <!-- <MenuItem name="1-1">
+                            <Icon type="ios-navigate"></Icon>
+                            <span>Option 1</span>
+                        </MenuItem>
+                        <MenuItem name="1-2">
+                            <Icon type="search"></Icon>
+                            <span>Option 2</span>
+                        </MenuItem>
+                        <MenuItem name="1-3">
+                            <Icon type="settings"></Icon>
+                            <span>Option 3</span>
+                        </MenuItem> -->
+                        <Submenu name="1">
+                            <template slot="title">
+                                <Icon type="ios-analytics"></Icon>
+                                Navigation One
+                            </template>
+                            <MenuGroup title="Item 1">
+                                <MenuItem name="1-1">Option 1</MenuItem>
+                                <MenuItem name="1-2">Option 2</MenuItem>
+                            </MenuGroup>
+                            <MenuGroup title="Item 2">
+                                <MenuItem name="1-3">Option 3</MenuItem>
+                                <MenuItem name="1-4">Option 4</MenuItem>
+                            </MenuGroup>
+                        </Submenu>
+                        <Submenu name="2">
+                            <template slot="title">
+                                <Icon type="ios-filing"></Icon>
+                                Navigation Two
+                            </template>
+                            <MenuItem name="2-1">Option 5</MenuItem>
+                            <MenuItem name="2-2">Option 6</MenuItem>
+                            <Submenu name="3">
+                                <template slot="title">Submenu</template>
+                                <MenuItem name="3-1">Option 7</MenuItem>
+                                <MenuItem name="3-2">Option 8</MenuItem>
+                            </Submenu>
+                        </Submenu>
+                        <Submenu name="4">
+                            <template slot="title">
+                                <Icon type="ios-gear"></Icon>
+                                Navigation Three
+                            </template>
+                            <MenuItem name="4-1">Option 9</MenuItem>
+                            <MenuItem name="4-2">Option 10</MenuItem>
+                            <MenuItem name="4-3">Option 11</MenuItem>
+                            <MenuItem name="4-4">Option 12</MenuItem>
+                        </Submenu>
+                    </Menu>
+                </Sider>
+                <Layout>
+                    <Header :style="{padding: 0}" class="layout-header-bar">
+                        <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
+                    </Header>
+                    <Content :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
+                        Content
+                    </Content>
+                </Layout>
             </Layout>
         </Layout>
       </div>
     </div>
 </template>
+
 <script>
-export default {
-  data() {
-    return {
-      spanLeft: 4,
-      spanRight: 20,
-      isCollapsed: false
-    };
-  },
-  computed: {
-    iconSize() {
-      return this.spanLeft === 5 ? 14 : 24;
+  export default {
+    data() {
+      return {
+        isCollapsed: false
+      };
     },
-    rotateIcon() {
-      return ["menu-icon", this.isCollapsed ? "rotate-icon" : ""];
-    },
-    menuitemClasses() {
-      return ["menu-item", this.isCollapsed ? "collapsed-menu" : ""];
-    }
-  },
-  methods: {
-    toggleClick() {
-      if (this.spanLeft === 4) {
-        this.spanLeft = 2;
-        this.spanRight = 22;
-      } else {
-        this.spanLeft = 4;
-        this.spanRight = 20;
+    computed: {
+      rotateIcon() {
+        return ["menu-icon", this.isCollapsed ? "rotate-icon" : ""];
+      },
+      menuitemClasses() {
+        return ["menu-item", this.isCollapsed ? "collapsed-menu" : ""];
       }
     },
-    collapsedSider() {
-      this.$refs.side1.toggleCollapse();
+    methods: {
+      collapsedSider() {
+        this.$refs.side1.toggleCollapse();
+      }
+    }
+  };
+</script>
+
+<style lang="scss">
+#homeContainer {
+  height: 100%;
+  .layout{
+    height: 100%;
+    .ivu-layout{
+      height: 100%;
+      .ivu-layout-header{
+        .layout-nav{
+          margin: 0px auto;
+          margin-left: 250px;
+          width: 550px;
+        }
+      }
+      .layout-header-bar{
+        .ivu-icon{
+          float: left;
+          cursor: pointer;
+        }
+      }
+      .ivu-layout-content{
+        background-color: skyblue !important;
+      }
     }
   }
-};
-</script>
-<style lang="scss">
+}
+
+
+// 以下是原生样式
 .layout {
   border: 1px solid #d7dde4;
   background: #f5f7f9;
@@ -134,29 +166,12 @@ export default {
   top: 15px;
   left: 20px;
 }
-.layout-header {
-  height: 60px;
-  background: #fff;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+.layout-nav {
+  width: 420px;
+  margin: 0 auto;
+  margin-right: 20px;
 }
 
-.layout-ceiling {
-  background: #464c5b;
-  padding: 10px 0;
-  overflow: hidden;
-}
-.layout-ceiling-main {
-  float: right;
-  margin-right: 15px;
-}
-
-.layout-ceiling-main a {
-  color: #9ba7b5;
-}
-
-.ivu-col {
-  transition: width 0.2s ease-in-out;
-}
 .layout-header-bar {
   background: #fff;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
@@ -198,22 +213,5 @@ export default {
   transition: font-size 0.2s ease 0.2s, transform 0.2s ease 0.2s;
   vertical-align: middle;
   font-size: 22px;
-}
-#homeContainer {
-  height: 100%;
-  .layout{
-    height: 100%;
-  }
-  .ivu-layout.ivu-layout-has-sider{
-    height: 100%;
-  }
-  .ivu-menu-light {
-    padding-left: 20%;
-  }
-  .ivu-layout{
-    .ivu-icon{
-      float: left;
-    }
-  }
 }
 </style>
