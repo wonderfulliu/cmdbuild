@@ -148,7 +148,7 @@
 }
 
 
-// 以下是原生样式
+/* 以下是原生样式*/
 .layout {
   border: 1px solid #d7dde4;
   background: #f5f7f9;
