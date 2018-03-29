@@ -4,7 +4,9 @@
         <Layout>
             <Header>
                 <Menu mode="horizontal" theme="dark" active-name="1">
-                    <div class="layout-logo"></div>
+                    <div class="layout-logo">
+                        <img src="../../static/logo.png" alt="LOGO">
+                    </div>
                     <div class="layout-nav">
                         <MenuItem name="1">
                             <Icon type="home"></Icon>
@@ -150,6 +152,10 @@
 
 
 /* 以下是原生样式*/
+.ivu-layout-header{
+    padding: 0;
+}
+
 .layout {
   border: 1px solid #d7dde4;
   background: #f5f7f9;
@@ -158,8 +164,8 @@
   overflow: hidden;
 }
 .layout-logo {
-  width: 100px;
-  height: 30px;
+  width: 200px;
+  height: 36px;
   background: #5b6270;
   border-radius: 3px;
   float: left;
@@ -167,6 +173,10 @@
   top: 15px;
   left: 20px;
 }
+.layout-logo img{
+    width: 100%;
+}
+
 .layout-nav {
   width: 420px;
   margin: 0 auto;
