@@ -4,7 +4,9 @@
         <Layout>
             <Header>
                 <Menu mode="horizontal" theme="dark" active-name="1">
-                    <div class="layout-logo"></div>
+                    <div class="layout-logo">
+                        <img src="../../static/logo.png" alt="LOGO">
+                    </div>
                     <div class="layout-nav">
                         <MenuItem name="1">
                             <Icon type="home"></Icon>
@@ -26,6 +28,21 @@
                             <Icon type="search"></Icon>
                             全局搜索
                         </MenuItem>
+                    </div>
+                    <div class="layout-user">
+                        <Dropdown trigger="click" >
+                            <Avatar icon="person" size="small" />
+                            <a href="javascript:void(0)">
+                                用户名
+                                <Icon type="chevron-down"></Icon>
+                            </a>
+                            <DropdownMenu slot="list">
+                                <DropdownItem>用户组名</DropdownItem>
+                                <DropdownItem>
+                                    <a>退出</a>
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
                     </div>
                 </Menu>
             </Header>
@@ -80,8 +97,8 @@
                 </Layout>
             </Layout> -->
             <transition name="fade" mode="out-in">
-							  <router-view></router-view>
-						</transition> 
+			    <router-view></router-view>
+            </transition>
         </Layout>
       </div>
     </div>
@@ -138,7 +155,32 @@
 }
 
 
-// 以下是原生样式
+/* 以下是原生样式*/
+.ivu-layout-header{
+    padding: 0;
+}
+
+.layout-user{
+    float: right;
+    padding-right: 20px;
+}
+
+.layout-user .ivu-dropdown .ivu-dropdown-rel a{
+    color: #c6c8cd;
+}
+
+.layout-user .ivu-dropdown .ivu-dropdown-rel a:hover{
+    color: #fff;
+}
+
+.layout-user .ivu-select-dropdown .ivu-dropdown-item a{
+    color: #495060;
+}
+
+.layout-user .ivu-avatar-icon{
+    margin-right: 2px;
+}
+
 .layout {
   border: 1px solid #d7dde4;
   background: #f5f7f9;
@@ -147,8 +189,8 @@
   overflow: hidden;
 }
 .layout-logo {
-  width: 100px;
-  height: 30px;
+  width: 200px;
+  height: 36px;
   background: #5b6270;
   border-radius: 3px;
   float: left;
@@ -156,6 +198,10 @@
   top: 15px;
   left: 20px;
 }
+.layout-logo img{
+    width: 100%;
+}
+
 .layout-nav {
   width: 420px;
   margin: 0 auto;
