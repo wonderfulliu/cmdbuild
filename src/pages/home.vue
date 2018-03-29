@@ -30,7 +30,7 @@
                 </Menu>
             </Header>
             <Layout>
-                <Sider ref="side1" hide-trigger collapsible :collapsed-width="78" v-model="isCollapsed">
+                <Sider ref="side1" collapsible :collapsed-width="0" v-model="isCollapsed">
                     <Menu active-name="1-2" theme="dark" width="auto" :class="menuitemClasses" accordion>
                         <!-- <MenuItem name="1-1">
                             <Icon type="ios-navigate"></Icon>
@@ -85,12 +85,13 @@
                 </Sider>
                 <Layout>
                     <Header :style="{padding: 0}" class="layout-header-bar">
-                        <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
+                        <!-- <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon> -->
                     </Header>
                     <Content :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
                         Content
                     </Content>
                 </Layout>
+                <router-view/>
             </Layout>
         </Layout>
       </div>
