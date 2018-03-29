@@ -7,7 +7,7 @@ import chart from '@/pages/chart/chart'
 import view from '@/pages/view/view'
 import workflow from '@/pages/workFlow/workFlow'
 
-Vue.use(Router)
+Vue.use(Router) 
   
 export default new Router({
   routes: [
