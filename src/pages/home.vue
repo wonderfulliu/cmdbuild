@@ -29,6 +29,21 @@
                             全局搜索
                         </MenuItem>
                     </div>
+                    <div class="layout-user">
+                        <Dropdown trigger="click" >
+                            <Avatar icon="person" size="small" />
+                            <a href="javascript:void(0)">
+                                用户名
+                                <Icon type="chevron-down"></Icon>
+                            </a>
+                            <DropdownMenu slot="list">
+                                <DropdownItem>用户组名</DropdownItem>
+                                <DropdownItem>
+                                    <a>退出</a>
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </div>
                 </Menu>
             </Header>
             <!-- <Layout>
@@ -82,8 +97,8 @@
                 </Layout>
             </Layout> -->
             <transition name="fade" mode="out-in">
-							  <router-view></router-view>
-						</transition> 
+			    <router-view></router-view>
+            </transition>
         </Layout>
       </div>
     </div>
@@ -143,6 +158,27 @@
 /* 以下是原生样式*/
 .ivu-layout-header{
     padding: 0;
+}
+
+.layout-user{
+    float: right;
+    padding-right: 20px;
+}
+
+.layout-user .ivu-dropdown .ivu-dropdown-rel a{
+    color: #c6c8cd;
+}
+
+.layout-user .ivu-dropdown .ivu-dropdown-rel a:hover{
+    color: #fff;
+}
+
+.layout-user .ivu-select-dropdown .ivu-dropdown-item a{
+    color: #495060;
+}
+
+.layout-user .ivu-avatar-icon{
+    margin-right: 2px;
 }
 
 .layout {
