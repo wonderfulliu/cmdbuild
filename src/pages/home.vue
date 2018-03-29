@@ -29,21 +29,9 @@
                     </div>
                 </Menu>
             </Header>
-            <Layout>
+            <!-- <Layout>
                 <Sider ref="side1" collapsible :collapsed-width="0" v-model="isCollapsed">
                     <Menu active-name="1-2" theme="dark" width="auto" :class="menuitemClasses" accordion>
-                        <!-- <MenuItem name="1-1">
-                            <Icon type="ios-navigate"></Icon>
-                            <span>Option 1</span>
-                        </MenuItem>
-                        <MenuItem name="1-2">
-                            <Icon type="search"></Icon>
-                            <span>Option 2</span>
-                        </MenuItem>
-                        <MenuItem name="1-3">
-                            <Icon type="settings"></Icon>
-                            <span>Option 3</span>
-                        </MenuItem> -->
                         <Submenu name="1">
                             <template slot="title">
                                 <Icon type="ios-analytics"></Icon>
@@ -85,14 +73,15 @@
                 </Sider>
                 <Layout>
                     <Header :style="{padding: 0}" class="layout-header-bar">
-                        <!-- <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon> -->
                     </Header>
                     <Content :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
                         Content
                     </Content>
                 </Layout>
-                <router-view/>
-            </Layout>
+            </Layout> -->
+            <transition name="fade" mode="out-in">
+							  <router-view></router-view>
+						</transition> 
         </Layout>
       </div>
     </div>

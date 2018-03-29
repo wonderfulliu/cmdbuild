@@ -1,12 +1,12 @@
 <template>
-  <div id="configContainer">
-    <h3>我是config页面</h3>
+  <div id="viewContainer">
+    <h3>我是view页面</h3>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'config'
+  name: 'view'
 }
 </script>
 
@@ -15,8 +15,8 @@ html, body {
   width: 100%;
   height: 100%;
 }
-#configContainer {
+#viewContainer {
   height: 50px;
-  background-color: red;
+  background-color: blue;
 }
 </style>
