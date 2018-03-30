@@ -6,6 +6,7 @@ import config from '@/pages/configMsg/config'
 import chart from '@/pages/chart/chart'
 import view from '@/pages/view/view'
 import workflow from '@/pages/workFlow/workFlow'
+import search from '@/pages/search/search'
 
 Vue.use(Router) 
   
@@ -41,6 +42,11 @@ export default new Router({
           name: 'workFlow',
           component: workflow
         },
+        {
+          path: '/search',
+          name: 'search',
+          component: search
+        }
       ]
     },
     {
