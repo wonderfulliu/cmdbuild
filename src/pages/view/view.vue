@@ -3,26 +3,42 @@
       <div class="layout">
         <Layout>
             <Sider ref="side1" hide-trigger collapsible :collapsed-width="0" v-model="isCollapsed">
-                <Menu active-name="1-2" theme="dark" width="auto" :class="menuitemClasses">
-                    <Submenu name="1">
-                        <template slot="title">
-                            <Icon type="ios-navigate"></Icon>
-                            Item 1
-                        </template>
-                        <MenuItem name="1-1">
-                            <Icon type="clipboard"></Icon>
-                            <span>Option 1</span>
-                        </MenuItem>
-                        <MenuItem name="1-2">
-                            <Icon type="clipboard"></Icon>
-                            Option 2
-                        </MenuItem>
-                        <MenuItem name="1-3">
-                            <Icon type="clipboard"></Icon>
-                            Option 3
-                        </MenuItem>
-                    </Submenu>
+                <Menu active-name="1-1" theme="dark" width="auto" :class="menuitemClasses">
+                      <!-- <Submenu name="1">
+                          <template slot="title">
+                              <Icon type="ios-navigate"></Icon>
+                              Item 1
+                          </template>
+                          <MenuItem name="1-1">
+                              <Icon type="clipboard"></Icon>
+                              <span>Option 1</span>
+                          </MenuItem>
+                          <MenuItem name="1-2">
+                              <Icon type="clipboard"></Icon>
+                              Option 2
+                          </MenuItem>
+                          <MenuItem name="1-3">
+                              <Icon type="clipboard"></Icon>
+                              Option 3
+                          </MenuItem>
+                      </Submenu> -->
                     <MenuItem name="1-1">
+                        <Icon type="clipboard"></Icon>
+                        <span>Option 1</span>
+                    </MenuItem>
+                    <MenuItem name="1-2">
+                        <Icon type="clipboard"></Icon>
+                        <span>Option 1</span>
+                    </MenuItem>
+                    <MenuItem name="1-3">
+                        <Icon type="clipboard"></Icon>
+                        <span>Option 1</span>
+                    </MenuItem>
+                    <MenuItem name="1-4">
+                        <Icon type="clipboard"></Icon>
+                        <span>Option 1</span>
+                    </MenuItem>
+                    <MenuItem name="1-5">
                         <Icon type="clipboard"></Icon>
                         <span>Option 1</span>
                     </MenuItem>
@@ -43,9 +59,9 @@
                     </div>
                     <br>
                     <div class="btn">
-                      <Button type="primary" size="small" @click="exportData(1)"><Icon type="ios-download-outline"></Icon> 原始</Button>
-                      <Button type="primary" size="small" @click="exportData(2)"><Icon type="ios-download-outline"></Icon> 排序/过滤</Button>
-                      <Button type="primary" size="small" @click="exportData(3)"><Icon type="ios-download-outline"></Icon> 自定义</Button>
+                      <Button type="primary" size="small" @click="exportData()"><Icon type="ios-download-outline"></Icon> 下载</Button>
+                      <!-- <Button type="primary" size="small" @click="exportData(2)"><Icon type="ios-download-outline"></Icon> 排序/过滤</Button>
+                      <Button type="primary" size="small" @click="exportData(3)"><Icon type="ios-download-outline"></Icon> 自定义</Button> -->
                     </div>
                 </Content>
             </Layout>
@@ -57,14 +73,14 @@
 export default {
   data() {
     return {
-      msg: '',
+      msg: "",
       isCollapsed: false,
       columns2: [
         {
           title: "Name",
           key: "name",
-          width: 100,
-          fixed: "left",
+          width: 120,
+          // fixed: "left",
           sortable: true,
           render: (h, params) => {
             return h("div", [
@@ -160,7 +176,7 @@ export default {
           title: "Action",
           key: "action",
           fixed: "right",
-          width: 120,
+          width: 60,
           render: (h, params) => {
             return h("div", [
               h(
@@ -178,22 +194,22 @@ export default {
                   }
                 },
                 "详情"
-              ),
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "error",
-                    size: "small"
-                  },
-                  on: {
-                    click: () => {
-                      this.remove(params.index);
-                    }
-                  }
-                },
-                "删除"
               )
+              // h(
+              //   "Button",
+              //   {
+              //     props: {
+              //       type: "error",
+              //       size: "small"
+              //     },
+              //     on: {
+              //       click: () => {
+              //         this.remove(params.index);
+              //       }
+              //     }
+              //   },
+              //   "删除"
+              // )
             ]);
           }
         }
@@ -322,22 +338,10 @@ export default {
       this.data4.splice(index, 1);
     },
     exportData(type) {
-      if (type === 1) {
-        this.$refs.table.exportCsv({
-          filename: "The original data"
-        });
-      } else if (type === 2) {
-        this.$refs.table.exportCsv({
-          filename: "Sorting and filtering data",
-          original: false
-        });
-      } else if (type === 3) {
-        this.$refs.table.exportCsv({
-          filename: "Custom data",
-          columns: this.columns2.filter((col, index) => index < 4),
-          data: this.data4.filter((data, index) => index < 4)
-        });
-      }
+      this.$refs.table.exportCsv({
+        filename: "Sorting and filtering data",
+        original: false
+      });
     }
   }
 };
@@ -348,26 +352,33 @@ export default {
   margin-left: -1px;
   .layout {
     height: 100%;
-    .ivu-table-fixed-right{
-      .ivu-btn-primary{
-        width: 45px;
-        margin-right: 10px;
+    .ivu-layout-sider {
+      .ivu-menu {
+        .ivu-menu-item {
+          // text-align: left;
+        }
       }
-      .ivu-btn-error{
+    }
+    .ivu-table-fixed-right {
+      .ivu-btn-primary {
+        width: 45px;
+        // margin-right: 10px;
+      }
+      .ivu-btn-error {
         width: 45px;
       }
     }
-    .btnContainer{
+    .btnContainer {
       overflow: hidden;
       padding-top: 20px;
       padding-right: 145px;
-      .ivu-input-wrapper{
+      .ivu-input-wrapper {
         float: right;
       }
-      button{
+      button {
         float: right;
         margin-left: 5px;
-        .ivu-icon{
+        .ivu-icon {
           margin-top: 3px;
         }
       }
