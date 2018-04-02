@@ -6,10 +6,12 @@ import router from './router'
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
 import axios from 'axios'
+import querystring from 'querystring'
 
 Vue.config.productionTip = false
 Vue.use(iView)
 Vue.prototype.$http = axios
+Vue.prototype.$qs = querystring;
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

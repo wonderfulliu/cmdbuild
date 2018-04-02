@@ -1,11 +1,24 @@
 <template>
-    <Input v-model="value14" placeholder="Enter something..." clearable style="width: 200px"></Input>
+    <Tree :data="data1"></Tree>
 </template>
 <script>
 export default {
   data() {
     return {
-      value14: "Hello World"
+      data1: [
+        {
+          title: "parent 1",
+          expand: true,
+          children: [
+            {
+              title: "leaf 1-1-1"
+            },
+            {
+              title: "leaf 1-1-2"
+            }
+          ]
+        }
+      ]
     };
   }
 };
