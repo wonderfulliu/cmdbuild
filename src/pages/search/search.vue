@@ -1,6 +1,6 @@
 <template>
-    <div id="viewContainer">
-      <div class="layout">
+  <div id="searchContainer">
+    <div class="layout">
         <Layout>
             <Sider ref="side1" hide-trigger collapsible :collapsed-width="0" v-model="isCollapsed">
                 <Menu active-name="1-2" theme="dark" width="auto" :class="menuitemClasses">
@@ -53,11 +53,12 @@
       </div>
     </div>
 </template>
+
 <script>
 export default {
   data() {
     return {
-      msg: '',
+      msg: "",
       isCollapsed: false,
       columns2: [
         {
@@ -167,7 +168,7 @@ export default {
                 "Button",
                 {
                   props: {
-                    type: "primary",
+                    type: "text",
                     size: "small"
                   },
                   style: {},
@@ -177,13 +178,13 @@ export default {
                     }
                   }
                 },
-                "详情"
+                "View"
               ),
               h(
                 "Button",
                 {
                   props: {
-                    type: "error",
+                    type: "text",
                     size: "small"
                   },
                   on: {
@@ -192,7 +193,7 @@ export default {
                     }
                   }
                 },
-                "删除"
+                "Delete"
               )
             ]);
           }
@@ -342,32 +343,24 @@ export default {
   }
 };
 </script>
+ 
 <style lang="scss">
-#viewContainer {
+#searchContainer {
   height: 100%;
   margin-left: -1px;
   .layout {
     height: 100%;
-    .ivu-table-fixed-right{
-      .ivu-btn-primary{
-        width: 45px;
-        margin-right: 10px;
-      }
-      .ivu-btn-error{
-        width: 45px;
-      }
-    }
-    .btnContainer{
+    .btnContainer {
       overflow: hidden;
       padding-top: 20px;
       padding-right: 145px;
-      .ivu-input-wrapper{
+      .ivu-input-wrapper {
         float: right;
       }
-      button{
+      button {
         float: right;
         margin-left: 5px;
-        .ivu-icon{
+        .ivu-icon {
           margin-top: 3px;
         }
       }

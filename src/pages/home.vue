@@ -9,24 +9,24 @@
                     </div>
                     <div class="layout-nav">
                         <MenuItem name="1">
+                            <Icon type="search"></Icon>
+                            全局搜索
+                        </MenuItem>
+                        <MenuItem name="2">
                             <Icon type="home"></Icon>
                             配置信息
                         </MenuItem>
-                        <MenuItem name="2">
+                        <MenuItem name="3">
                             <Icon type="map"></Icon>
                             视图
                         </MenuItem>
-                        <MenuItem name="3">
+                        <MenuItem name="4">
                             <Icon type="pin"></Icon>
                             工作流
                         </MenuItem>
-                        <MenuItem name="4">
+                        <MenuItem name="5">
                             <Icon type="stats-bars"></Icon>
                             Charts
-                        </MenuItem>
-                        <MenuItem name="5">
-                            <Icon type="search"></Icon>
-                            全局搜索
                         </MenuItem>
                     </div>
                     <div class="layout-user">
@@ -46,56 +46,6 @@
                     </div>
                 </Menu>
             </Header>
-            <!-- <Layout>
-                <Sider ref="side1" collapsible :collapsed-width="0" v-model="isCollapsed">
-                    <Menu active-name="1-2" theme="dark" width="auto" :class="menuitemClasses" accordion>
-                        <Submenu name="1">
-                            <template slot="title">
-                                <Icon type="ios-analytics"></Icon>
-                                Navigation One
-                            </template>
-                            <MenuGroup title="Item 1">
-                                <MenuItem name="1-1">Option 1</MenuItem>
-                                <MenuItem name="1-2">Option 2</MenuItem>
-                            </MenuGroup>
-                            <MenuGroup title="Item 2">
-                                <MenuItem name="1-3">Option 3</MenuItem>
-                                <MenuItem name="1-4">Option 4</MenuItem>
-                            </MenuGroup>
-                        </Submenu>
-                        <Submenu name="2">
-                            <template slot="title">
-                                <Icon type="ios-filing"></Icon>
-                                Navigation Two
-                            </template>
-                            <MenuItem name="2-1">Option 5</MenuItem>
-                            <MenuItem name="2-2">Option 6</MenuItem>
-                            <Submenu name="3">
-                                <template slot="title">Submenu</template>
-                                <MenuItem name="3-1">Option 7</MenuItem>
-                                <MenuItem name="3-2">Option 8</MenuItem>
-                            </Submenu>
-                        </Submenu>
-                        <Submenu name="4">
-                            <template slot="title">
-                                <Icon type="ios-gear"></Icon>
-                                Navigation Three
-                            </template>
-                            <MenuItem name="4-1">Option 9</MenuItem>
-                            <MenuItem name="4-2">Option 10</MenuItem>
-                            <MenuItem name="4-3">Option 11</MenuItem>
-                            <MenuItem name="4-4">Option 12</MenuItem>
-                        </Submenu>
-                    </Menu>
-                </Sider>
-                <Layout>
-                    <Header :style="{padding: 0}" class="layout-header-bar">
-                    </Header>
-                    <Content :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
-                        Content
-                    </Content>
-                </Layout>
-            </Layout> -->
             <transition name="fade" mode="out-in">
 			    <router-view></router-view>
             </transition>
@@ -105,44 +55,45 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        isCollapsed: false
-      };
+export default {
+  data() {
+    return {
+      isCollapsed: false
+    };
+  },
+  computed: {
+    rotateIcon() {
+      return ["menu-icon", this.isCollapsed ? "rotate-icon" : ""];
     },
-    computed: {
-      rotateIcon() {
-        return ["menu-icon", this.isCollapsed ? "rotate-icon" : ""];
-      },
-      menuitemClasses() {
-        return ["menu-item", this.isCollapsed ? "collapsed-menu" : ""];
-      }
-    },
-    methods: {
-      collapsedSider() {
-        this.$refs.side1.toggleCollapse();
-      }
+    menuitemClasses() {
+      return ["menu-item", this.isCollapsed ? "collapsed-menu" : ""];
     }
-  };
+  },
+  methods: {
+    collapsedSider() {
+      this.$refs.side1.toggleCollapse();
+    }
+  }
+};
 </script>
 
 <style lang="scss">
 #homeContainer {
   height: 100%;
-  .layout{
+  margin-left: -1px;
+  .layout {
     height: 100%;
-    .ivu-layout{
+    .ivu-layout {
       height: 100%;
-      .ivu-layout-header{
-        .layout-nav{
+      .ivu-layout-header {
+        .layout-nav {
           margin: 0px auto;
           margin-left: 250px;
           width: 550px;
         }
       }
-      .layout-header-bar{
-        .ivu-icon{
+      .layout-header-bar {
+        .ivu-icon {
           float: left;
           cursor: pointer;
         }
@@ -154,31 +105,30 @@
   }
 }
 
-
 /* 以下是原生样式*/
-.ivu-layout-header{
-    padding: 0;
+.ivu-layout-header {
+  padding: 0;
 }
 
-.layout-user{
-    float: right;
-    padding-right: 20px;
+.layout-user {
+  float: right;
+  padding-right: 20px;
 }
 
-.layout-user .ivu-dropdown .ivu-dropdown-rel a{
-    color: #c6c8cd;
+.layout-user .ivu-dropdown .ivu-dropdown-rel a {
+  color: #c6c8cd;
 }
 
-.layout-user .ivu-dropdown .ivu-dropdown-rel a:hover{
-    color: #fff;
+.layout-user .ivu-dropdown .ivu-dropdown-rel a:hover {
+  color: #fff;
 }
 
-.layout-user .ivu-select-dropdown .ivu-dropdown-item a{
-    color: #495060;
+.layout-user .ivu-select-dropdown .ivu-dropdown-item a {
+  color: #495060;
 }
 
-.layout-user .ivu-avatar-icon{
-    margin-right: 2px;
+.layout-user .ivu-avatar-icon {
+  margin-right: 2px;
 }
 
 .layout {
@@ -198,8 +148,8 @@
   top: 15px;
   left: 20px;
 }
-.layout-logo img{
-    width: 100%;
+.layout-logo img {
+  width: 100%;
 }
 
 .layout-nav {
