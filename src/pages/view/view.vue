@@ -4,7 +4,7 @@
         <Layout>
             <!-- 侧边栏 -->
             <Sider ref="side1" hide-trigger collapsible :collapsed-width="0" v-model="isCollapsed">
-                <Tree :data="asideMsg"></Tree>
+                <Tree :data="asideMsg" @on-select-change='getSelectedNodes' ref='tree'></Tree>
             </Sider>
             <!-- 内容区域 -->
             <Layout>
@@ -16,13 +16,13 @@
                     </div>
                 </Header>
                 <Content :style="{margin: '15px'}">
-                    <Table stripe height="410" border :columns="columns" :data="data" ref="table"></Table>
+                    <Table stripe height="410" :loading='loading' border :columns="columns" :data="data" ref="table"></Table>
                     <div style="margin-top: 10px;margin-right: 30px;float:right;">
-                        <Page :current="2" :total="50" simple></Page>
+                        <Page :total="totalBar" @on-change="pageChange" :page-size=20 show-elevator show-total></Page>
                     </div>
                     <br>
                     <div class="btn">
-                      <Button type="primary" size="small" @click="exportData()"><Icon type="ios-download-outline"></Icon> 下载</Button>
+                      <Button type="primary" size="small" @click="exportData"><Icon type="ios-download-outline"></Icon> 下载</Button>
                     </div>
                 </Content>
             </Layout>
@@ -37,28 +37,26 @@ export default {
       asideMsg: [
         {
           title: "视图信息列表",
-          expand: true
-          // children: [
-          //   {
-          //     title: "leaf 1-1-1",
-          //   },
-          //   {
-          //     title: "leaf 1-1-2",
-          //   }
-          // ]
+          expand: true,
+          children: []
         }
       ],
+      tableName: "",
       searchMsg: "",
       isCollapsed: false,
       // 表格列
       columns: [],
       // 表格详细数据
-      data: []
+      data: [],
+      loading: true,
+      total:'',//表格数据总条数
+      pageNum: 1,
+      totalBar: 0
     };
   },
-  mounted() {
+  created() {
     this.getasideMsg();
-    this.gettableMsg();
+    // this.gettableMsg();
   },
   computed: {
     rotateIcon() {
@@ -77,77 +75,102 @@ export default {
             // 遍历数组, 将description替换为title
             info.data.forEach(function(v, i) {
               v.title = v.Description;
+              // 设置节点为选中状态
+              if (i == 0) {
+                v.selected = true;
+              }
             });
             // console.log(info.data);
             this.asideMsg[0].children = info.data;
+            //给this.tableName赋值
+            if (this.tableName == "") {
+              this.tableName = this.asideMsg[0].children[0].SourceFunction;
+            }
+            // console.log(this.tableName);
+            this.gettableMsg();
           }
-          // this.asideMsg = info;
         },
         function(info) {
-          console.log(info);
+          alert(info);
         }
       );
     },
+    //表格数据的处理
+    dataProcess(info) {
+      this.totalBar = info.data.totalRecord;
+      let dataArr = info.data.list;
+      let end = {
+        title: "Action",
+        key: "action",
+        fixed: "right",
+        width: 60,
+        render: (h, params) => {
+          return h("div", [
+            h(
+              "Button",
+              {
+                props: {
+                  type: "primary",
+                  size: "small"
+                },
+                style: {},
+                on: {
+                  click: () => {
+                    this.show(params.index);
+                  }
+                }
+              },
+              "详情"
+            )
+          ]);
+        }
+      };
+      let newtitleArr = [];
+      let i = 0;
+      // 设置每个td的宽度
+      let len = 0;
+      let width = 200;
+      for (var k in dataArr[0]) {
+        len ++;
+      }
+      // 设置表头每个td的宽度--77是action的宽度
+      let theadWidth = document.querySelector('.ivu-layout-content .ivu-table-header').offsetWidth - 77;
+      width = theadWidth / len > 200?theadWidth / len : 200;
+      //获取表头
+      for (var k in dataArr[0]) {
+        let newObj = {};
+        newObj.title = k;
+        newObj.key = ++i;
+        newObj.width = width;
+        newtitleArr.push(newObj);
+      }
+      newtitleArr.push(end);
+      this.columns = newtitleArr;
+      // 渲染表格数据
+      let newcontentArr = [];
+      dataArr.forEach(function(v, i) {
+        let newObj = {};
+        let j = 0;
+        for (var key in v) {
+          j++;
+          newObj[j] = v[key];
+        }
+        newcontentArr.push(newObj);
+      });
+      this.data = newcontentArr;
+      this.loading = false;
+    },
     // 获取表格数据
     gettableMsg() {
-      let data = { funcionName: "view_qrcode_download", pageNum: 1 };
+      this.loading = true;
+      let data = { funcionName: this.tableName, pageNum: this.pageNum };
       this.$http
         .post("/viewController/getViewCardList", this.$qs.stringify(data))
         .then(
           info => {
             // 成功的回调
             if (info.status == 200) {
-              let dataArr = info.data.list;
-              let end = {
-                title: "Action",
-                key: "action",
-                fixed: "right",
-                width: 60,
-                render: (h, params) => {
-                  return h("div", [
-                    h(
-                      "Button",
-                      {
-                        props: {
-                          type: "primary",
-                          size: "small"
-                        },
-                        style: {},
-                        on: {
-                          click: () => {
-                            this.show(params.index);
-                          }
-                        }
-                      },
-                      "详情"
-                    )
-                  ]);
-                }
-              };
-              let newtitleArr = [];
-              let i = 0;
-              // 获取表头
-              for (var k in dataArr[0]) {
-                let newObj = {};
-                newObj.title = k;
-                newObj.key = ++i;
-                newObj.width = 200;
-                newtitleArr.push(newObj);
-              }
-              newtitleArr.push(end);
-              this.columns = newtitleArr;
-              // 渲染表格数据
-              let newcontentArr = [];
-              dataArr.forEach(function (v, i) {
-                let newObj = {};
-                let j = 0;
-                for(var key in v){
-                  j++;
-                  newObj[j] = v[key];
-                }
-                newcontentArr.push(newObj);
-              })
-              this.data = newcontentArr;
+              this.dataProcess(info);
             }
           },
           info => {
@@ -158,10 +181,45 @@ export default {
           console.log(error);
         });
     },
+    // 点击侧边栏每个表触发的事件
+    getSelectedNodes() {
+      // console.log(this.$refs.tree.getSelectedNodes());
+      // 清空搜索框内容
+      this.searchMsg = '';
+      if (this.$refs.tree.getSelectedNodes().length != 0) {
+        this.tableName = this.$refs.tree.getSelectedNodes()[0].SourceFunction;
+        this.gettableMsg();
+      }
+    },
+    // 页面跳转
+    pageChange(page) {
+      this.pageNum = page;
+      if (this.searchMsg != '') {
+        this.search();
+      } else {
+        this.gettableMsg();
+      }
+    },
     // 搜索
     search() {
-      let data = this.searchMsg;
-      
+      // if (this.searchMsg == '') {
+      //   return false;
+      // }
+      this.loading = true;
+      let data = { functionName: this.tableName, pageNum: this.pageNum, condition: this.searchMsg };
+      this.$http
+        .post("/viewController/fuzzyQuery", this.$qs.stringify(data)) 
+        .then(
+          (info) => {
+            // console.log(info);
+            if (info.status == 200) {
+              this.dataProcess(info);
+            }
+          },
+          (info) => {
+            console.log(info);
+          }
+        );
     },
     // 侧边栏收起功能
     collapsedSider() {
@@ -169,12 +227,10 @@ export default {
     },
     // 表详情展示
     show(index) {
-      console.log(this.columns);
-      let content = '';
-      for(let i = 0; i < this.columns.length - 1; i ++){
-        content += this.columns[i].title + `: ${this.data[index][i + 1]}<br>`
+      let content = "";
+      for (let i = 0; i < this.columns.length - 1; i++) {
+        content += this.columns[i].title + `: ${this.data[index][i + 1]}<br>`;
       }
-      console.log(content);
       this.$Modal.info({
         title: "详细信息",
         content: content
@@ -185,11 +241,21 @@ export default {
       this.data.splice(index, 1);
     },
     // 下载功能
-    exportData(type) {
-      this.$refs.table.exportCsv({
-        filename: "Sorting and filtering data",
-        original: false
-      });
+    exportData() {
+      let data = '?functionName='+ this.tableName;
+      // window.open('/viewController/downLoadViewExcel' + data, '_self');
+      this.$http.get('/viewController/downLoadViewExcel' + data).then(info => {
+        if (info.status == 200) {
+          window.open('/viewController/downLoadViewExcel' + data, '_self');
+        }
+      }, info => {
+        console.log(info);
+      })
+      // 如果使用, 要传参type
+      // this.$refs.table.exportCsv({
+      //   filename: "Sorting and filtering data",
+      //   original: false
+      // });
     }
   }
 };
@@ -200,7 +266,7 @@ export default {
   margin-left: -1px;
   .layout {
     height: 100%;
-    .ivu-layout-content{
+    .ivu-layout-content {
       .ivu-table-header thead th,
       .ivu-table-body tbody td {
         text-align: center;
@@ -260,7 +326,7 @@ export default {
 }
 
 // 模态框样式
-.ivu-modal-confirm-body{
+.ivu-modal-confirm-body {
   padding-left: 66px;
   padding-top: 4px;
   font-size: 16px;

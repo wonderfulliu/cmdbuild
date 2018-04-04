@@ -7,6 +7,7 @@ import chart from '@/pages/chart/chart'
 import view from '@/pages/view/view'
 import workflow from '@/pages/workFlow/workFlow'
 import search from '@/pages/search/search'
+import test from '@/pages/test'
 
 Vue.use(Router) 
   
@@ -46,6 +47,11 @@ export default new Router({
           path: '/search',
           name: 'search',
           component: search
+        },
+        {
+          path: '/test',
+          name: 'test',
+          component: test
         }
       ]
     },
