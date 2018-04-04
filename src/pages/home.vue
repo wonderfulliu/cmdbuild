@@ -98,8 +98,8 @@ export default {
           cursor: pointer;
         }
       }
-      .ivu-layout-content {
-        // background-color: skyblue !important;
+      .ivu-layout-content{
+        /*background-color: skyblue !important;*/
       }
     }
   }
