@@ -107,13 +107,13 @@
     },
     created: function(){
       let _this = this;
-      let thead = sessionStorage.getItem('config_' + _this.tableName + '_attribute');
-      if(!thead){
-        _this.$http.post('/cardController/getAttributeList',{"table": _this.tableName})
-                .then(function(info){
-                  console.log(info.data);
-                  sessionStorage.setItem('config_' + _this.tableName + '_attribute',JSON.stringify(info.data));
-                });
+        let thead = sessionStorage.getItem('config_' + _this.tableName + '_attribute');
+        if(!thead){
+          _this.$http.post('/cardController/getAttributeList',{"table": _this.tableName})
+                  .then(function(info){
+                    console.log(info.data);
+                    sessionStorage.setItem('config_' + _this.tableName + '_attribute',JSON.stringify(info.data));
+                  });
       }
 
       //侧栏树形菜单数据获取

@@ -148,7 +148,7 @@
         }
       }
       .ivu-layout-content{
-        background-color: skyblue !important;
+        /*background-color: skyblue !important;*/
       }
     }
   }
