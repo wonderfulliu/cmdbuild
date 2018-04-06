@@ -9,33 +9,77 @@
 export default {
   data() {
     return {
-      searchMsg: ""
+      searchMsg: "",
+      tableMsg: "",
+      searchasideMsg: ""
     };
   },
-  created(){
+  created() {
     this.gettableName();
   },
   methods: {
     // 根据搜索的内容查询所有符合的表与记录
-    getsearchMsg(){
-      let data = '?key=' + this.searchMsg;
-      this.$http.get('/luceneController/search'+data).then(info => {
-        // 成功的回调
-        console.log(info.data);
-        if (info.status == 200) {
-          this.searchMsg = '';
-          // 路由跳转
-
+    getsearchMsg() {
+      //清除获取到的内容的空格
+      let data = this.searchMsg.replace(/\s+/g, "");
+      if (data == "") {
+        //输入为空时, 停止发送请求, 清空input内容
+        this.searchMsg = "";
+        return false;
+      }
+      data = "?key=" + data;
+      this.$http.get("/luceneController/search" + data).then(
+        info => {
+          // 成功的回调
+          if (info.status == 200) {
+            // 如果对象为空 Object.keys(info.data).length == 0是ES6新方法
+            if (Object.keys(info.data).length == 0) {
+              this.alertMsg();
+            } else {
+              // 清空搜索内容
+              this.searchMsg = "";
+              // 将搜索到的数据改为需要的数据格式
+              let arrsearchMsg = [];
+              let i = 0; //判断第一个对象, 并给他加选中状态
+              for (let k in info.data) {
+                let obj = {};
+                obj[k] = info.data[k];
+                if (i == 0) {
+                  obj.selected = true;
+                  i++;
+                }
+                for (let kTable in this.tableMsg) {
+                  if (k == '"' + kTable + '"') {
+                    obj.title = this.tableMsg[kTable];
+                  }
+                }
+                arrsearchMsg.push(obj);
+              }
+              this.searchasideMsg = arrsearchMsg;
+              console.log(this.searchasideMsg);
+            }
+          }
+        },
+        info => {
+          // 失败的回调
         }
-      }, info => {
-        // 失败的回调
-      })
+      );
     },
     // 获取所有表名
-    gettableName(){
-      this.$http.get('/cardController/getTableList').then(info => {
-        console.log(info);
-      })
+    gettableName() {
+      this.$http.get("/cardController/getTableList").then(info => {
+        if (info.status == 200) {
+          this.tableMsg = info.data;
+        }
+      });
+    },
+    //提示信息
+    alertMsg() {
+      this.$Message.warning({
+        content: "您搜索的内容为空"
+        // top: 550,
+        // duration: 2 不写有默认值
+      });
     }
   }
 };
@@ -54,10 +98,10 @@ export default {
         padding-right: 46px;
         border-radius: 23px;
       }
-      input.ivu-input-large::placeholder{
+      input.ivu-input-large::placeholder {
         font-size: 16px;
       }
-      i.ivu-input-icon{
+      i.ivu-input-icon {
         height: 46px;
         width: 46px;
         line-height: 46px;
@@ -65,9 +109,9 @@ export default {
         border-radius: 0 23px 23px 0;
         cursor: pointer;
       }
-      i.ivu-input-icon:hover{
+      i.ivu-input-icon:hover {
         background-color: #ededed;
-        transition: .5s
+        transition: 0.5s;
       }
     }
   }

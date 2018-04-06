@@ -1,5 +1,5 @@
 <template>
-    <div id="viewContainer">
+    <div id="searchforContainer">
       <div class="layout">
         <Layout>
             <!-- 侧边栏 -->
@@ -49,15 +49,13 @@ export default {
       // 表格详细数据
       data: [],
       loading: true,
-      total:'',//表格数据总条数
+      total: "", //表格数据总条数
       pageNum: 1,
-      totalBar: 0,
-      searched: false,
+      totalBar: 0
     };
   },
   created() {
     this.getasideMsg();
-    // this.gettableMsg();
   },
   computed: {
     rotateIcon() {
@@ -65,11 +63,6 @@ export default {
     },
     menuitemClasses() {
       return ["menu-item", this.isCollapsed ? "collapsed-menu" : ""];
-    }
-  },
-  watch: {
-    searchMsg: function (val) {//对input中的数据进行监听, 有变化会触发
-      this.searched = false;
     }
   },
   methods: {
@@ -86,7 +79,7 @@ export default {
                 v.selected = true;
               }
             });
-            // console.log(info.data);
+            console.log(info.data);
             this.asideMsg[0].children = info.data;
             //给this.tableName赋值
             if (this.tableName == "") {
@@ -137,11 +130,13 @@ export default {
       let len = 0;
       let width = 200;
       for (var k in dataArr[0]) {
-        len ++;
+        len++;
       }
       // 设置表头每个td的宽度--77是action的宽度
-      let theadWidth = document.querySelector('.ivu-layout-content .ivu-table-header').offsetWidth - 77;
-      width = theadWidth / len > 200?theadWidth / len : 200;
+      let theadWidth =
+        document.querySelector(".ivu-layout-content .ivu-table-header")
+          .offsetWidth - 77;
+      width = theadWidth / len > 200 ? theadWidth / len : 200;
       //获取表头
       for (var k in dataArr[0]) {
         let newObj = {};
@@ -191,7 +186,7 @@ export default {
     getSelectedNodes() {
       // console.log(this.$refs.tree.getSelectedNodes());
       // 清空搜索框内容
-      this.searchMsg = '';
+      this.searchMsg = "";
       if (this.$refs.tree.getSelectedNodes().length != 0) {
         this.tableName = this.$refs.tree.getSelectedNodes()[0].SourceFunction;
         this.gettableMsg();
@@ -200,7 +195,7 @@ export default {
     // 页面跳转
     pageChange(page) {
       this.pageNum = page;
-      if (this.searchMsg != '') {
+      if (this.searchMsg != "") {
         this.search();
       } else {
         this.gettableMsg();
@@ -211,19 +206,22 @@ export default {
       // if (this.searchMsg == '') {
       //   return false;
       // }
-      this.searched = true;
       this.loading = true;
-      let data = { functionName: this.tableName, pageNum: this.pageNum, condition: this.searchMsg };
+      let data = {
+        functionName: this.tableName,
+        pageNum: this.pageNum,
+        condition: this.searchMsg
+      };
       this.$http
-        .post("/viewController/fuzzyQuery", this.$qs.stringify(data)) 
+        .post("/viewController/fuzzyQuery", this.$qs.stringify(data))
         .then(
-          (info) => {
+          info => {
             // console.log(info);
             if (info.status == 200) {
               this.dataProcess(info);
             }
           },
-          (info) => {
+          info => {
             console.log(info);
           }
         );
@@ -249,30 +247,24 @@ export default {
     },
     // 下载功能
     exportData() {
-      if (this.searchMsg && this.searched) {
-        var data = '?functionName='+ this.tableName + '&condition=' + this.searchMsg;
-      } else {
-        var data = '?functionName='+ this.tableName;
-      }
-
-      this.$http.get('/viewController/downLoadViewExcel' + data).then(info => {
-        if (info.status == 200) {
-          window.open('/viewController/downLoadViewExcel' + data, '_self');
+      let data = "?functionName=" + this.tableName;
+      // window.open('/viewController/downLoadViewExcel' + data, '_self');
+      this.$http.get("/viewController/downLoadViewExcel" + data).then(
+        info => {
+          if (info.status == 200) {
+            window.open("/viewController/downLoadViewExcel" + data, "_self");
+          }
+        },
+        info => {
+          console.log(info);
         }
-      }, info => {
-        console.log(info);
-      })
-      // 如果使用, 要传参type
-      // this.$refs.table.exportCsv({
-      //   filename: "Sorting and filtering data",
-      //   original: false
-      // });
+      );
     }
   }
 };
 </script>
 <style lang="scss">
-#viewContainer {
+#searchforContainer {
   height: 100%;
   margin-left: -1px;
   .layout {
