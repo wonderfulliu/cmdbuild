@@ -10,23 +10,23 @@
                     <div class="layout-nav">
                         <MenuItem name="1">
                             <Icon type="search"></Icon>
-                            全局搜索
+                            <router-link to="/search">全局搜索</router-link>
                         </MenuItem>
                         <MenuItem name="2">
                             <Icon type="home"></Icon>
-                            配置信息
+                            <router-link to="/config">配置信息</router-link>
                         </MenuItem>
                         <MenuItem name="3">
                             <Icon type="map"></Icon>
-                            视图
+                            <router-link to="/view">视图</router-link>
                         </MenuItem>
                         <MenuItem name="4">
                             <Icon type="pin"></Icon>
-                            工作流
+                            <router-link to="/workFlow">工作流</router-link>
                         </MenuItem>
                         <MenuItem name="5">
                             <Icon type="stats-bars"></Icon>
-                            Charts
+                            <router-link to="/chart">Charts</router-link>
                         </MenuItem>
                     </div>
                     <div class="layout-user">
