@@ -57,7 +57,6 @@ export default {
   },
   created() {
     this.getasideMsg();
-    // this.gettableMsg();
   },
   computed: {
     rotateIcon() {
@@ -87,12 +86,12 @@ export default {
               }
             });
             // console.log(info.data);
+            // 给侧边栏赋值
             this.asideMsg[0].children = info.data;
             //给this.tableName赋值
             if (this.tableName == "") {
               this.tableName = this.asideMsg[0].children[0].SourceFunction;
             }
-            // console.log(this.tableName);
             this.gettableMsg();
           }
         },

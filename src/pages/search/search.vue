@@ -56,7 +56,8 @@ export default {
                 arrsearchMsg.push(obj);
               }
               this.searchasideMsg = arrsearchMsg;
-              console.log(this.searchasideMsg);
+              // console.log(this.searchasideMsg);
+              this.$store.commit('getsearchMsg', this.searchasideMsg);
             }
           }
         },
@@ -70,6 +71,7 @@ export default {
       this.$http.get("/cardController/getTableList").then(info => {
         if (info.status == 200) {
           this.tableMsg = info.data;
+          this.$store.commit('gettableMsg', this.tableMsg);//把tableMsg放置到公共数据仓库
         }
       });
     },

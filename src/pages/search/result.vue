@@ -10,15 +10,15 @@
             <Layout>
                 <Header :style="{padding: 0}" class="layout-header-bar">
                     <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
-                    <div class="btnContainer">
+                    <!-- <div class="btnContainer">
                         <Button type="primary" size="large" icon="ios-search" @click="search">Search</Button>
                         <Input v-model="searchMsg" size="large" placeholder="Enter something..." clearable style="width: 280px"></Input>
-                    </div>
+                    </div> -->
                 </Header>
                 <Content :style="{margin: '15px'}">
                     <Table stripe height="410" :loading='loading' border :columns="columns" :data="data" ref="table"></Table>
                     <div style="margin-top: 10px;margin-right: 30px;float:right;">
-                        <Page :total="totalBar" @on-change="pageChange" :page-size=20 show-elevator show-total></Page>
+                        <Page :total="totalBar" :current="pageNum" @on-change="pageChange" :page-size=20 show-elevator show-total></Page>
                     </div>
                     <br>
                     <div class="btn">
@@ -28,6 +28,19 @@
             </Layout>
         </Layout>
       </div>
+      <Modal v-model="modal" width="360">
+          <p slot="header" style="color:#f60;text-align:center">
+              <Icon type="information-circled"></Icon>
+              <span>删除提示</span>
+          </p>
+          <div style="text-align:center">
+              <p>该记录删除后无法恢复</p>
+              <p>是否确认删除?</p>
+          </div>
+          <div slot="footer">
+              <Button type="error" size="large" long @click="del()">删除</Button>
+          </div>
+      </Modal>
     </div>
 </template>
 <script>
@@ -42,6 +55,9 @@ export default {
         }
       ],
       tableName: "",
+      ids: "",
+      pageNum: 1,
+      pageSize: 20, //每页显示的数量
       searchMsg: "",
       isCollapsed: false,
       // 表格列
@@ -50,8 +66,13 @@ export default {
       data: [],
       loading: true,
       total: "", //表格数据总条数
-      pageNum: 1,
-      totalBar: 0
+      totalBar: 0,
+      cnameTitle: "", // 存储表头中英文对照信息
+      modal: false,
+      delData: {
+        delData: "",
+        index: ""
+      } //删除的数据
     };
   },
   created() {
@@ -66,43 +87,15 @@ export default {
     }
   },
   methods: {
-    // 获取侧边栏数据
-    getasideMsg() {
-      this.$http.get("/viewController/getViewList").then(
-        info => {
-          if (info.status == 200) {
-            // 遍历数组, 将description替换为title
-            info.data.forEach(function(v, i) {
-              v.title = v.Description;
-              // 设置节点为选中状态
-              if (i == 0) {
-                v.selected = true;
-              }
-            });
-            console.log(info.data);
-            this.asideMsg[0].children = info.data;
-            //给this.tableName赋值
-            if (this.tableName == "") {
-              this.tableName = this.asideMsg[0].children[0].SourceFunction;
-            }
-            // console.log(this.tableName);
-            this.gettableMsg();
-          }
-        },
-        function(info) {
-          alert(info);
-        }
-      );
-    },
     //表格数据的处理
     dataProcess(info) {
       this.totalBar = info.data.totalRecord;
-      let dataArr = info.data.list;
+      let dataArr = info.data.list; //要处理和渲染的表格数据
       let end = {
         title: "Action",
         key: "action",
         fixed: "right",
-        width: 60,
+        width: 120,
         render: (h, params) => {
           return h("div", [
             h(
@@ -120,12 +113,27 @@ export default {
                 }
               },
               "详情"
+            ),
+            h(
+              "Button",
+              {
+                props: {
+                  type: "error",
+                  size: "small"
+                },
+                on: {
+                  click: () => {
+                    this.modal = true;
+                    this.remove(params.index);
+                  }
+                }
+              },
+              "删除"
             )
           ]);
         }
       };
-      let newtitleArr = [];
-      let i = 0;
+
       // 设置每个td的宽度
       let len = 0;
       let width = 200;
@@ -137,40 +145,97 @@ export default {
         document.querySelector(".ivu-layout-content .ivu-table-header")
           .offsetWidth - 77;
       width = theadWidth / len > 200 ? theadWidth / len : 200;
+
+      // console.log(this.cnameTitle);//根据这个将英文名转换为中文名进行数据处理
+      //判断返回的表格数据是否有Id
+      let flag = this.hasId(dataArr[0]);
       //获取表头
-      for (var k in dataArr[0]) {
-        let newObj = {};
-        newObj.title = k;
-        newObj.key = ++i;
-        newObj.width = width;
-        newtitleArr.push(newObj);
+      let newtitleArr = []; //存储最终要给columns的表头数据
+      let j = 0;
+      this.cnameTitle.forEach(function(v, i) {
+        v.title = v.cname;
+        v.key = ++j;
+        v.width = width;
+        newtitleArr.push(v);
+      });
+      if (flag) {
+        var Id = {
+          title: "Id",
+          key: "Id",
+          width: 200
+        };
+        newtitleArr.push(Id);
       }
       newtitleArr.push(end);
-      this.columns = newtitleArr;
+      this.columns = newtitleArr; //将获取到的表头字段赋值给table的columns
+
       // 渲染表格数据
-      let newcontentArr = [];
+      let newcontentArr = []; //存储最终要赋给表格的数据
       dataArr.forEach(function(v, i) {
+        //v表示待过滤数据中的每个对象, 一共6个对象
         let newObj = {};
-        let j = 0;
         for (var key in v) {
-          j++;
-          newObj[j] = v[key];
+          //key表示每个待过滤对象的键
+          if (key == "Id") {
+            newObj.Id = v[key];
+          } else {
+            newtitleArr.forEach(function(val, index) {
+              //val表示表头每个字段对象
+              if (key == val.attribute) {
+                if (v[key] != null && typeof v[key] == "object") {
+                  //如果是对象, 那么值为123
+                  newObj[val.key] = v[key].Description;
+                } else if (v[key] == null) {
+                  newObj[val.key] = v[key];
+                } else {
+                  newObj[val.key] = v[key];
+                }
+              }
+            });
+          }
         }
         newcontentArr.push(newObj);
       });
       this.data = newcontentArr;
       this.loading = false;
     },
+    // 获取侧边栏数据
+    getasideMsg() {
+      //给侧边栏赋search页面传来的侧边栏数据
+      // console.log(this.$store.state.searchMsg);
+      this.asideMsg[0].children = this.$store.state.searchMsg;
+
+      //如果表名为空, 即第一次进入该表, 那么将表名赋值为第一个名字, ids也是一样的
+      if (this.tableName == "") {
+        for (var k in this.asideMsg[0].children[0]) {
+          this.tableName = k.replace(/\"/g, "");
+          this.ids = this.asideMsg[0].children[0][k];
+          break; //只获取第一个键与值
+        }
+      }
+      this.getcnameTitle();
+      this.gettableMsg();
+    },
     // 获取表格数据
     gettableMsg() {
       this.loading = true;
-      let data = { funcionName: this.tableName, pageNum: this.pageNum };
+      let data =
+        `?table=` +
+        this.tableName +
+        `&ids=` +
+        this.ids +
+        `&pageNum=` +
+        this.pageNum +
+        `&pageSize=` +
+        this.pageSize;
       this.$http
-        .post("/viewController/getViewCardList", this.$qs.stringify(data))
+        .get("/luceneController/pageSearch" + data)
         .then(
           info => {
+            console.log(info);
             // 成功的回调
             if (info.status == 200) {
+              // console.log(info.data);
               this.dataProcess(info);
             }
           },
@@ -184,47 +249,40 @@ export default {
     },
     // 点击侧边栏每个表触发的事件
     getSelectedNodes() {
+      // 单击侧边栏时, 分页改为1
+      this.pageNum = 1;
       // console.log(this.$refs.tree.getSelectedNodes());
-      // 清空搜索框内容
-      this.searchMsg = "";
-      if (this.$refs.tree.getSelectedNodes().length != 0) {
-        this.tableName = this.$refs.tree.getSelectedNodes()[0].SourceFunction;
-        this.gettableMsg();
+      for (var k in this.$refs.tree.getSelectedNodes()[0]) {
+        this.tableName = k.replace(/\"/g, "");
+        this.ids = this.$refs.tree.getSelectedNodes()[0][k];
+        break; //只获取第一个键与值
       }
+      this.getcnameTitle();
+      this.gettableMsg();
+    },
+    // 获取不同表格的表头字段所对应的中文名结合(需要筛选)
+    getcnameTitle() {
+      let data = { table: this.tableName };
+      this.$http.post("/cardController/getAttributeList", data).then(info => {
+        if (info.status == 200) {
+          this.cnameTitle = info.data;
+        }
+      });
+    },
+    // 判断返回的数据中是否包含Id
+    hasId(info) {
+      let flag = false;
+      for (var k in info) {
+        if (k == "Id") {
+          flag = true;
+        }
+      }
+      return flag;
     },
     // 页面跳转
     pageChange(page) {
       this.pageNum = page;
-      if (this.searchMsg != "") {
-        this.search();
-      } else {
-        this.gettableMsg();
-      }
-    },
-    // 搜索
-    search() {
-      // if (this.searchMsg == '') {
-      //   return false;
-      // }
-      this.loading = true;
-      let data = {
-        functionName: this.tableName,
-        pageNum: this.pageNum,
-        condition: this.searchMsg
-      };
-      this.$http
-        .post("/viewController/fuzzyQuery", this.$qs.stringify(data))
-        .then(
-          info => {
-            // console.log(info);
-            if (info.status == 200) {
-              this.dataProcess(info);
-            }
-          },
-          info => {
-            console.log(info);
-          }
-        );
+      this.gettableMsg();
     },
     // 侧边栏收起功能
     collapsedSider() {
@@ -241,9 +299,33 @@ export default {
         content: content
       });
     },
-    // 删除功能
+    // 删除提示
     remove(index) {
-      this.data.splice(index, 1);
+      //先发送请求, 根据返回的结果判断是否删除成功
+      let data = "?table=" + this.tableName + "&Id=" + this.data[index].Id;
+      this.delData.delData = data;
+      this.delData.index = index;
+    },
+    //实现删除
+    del() {
+      this.modal = false;
+      this.$http.delete("/cardController/card" + this.delData.delData).then(info => {
+        console.log(info);
+        if (info.status == 200) {
+          if (info.data == "ok") {
+            this.$Message.success({//提示用户删除成功
+              content: "删除成功"
+            });
+            this.data.splice(this.delData.index, 1); //删除该元素
+            // 重新获取数据
+            this.gettableMsg();
+          } else {
+            this.$Message.error({
+              content: "删除失败"
+            });
+          }
+        }
+      });
     },
     // 下载功能
     exportData() {
@@ -282,7 +364,7 @@ export default {
     .ivu-table-fixed-right {
       .ivu-btn-primary {
         width: 45px;
-        // margin-right: 10px;
+        margin-right: 10px;
       }
       .ivu-btn-error {
         width: 45px;
