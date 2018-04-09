@@ -33,13 +33,13 @@
                         <Dropdown trigger="click" >
                             <Avatar icon="person" size="small" />
                             <a href="javascript:void(0)">
-                                用户名
+                                 {{ userName }}
                                 <Icon type="chevron-down"></Icon>
                             </a>
                             <DropdownMenu slot="list">
-                                <DropdownItem>用户组名</DropdownItem>
+                                <DropdownItem>{{ group }}</DropdownItem>
                                 <DropdownItem>
-                                    <a>退出</a>
+                                    <a @click="logout">退出</a>
                                 </DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
@@ -58,7 +58,9 @@
 export default {
   data() {
     return {
-      isCollapsed: false
+      isCollapsed: false,
+      userName: JSON.parse(sessionStorage.getItem('groupInfo')).user,
+      group: JSON.parse(sessionStorage.getItem('groupInfo')).Description
     };
   },
   computed: {
@@ -72,6 +74,12 @@ export default {
   methods: {
     collapsedSider() {
       this.$refs.side1.toggleCollapse();
+    },
+    logout: function(){
+      //清除session信息
+      sessionStorage.clear();
+      //跳转页面
+      this.$router.push({ path: '/login' });
     }
   }
 };
@@ -87,7 +95,7 @@ export default {
       height: 100%;
       .ivu-layout-header {
         .layout-nav {
-          margin: 0px auto;
+          margin: 0 auto;
           margin-left: 250px;
           width: 550px;
         }

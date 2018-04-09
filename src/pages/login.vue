@@ -2,28 +2,29 @@
   <div id="loginContainer">
     <i-form v-ref:form-inline :model="formInline" :rules="ruleInline">
         <Form-item prop="user">
-            <i-input type="text" :value.sync="formInline.user" placeholder="Username">
+            <i-input type="text" v-model="formInline.user" placeholder="Username" @input="inpChange()">
                 <Icon type="ios-person-outline" slot="prepend"></Icon>
             </i-input>
         </Form-item>
         <Form-item prop="password">
-            <i-input type="password" :value.sync="formInline.password" placeholder="Password">
+            <i-input type="password" v-model="formInline.password" placeholder="Password" @input="inpChange()">
                 <Icon type="ios-locked-outline" slot="prepend"></Icon>
             </i-input>
         </Form-item>
-        <Form-item label="请选择分组">
-            <i-select :model.sync="formInline.select" placeholder="请选择分组">
-                <i-option value="beijing">北京市</i-option>
-                <i-option value="shanghai">上海市</i-option>
-                <i-option value="shenzhen">深圳市</i-option>
+        <Form-item prop="select" label="请选择分组" v-if="groupInfo.length != 0" id="selectContainer">
+            <i-select v-model="formInline.select" placeholder="请选择分组">
+                <i-option :value="info.Code" :key="info.Code" v-for="info in groupInfo">{{ info.Description }}</i-option>
             </i-select>
         </Form-item>
-        <Form-item>
-            <i-button type="primary" long @click="handleSubmit('formInline')">登录</i-button>
+        <Form-item v-if="groupInfo.length == 0">
+            <i-button type="primary" long @click="getGroup">确定</i-button>
+        </Form-item>
+        <Form-item v-if="groupInfo.length != 0">
+            <i-button type="primary" long @click="login">登录</i-button>
         </Form-item>
     </i-form>
   </div>
-</template> 
+</template>
 
 <script>
   export default {
@@ -44,23 +45,43 @@
               message: "密码长度不能小于6位",
               trigger: "blur"
             }
-          ]
+          ],
+          select: [{ required: true, message: "请选择分组", trigger: "blur" }]
         },
-        formItem: {
-          select: '',
-        }
+        groupInfo: ''
       };
     },
     methods: {
-      handleSubmit(name) {
-        this.$refs[name].validate(valid => {
-          if (valid) {
-            this.$Message.success("提交成功!");
-          } else {
-            this.$Message.error("表单验证失败!");
-          }
-        });
+      login:function() {
+        let _this = this;
+        if (_this.formInline.select == ''){
+
+        }else {
+          _this.groupInfo.forEach(function(v, i){
+            if( v.Code == _this.formInline.select){
+              let arra = v;
+              arra.user = _this.formInline.user;
+              sessionStorage.setItem('groupInfo', JSON.stringify(arra)); //分组信息存入session
+            }
+          });
+          //跳转页面
+          _this.$router.push({ path: '/search' });
+        }
+
+
+      },
+      getGroup: function () {
+        let _this = this;
+        _this.$http.post('/authorityController/login?username=' + _this.formInline.user + '&password=' + _this.formInline.password)
+          .then(function (info) {
+            _this.groupInfo = info.data.data;
+          })
+      },
+      inpChange: function(){
+        let _this = this;
+        _this.groupInfo = '';
       }
+
     }
   };
 </script>
@@ -85,6 +106,10 @@
   #loginContainer:hover{
     margin-top: 140px;
     box-shadow: 0px 0px 25px #ccc;
+  }
+
+  #selectContainer .ivu-form-item-content{
+
   }
 </style>
 

@@ -40,9 +40,21 @@
       </Sider>
       <Layout>
         <Header :style="{padding: 0}" class="layout-header-bar">
+          <div class="btnItem btnItemLeft">
+            <Button type="ghost">searchFilter</Button>
+          </div>
+          <div class="searchBar">
+            <Input v-model="configCondition"></Input>
+            <!--<Input v-model="configCondition" clearable="true"></Input>-->
+            <Button type="primary" icon="ios-search">搜索</Button>
+          </div>
+          <div class="btnItem btnItemRight">
+            <Button type="ghost" icon="plus-round" @click="configAdd()"></Button>
+            <Button type="ghost" icon="arrow-down-a"></Button>
+          </div>
+
         </Header>
         <Content :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
-
           <div class="contentBody">
             <Table border size="small" :loading="loading" height="450" :columns="ConfigThead" :data="ConfigTdata"></Table>
             <div class="pageContainer clearfix">
@@ -80,6 +92,25 @@
       <div slot="footer">
       </div>
     </Modal>
+    <Modal v-model="configAddModal" title="新增信息" @on-ok="configAddOk">
+      <Form :label-width="100">
+        <FormItem :label="attr.cname" v-for="attr in attributes" :key="attr.attribute">
+          <Input placeholder="Enter something..." v-if="attr.type=='varchar'" :name="attr.attribute"></Input>
+          <Input placeholder="Enter something..." v-if="attr.type=='int4'" :name="attr.attribute"></Input>
+          <Select v-if="attr.type=='lookup'" :name="attr.attribute" @click.native="getLookUp(attr.lr)">
+            <Option v-for="a in lookupInfo" :value="a.Id" :key="a.Id">{{ a.Description }}</Option>
+          </Select>
+          <Row v-if="attr.type=='date'">
+            <Col span="24">
+              <DatePicker type="date" placeholder="Select date" :name="attr.attribute"></DatePicker>
+            </Col>
+          </Row>
+          <Input v-if="attr.type=='reference'" :name="attr.attribute">
+            <Button slot="append" icon="ios-search"></Button>
+          </Input>
+        </FormItem>
+      </Form>
+    </Modal>
   </div>
 
 </template>
@@ -88,21 +119,26 @@
     props: ['isCollapsed','menuitemClasses'],
     data () {
       return {
-        ConfigTreeData: '',
-        ConfigThead: [],
-        ConfigTdata: [],
+        ConfigTreeData: '', //树状目录
+        ConfigThead: [],  //表头
+        ConfigTdata: [],  //表格数据
         //页面配置：
         loading: true,
-        tableName: 'Server',
-        recordId: '',
-        pageNum: 1,
-        pageSize: 20,
-        totalBar: '',
+        groupName: JSON.parse(sessionStorage.getItem('groupInfo')).Code,  //组名
+        tableName: 'Server',  //表名
+        recordId: '',     //记录id
+        pageNum: 1,       //当前页
+        pageSize: 20,     //每页条数
+        totalBar: '',     //总条数
+        configCondition: '',  //查询条件
         //模态框
-        configDeleModal: false,
-        configViewModal: false,
+        configDeleModal: false, //删除modal
+        configViewModal: false, //查看modal
+        configAddModal: false,
         deleLoading: false,
-        configViewData: ''
+        configViewData: '',     //查看数据
+        attributes: '',  //记录的字段 中英文
+        lookupInfo: ''
       }
     },
     created: function(){
@@ -111,7 +147,6 @@
         if(!thead){
           _this.$http.post('/cardController/getAttributeList',{"table": _this.tableName})
                   .then(function(info){
-                    console.log(info.data);
                     sessionStorage.setItem('config_' + _this.tableName + '_attribute',JSON.stringify(info.data));
                   });
       }
@@ -128,7 +163,7 @@
       getTreeData: function(){
         let _this = this;
         //侧栏树形菜单数据获取
-        _this.$http.post('/authorityController/getMenu?groupName=NET')
+        _this.$http.post('/authorityController/getMenu?groupName='+_this.groupName)
                 .then(function(info){
                   let oData = info.data.children;
                   _this.ConfigTreeData = objFunc(oData);  //将转换好的对象传给ConfigTreeData
@@ -339,7 +374,7 @@
       configDele: function(){
         let _this = this;
         _this.deleLoading = true;
-        _this.$http.delete('/cardController/card?table=' + _this.tableName + '&Id=' + _this.recordId)
+        _this.$http.delete('/cardController/card?table=' + _this.tableName + '&&Id=' + _this.recordId)
                 .then(function(){
                   _this.deleLoading = false;
                   _this.configDeleModal = false;
@@ -353,14 +388,89 @@
                   _this.$Message.error('删除失败');
                 });
 
+      },
+      configAdd: function () {
+        let _this = this;
+        _this.configAddModal = true;
+        _this.attributes = JSON.parse(sessionStorage.getItem('config_' + _this.tableName + '_attribute'));
+      },
+      configAddOk: function(){
+
+      },
+      getLookUp: function(req){
+        let _this = this;
+        _this.lookupInfo =[{"Description":"aaa","Id":1},{"Description":"bbb","Id":2}]
+          /*_this.$http.post('/relationController/lookupQuery?lookup='+req)
+          .then(function (info) {
+            console.log(info);
+            console.log(_this.attributes);
+            _this.lookupInfo = info.data;
+          console.log(info.data)
+          })*/
       }
+
     },
     mounted () {
     }
   }
 </script>
 
-<style>
+<style lang="scss">
+  .btnItem{
+    width: 25%;
+    float: left;
+    padding-top: 15px;
+    button{
+      float: left;
+      .ivu-icon{
+        margin-top: 2px;
+        margin-right: -6px;
+        font-size: 14px;
+      }
+    }
+  }
+
+  .btnItemLeft{
+    button{
+      margin-left: 15px;
+      float: left;
+    }
+  }
+
+  .btnItemRight{
+    button{
+      margin-right: 15px;
+      float: right;
+    }
+  }
+  .searchBar{
+    width: 50%;
+    float: left;
+    padding-top: 15px;
+    .ivu-input-wrapper{
+      width: 80%;
+      float: left;
+    }
+    button{
+      float: right;
+      width: 18%;
+      .ivu-icon{
+        margin-top: 3px;
+      }
+    }
+  }
+
+  .ivu-row{
+    .ivu-col{
+      .ivu-date-picker{
+        width: 100%;
+      }
+    }
+  }
+
+
+
+
 html, body {
   width: 100%;
   height: 100%;
@@ -402,5 +512,6 @@ line-height: 0;
 .pageContainer{
   padding: 10px 0;
 }
+
 
 </style>

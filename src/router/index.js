@@ -1,3 +1,4 @@
+
 import Vue from 'vue'
 import Router from 'vue-router'
 // 主组件
@@ -19,15 +20,15 @@ import edit from '@/pages/search/edit'
 // 测试 没用
 import test from '@/pages/test'
 
-Vue.use(Router) 
-  
+Vue.use(Router)
+
 export default new Router({
   routes: [
     {
       path: '/',
       name: 'login',
       component: login
-    }, 
+    },
     {
       path: '/home',
       name: 'home',
@@ -80,5 +81,6 @@ export default new Router({
       name: 'config',
       component: config
     }
-  ] 
+  ]
 })
+

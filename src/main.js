@@ -13,6 +13,7 @@ Vue.config.productionTip = false
 Vue.use(iView)
 Vue.use(Vuex)
 Vue.prototype.$http = axios
+
 Vue.prototype.$qs = querystring;
 
 //公共仓库存储数据
@@ -38,6 +39,7 @@ const store = new Vuex.Store({
 // this.$store.commit('getsearchMsg', val);
 //另一个组件通过以下方法就可以获取, searchMsg就是要获取的数据
 // this.$store.state.searchMsg
+
 
 new Vue({
   el: '#app',
