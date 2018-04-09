@@ -1,176 +1,74 @@
 <template>
-    <Tree :data="data5" :render="renderContent"></Tree>
+    <Form :model="formItem" :label-width="80">
+        <FormItem label="Input">
+            <Input v-model="formItem.input" placeholder="Enter something..."></Input>
+        </FormItem>
+        <FormItem label="Select">
+            <Select v-model="formItem.select">
+                <Option value="beijing">New York</Option>
+                <Option value="shanghai">London</Option>
+                <Option value="shenzhen">Sydney</Option>
+            </Select>
+        </FormItem>
+        <FormItem label="DatePicker">
+            <Row>
+                <Col span="11">
+                    <DatePicker type="date" placeholder="Select date" v-model="formItem.date"></DatePicker>
+                </Col>
+                <Col span="2" style="text-align: center">-</Col>
+                <Col span="11">
+                    <TimePicker type="time" placeholder="Select time" v-model="formItem.time"></TimePicker>
+                </Col>
+            </Row>
+        </FormItem>
+        <FormItem label="Radio">
+            <RadioGroup v-model="formItem.radio">
+                <Radio label="male">Male</Radio>
+                <Radio label="female">Female</Radio>
+            </RadioGroup>
+        </FormItem>
+        <FormItem label="Checkbox">
+            <CheckboxGroup v-model="formItem.checkbox">
+                <Checkbox label="Eat"></Checkbox>
+                <Checkbox label="Sleep"></Checkbox>
+                <Checkbox label="Run"></Checkbox>
+                <Checkbox label="Movie"></Checkbox>
+            </CheckboxGroup>
+        </FormItem>
+        <FormItem label="Switch">
+            <i-switch v-model="formItem.switch" size="large">
+                <span slot="open">On</span>
+                <span slot="close">Off</span>
+            </i-switch>
+        </FormItem>
+        <FormItem label="Slider">
+            <Slider v-model="formItem.slider" range></Slider>
+        </FormItem>
+        <FormItem label="Text">
+            <Input v-model="formItem.textarea" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="Enter something..."></Input>
+        </FormItem>
+        <FormItem>
+            <Button type="primary">Submit</Button>
+            <Button type="ghost" style="margin-left: 8px">Cancel</Button>
+        </FormItem>
+    </Form>
 </template>
 <script>
 export default {
   data() {
     return {
-      data5: [
-        {
-          title: "parent 1",
-          expand: true,
-          render: (h, { root, node, data }) => {
-            return h(
-              "span",
-              {
-                style: {
-                  display: "inline-block",
-                  width: "100%"
-                }
-              },
-              [
-                h("span", [
-                  h("Icon", {
-                    props: {
-                      type: "ios-folder-outline"
-                    },
-                    style: {
-                      marginRight: "8px"
-                    }
-                  }),
-                  h("span", data.title)
-                ]),
-                h(
-                  "span",
-                  {
-                    style: {
-                      display: "inline-block",
-                      float: "right",
-                      marginRight: "32px"
-                    }
-                  },
-                  [
-                    h("Button", {
-                      props: Object.assign({}, this.buttonProps, {
-                        icon: "ios-plus-empty",
-                        type: "primary"
-                      }),
-                      style: {
-                        width: "52px"
-                      },
-                      on: {
-                        click: () => {
-                          this.append(data);
-                        }
-                      }
-                    })
-                  ]
-                )
-              ]
-            );
-          },
-          children: [
-            {
-              title: "child 1-1",
-              expand: true,
-              children: [
-                {
-                  title: "leaf 1-1-1",
-                  expand: true
-                },
-                {
-                  title: "leaf 1-1-2",
-                  expand: true
-                }
-              ]
-            },
-            {
-              title: "child 1-2",
-              expand: true,
-              children: [
-                {
-                  title: "leaf 1-2-1",
-                  expand: true
-                },
-                {
-                  title: "leaf 1-2-1",
-                  expand: true
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      buttonProps: {
-        type: "ghost",
-        size: "small"
+      formItem: {
+        input: "",
+        select: "",
+        radio: "male",
+        checkbox: [],
+        switch: true,
+        date: "",
+        time: "",
+        slider: [20, 50],
+        textarea: ""
       }
     };
-  },
-  methods: {
-    renderContent(h, { root, node, data }) {
-      return h(
-        "span",
-        {
-          style: {
-            display: "inline-block",
-            width: "100%"
-          }
-        },
-        [
-          h("span", [
-            h("Icon", {
-              props: {
-                type: "ios-paper-outline"
-              },
-              style: {
-                marginRight: "8px"
-              }
-            }),
-            h("span", data.title)
-          ]),
-          h(
-            "span",
-            {
-              style: {
-                display: "inline-block",
-                float: "right",
-                marginRight: "32px"
-              }
-            },
-            [
-              h("Button", {
-                props: Object.assign({}, this.buttonProps, {
-                  icon: "ios-plus-empty"
-                }),
-                style: {
-                  marginRight: "8px"
-                },
-                on: {
-                  click: () => {
-                    this.append(data);
-                  }
-                }
-              }),
-              h("Button", {
-                props: Object.assign({}, this.buttonProps, {
-                  icon: "ios-minus-empty"
-                }),
-                on: {
-                  click: () => {
-                    this.remove(root, node, data);
-                  }
-                }
-              })
-            ]
-          )
-        ]
-      );
-    },
-    append(data) {
-      const children = data.children || [];
-      children.push({
-        title: "appended node",
-        expand: true
-      });
-      this.$set(data, "children", children);
-    },
-    remove(root, node, data) {
-      const parentKey = root.find(el => el === node).parent;
-      const parent = root.find(el => el.nodeKey === parentKey).node;
-      const index = parent.children.indexOf(data);
-      parent.children.splice(index, 1);
-    }
   }
 };
 </script>

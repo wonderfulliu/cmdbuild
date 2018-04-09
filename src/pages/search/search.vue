@@ -1,7 +1,13 @@
 <template>
     <div id="searchContainer">
       <div class="btnContainerAll">
-          <Input v-model="searchMsg" size="large" placeholder="Search for..." style="width: 400px; height: 46px" icon="arrow-right-c" @on-click='getsearchMsg'></Input>
+          <Input v-model="searchMsg"
+                 size="large"
+                 placeholder="Search for..."
+                 style="width: 400px; height: 46px"
+                 icon="arrow-right-c"
+                 @on-click='getsearchMsg'
+                 @on-enter="getsearchMsg"></Input>
       </div>
     </div>
 </template>

@@ -123,8 +123,8 @@ export default {
                 },
                 on: {
                   click: () => {
-                    // this.modal = true;
-                    // this.remove(params.index);
+                    this.$router.push({path: '/edit'})
+                    console.log(params.index);
                   }
                 }
               },
