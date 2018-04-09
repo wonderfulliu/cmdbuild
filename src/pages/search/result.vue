@@ -95,7 +95,7 @@ export default {
         title: "Action",
         key: "action",
         fixed: "right",
-        width: 120,
+        width: 180,
         render: (h, params) => {
           return h("div", [
             h(
@@ -113,6 +113,22 @@ export default {
                 }
               },
               "详情"
+            ),
+            h(
+              "Button",
+              {
+                props: {
+                  type: "success",
+                  size: "small"
+                },
+                on: {
+                  click: () => {
+                    // this.modal = true;
+                    // this.remove(params.index);
+                  }
+                }
+              },
+              "编辑"
             ),
             h(
               "Button",
@@ -232,7 +248,7 @@ export default {
         .get("/luceneController/pageSearch" + data)
         .then(
           info => {
-            console.log(info);
+            // console.log(info);
             // 成功的回调
             if (info.status == 200) {
               // console.log(info.data);
@@ -309,23 +325,26 @@ export default {
     //实现删除
     del() {
       this.modal = false;
-      this.$http.delete("/cardController/card" + this.delData.delData).then(info => {
-        console.log(info);
-        if (info.status == 200) {
-          if (info.data == "ok") {
-            this.$Message.success({//提示用户删除成功
-              content: "删除成功"
-            });
-            this.data.splice(this.delData.index, 1); //删除该元素
-            // 重新获取数据
-            this.gettableMsg();
-          } else {
-            this.$Message.error({
-              content: "删除失败"
-            });
+      this.$http
+        .delete("/cardController/card" + this.delData.delData)
+        .then(info => {
+          // console.log(info);//删除的info
+          if (info.status == 200) {
+            if (info.data == "ok") {
+              this.$Message.success({
+                //提示用户删除成功
+                content: "删除成功"
+              });
+              this.data.splice(this.delData.index, 1); //删除该元素
+              // 重新获取数据
+              this.gettableMsg();
+            } else {
+              this.$Message.error({
+                content: "删除失败"
+              });
+            }
           }
-        }
-      });
+        });
     },
     // 下载功能
     exportData() {
@@ -364,10 +383,13 @@ export default {
     .ivu-table-fixed-right {
       .ivu-btn-primary {
         width: 45px;
-        margin-right: 10px;
       }
       .ivu-btn-error {
         width: 45px;
+      }
+      .ivu-btn-success{
+        width: 45px;
+        margin: 0 12px;
       }
     }
     .btnContainer {

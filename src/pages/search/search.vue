@@ -56,8 +56,8 @@ export default {
                 arrsearchMsg.push(obj);
               }
               this.searchasideMsg = arrsearchMsg;
-              // console.log(this.searchasideMsg);
               this.$store.commit('getsearchMsg', this.searchasideMsg);
+              this.$router.push({path: '/result'});
             }
           }
         },
