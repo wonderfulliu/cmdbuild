@@ -2,16 +2,16 @@
   <div id="loginContainer">
     <i-form v-ref:form-inline :model="formInline" :rules="ruleInline">
         <Form-item prop="user">
-            <i-input type="text" v-model="formInline.user" placeholder="Username">
+            <i-input type="text" v-model="formInline.user" placeholder="Username" @input="inpChange()">
                 <Icon type="ios-person-outline" slot="prepend"></Icon>
             </i-input>
         </Form-item>
         <Form-item prop="password">
-            <i-input type="password" v-model="formInline.password" placeholder="Password">
+            <i-input type="password" v-model="formInline.password" placeholder="Password" @input="inpChange()">
                 <Icon type="ios-locked-outline" slot="prepend"></Icon>
             </i-input>
         </Form-item>
-        <Form-item label="请选择分组" v-if="groupInfo.length != 0">
+        <Form-item prop="select" label="请选择分组" v-if="groupInfo.length != 0" id="selectContainer">
             <i-select v-model="formInline.select" placeholder="请选择分组">
                 <i-option :value="info.Code" :key="info.Code" v-for="info in groupInfo">{{ info.Description }}</i-option>
             </i-select>
@@ -45,7 +45,8 @@
               message: "密码长度不能小于6位",
               trigger: "blur"
             }
-          ]
+          ],
+          select: [{ required: true, message: "请选择分组", trigger: "blur" }]
         },
         groupInfo: ''
       };
@@ -53,26 +54,34 @@
     methods: {
       login:function() {
         let _this = this;
-        _this.groupInfo.forEach(function(v, i){
-          if( v.Code == _this.formInline.select){
-            let arra = v;
-            arra.user = _this.formInline.user;
-            sessionStorage.setItem('groupInfo', JSON.stringify(arra)); //分组信息存入session
-          }
-        });
+        if (_this.formInline.select == ''){
 
-        //跳转页面
+        }else {
+          _this.groupInfo.forEach(function(v, i){
+            if( v.Code == _this.formInline.select){
+              let arra = v;
+              arra.user = _this.formInline.user;
+              sessionStorage.setItem('groupInfo', JSON.stringify(arra)); //分组信息存入session
+            }
+          });
+          //跳转页面
+          _this.$router.push({ path: '/search' });
+        }
+
 
       },
       getGroup: function () {
         let _this = this;
-        let user = _this.formInline.user;
-        let  pwd = _this.formInline.password;
-        _this.$http.post('/authorityController/login?username=' + user + '&password=' + pwd)
+        _this.$http.post('/authorityController/login?username=' + _this.formInline.user + '&password=' + _this.formInline.password)
           .then(function (info) {
             _this.groupInfo = info.data.data;
           })
+      },
+      inpChange: function(){
+        let _this = this;
+        _this.groupInfo = '';
       }
+
     }
   };
 </script>
@@ -97,6 +106,10 @@
   #loginContainer:hover{
     margin-top: 140px;
     box-shadow: 0px 0px 25px #ccc;
+  }
+
+  #selectContainer .ivu-form-item-content{
+
   }
 </style>
 
