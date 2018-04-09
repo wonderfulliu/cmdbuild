@@ -19,7 +19,8 @@ Vue.prototype.$qs = querystring;
 const store = new Vuex.Store({
   state: {//里面放数据
     tableMsg: '', //中英文对应表
-    searchMsg: '', //这个是数据
+    searchMsg: '', //这个是搜索时输入的数据
+    editMsg: '', //点击编辑的时候传入的数据
   },
   mutations: {//里面放方法
     getsearchMsg(state, val){//后面可以传参数val, 是为了适应下面传的参数, 不是必须的
@@ -27,6 +28,9 @@ const store = new Vuex.Store({
     },
     gettableMsg(state, val){
       state.tableMsg = val
+    },
+    geteditMsg(state, val){
+      state.editMsg = val;
     }
   }
 })

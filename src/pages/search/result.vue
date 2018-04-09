@@ -10,10 +10,6 @@
             <Layout>
                 <Header :style="{padding: 0}" class="layout-header-bar">
                     <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
-                    <!-- <div class="btnContainer">
-                        <Button type="primary" size="large" icon="ios-search" @click="search">Search</Button>
-                        <Input v-model="searchMsg" size="large" placeholder="Enter something..." clearable style="width: 280px"></Input>
-                    </div> -->
                 </Header>
                 <Content :style="{margin: '15px'}">
                     <Table stripe height="410" :loading='loading' border :columns="columns" :data="data" ref="table"></Table>
@@ -123,8 +119,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.$router.push({path: '/edit'})
-                    console.log(params.index);
+                    this.edit(params);
                   }
                 }
               },
@@ -218,7 +213,6 @@ export default {
     // 获取侧边栏数据
     getasideMsg() {
       //给侧边栏赋search页面传来的侧边栏数据
-      // console.log(this.$store.state.searchMsg);
       this.asideMsg[0].children = this.$store.state.searchMsg;
 
       //如果表名为空, 即第一次进入该表, 那么将表名赋值为第一个名字, ids也是一样的
@@ -345,6 +339,19 @@ export default {
             }
           }
         });
+    },
+    // 编辑功能
+    edit(params){
+      // 获取到表头的数据(主要获取改数据的格式)
+      let titleData = this.columns;
+      let contentData = this.data[params.index];
+      let editMsg = {
+        titleData,
+        contentData
+      }
+      this.$store.commit('geteditMsg', editMsg);
+      // 页面跳转
+      this.$router.push({path: '/edit'});
     },
     // 下载功能
     exportData() {
