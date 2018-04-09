@@ -11,6 +11,7 @@ Vue.config.productionTip = false
 Vue.use(iView)
 Vue.prototype.$http = axios
 /* eslint-disable no-new */
+
 new Vue({
   el: '#app',
   router,
