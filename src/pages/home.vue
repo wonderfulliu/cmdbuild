@@ -9,24 +9,29 @@
                     </div>
                     <div class="layout-nav">
                         <MenuItem name="1">
-                            <Icon type="search"></Icon>
-                            <router-link to="/search">全局搜索</router-link>
+                            <router-link to="/search">
+                              <Icon type="search"></Icon>全局搜索
+                            </router-link>
                         </MenuItem>
                         <MenuItem name="2">
-                            <Icon type="home"></Icon>
-                            <router-link to="/config">配置信息</router-link>
+                            <router-link to="/config">
+                              <Icon type="home"></Icon>配置信息
+                            </router-link>
                         </MenuItem>
                         <MenuItem name="3">
-                            <Icon type="map"></Icon>
-                            <router-link to="/view">视图</router-link>
+                            <router-link to="/view">
+                              <Icon type="map"></Icon>视图
+                            </router-link>
                         </MenuItem>
                         <MenuItem name="4">
-                            <Icon type="pin"></Icon>
-                            <router-link to="/workFlow">工作流</router-link>
+                            <router-link to="/workFlow">
+                              <Icon type="pin"></Icon>工作流
+                            </router-link>
                         </MenuItem>
                         <MenuItem name="5">
-                            <Icon type="stats-bars"></Icon>
-                            <router-link to="/chart">Charts</router-link>
+                            <router-link to="/chart">
+                              <Icon type="stats-bars"></Icon>Charts
+                            </router-link>
                         </MenuItem>
                     </div>
                     <div class="layout-user">
@@ -98,6 +103,18 @@ export default {
           margin: 0 auto;
           margin-left: 250px;
           width: 550px;
+          .ivu-menu-item{
+            a{
+              color: #e3e3e3;
+              .ivu-icon{
+                margin-right: 5px;
+              }
+            }
+            a:hover{
+              color: #fff;
+            }
+          }
+
         }
       }
       .layout-header-bar {
@@ -113,10 +130,31 @@ export default {
   }
 }
 
+.ivu-layout-header,
+.ivu-layout-sider,
+.ivu-layout-sider,
+.ivu-menu-dark.ivu-menu-vertical .ivu-menu-opened{
+  background: #2a3f54;
+  .ivu-menu-submenu-title{
+    background: #2a3f54;
+  }
+}
+.ivu-menu-dark {
+  background: #2a3f54;
+}
+.ivu-menu-submenu:hover{
+  background: #243546;
+}
+.ivu-tree-arrow i {
+  color: #38536d;
+}
+
+
 /* 以下是原生样式*/
 .ivu-layout-header {
   padding: 0;
 }
+
 
 .layout-user {
   float: right;
@@ -149,7 +187,7 @@ export default {
 .layout-logo {
   width: 200px;
   height: 36px;
-  background: #5b6270;
+  background: #23384e;
   border-radius: 3px;
   float: left;
   position: relative;
@@ -186,7 +224,7 @@ export default {
 .menu-item span {
   display: inline-block;
   overflow: hidden;
-  width: 69px;
+  /*width: 69px;*/
   text-overflow: ellipsis;
   white-space: nowrap;
   vertical-align: bottom;

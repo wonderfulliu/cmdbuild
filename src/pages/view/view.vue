@@ -214,7 +214,7 @@ export default {
       this.loading = true;
       let data = { functionName: this.tableName, pageNum: this.pageNum, condition: this.searchMsg };
       this.$http
-        .post("/viewController/fuzzyQuery", this.$qs.stringify(data)) 
+        .post("/viewController/fuzzyQuery", this.$qs.stringify(data))
         .then(
           (info) => {
             // console.log(info);
@@ -285,6 +285,7 @@ export default {
     .ivu-layout-sider {
       background-color: #f5f7f9;
       overflow: scroll;
+      text-align: left
     }
     .ivu-table-fixed-right {
       .ivu-btn-primary {
@@ -364,7 +365,7 @@ export default {
 .menu-item span {
   display: inline-block;
   overflow: hidden;
-  width: 69px;
+  /*width: 69px;*/
   text-overflow: ellipsis;
   white-space: nowrap;
   vertical-align: bottom;

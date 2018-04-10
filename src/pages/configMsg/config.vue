@@ -1,62 +1,50 @@
 <template>
   <div id="configContainer">
     <Layout>
-      <Sider ref="side1" collapsible :collapsed-width="0" v-model="isCollapsed">
-        <Menu active-name="1-2" theme="dark" width="auto" :class="menuitemClasses" accordion>
+      <Sider ref="side1" hide-trigger collapsible :collapsed-width="0" v-model="isCollapsed">
+        <Menu active-name="1-2" theme="dark" width="auto" :open-names="['1']" :class="menuitemClasses" accordion>
           <Submenu name="1">
             <template slot="title">
               <Icon type="ios-analytics"></Icon>
-              Navigation One
+              配置信息列表
             </template>
             <div class="treeContent">
               <!--树状菜单-->
-              <Tree :data="ConfigTreeData"></Tree>
+              <Tree :data="ConfigTreeData" @on-select-change="getTreeNodes"></Tree>
             </div>
           </Submenu>
           <Submenu name="2">
             <template slot="title">
-              <Icon type="ios-filing"></Icon>
-              Navigation Two
+              <Icon type="ios-keypad"></Icon>
+              应用组件
             </template>
-            <MenuItem name="2-1">Option 5</MenuItem>
-            <MenuItem name="2-2">Option 6</MenuItem>
-            <Submenu name="3">
-              <template slot="title">Submenu</template>
-              <MenuItem name="3-1">Option 7</MenuItem>
-              <MenuItem name="3-2">Option 8</MenuItem>
-            </Submenu>
-          </Submenu>
-          <Submenu name="4">
-            <template slot="title">
-              <Icon type="ios-gear"></Icon>
-              Navigation Three
-            </template>
-            <MenuItem name="4-1">Option 9</MenuItem>
-            <MenuItem name="4-2">Option 10</MenuItem>
-            <MenuItem name="4-3">Option 11</MenuItem>
-            <MenuItem name="4-4">Option 12</MenuItem>
+            <MenuItem name="2-1">导入XLS文件</MenuItem>
+            <MenuItem name="2-2">导出XLS文件</MenuItem>
+            <MenuItem name="2-3">导入关系文件</MenuItem>
+            <MenuItem name="2-4">导出关系文件</MenuItem>
           </Submenu>
         </Menu>
       </Sider>
       <Layout>
         <Header :style="{padding: 0}" class="layout-header-bar">
           <div class="btnItem btnItemLeft">
+            <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '4px 20px'}" type="navicon-round" size="24"></Icon>
             <Button type="ghost">searchFilter</Button>
           </div>
           <div class="searchBar">
             <Input v-model="configCondition"></Input>
             <!--<Input v-model="configCondition" clearable="true"></Input>-->
-            <Button type="primary" icon="ios-search">搜索</Button>
+            <Button type="primary" icon="ios-search" @click="fuzzy">搜索</Button>
           </div>
           <div class="btnItem btnItemRight">
-            <Button type="ghost" icon="plus-round" @click="configAdd()"></Button>
+            <Button type="ghost" icon="plus-round" @click="configAdd"></Button>
             <Button type="ghost" icon="arrow-down-a"></Button>
           </div>
 
         </Header>
         <Content :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
           <div class="contentBody">
-            <Table border size="small" :loading="loading" height="450" :columns="ConfigThead" :data="ConfigTdata"></Table>
+            <Table border size="small" :loading="loading" height="440" :columns="ConfigThead" :data="ConfigTdata"></Table>
             <div class="pageContainer clearfix">
               <Page :total="totalBar" @on-change="pageChange" show-elevator show-total class="floatRight"></Page>
             </div>
@@ -98,7 +86,7 @@
           <Input placeholder="Enter something..." v-if="attr.type=='varchar'" :name="attr.attribute"></Input>
           <Input placeholder="Enter something..." v-if="attr.type=='int4'" :name="attr.attribute"></Input>
           <Select v-if="attr.type=='lookup'" :name="attr.attribute" @click.native="getLookUp(attr.lr)">
-            <Option v-for="a in lookupInfo" :value="a.Id" :key="a.Id">{{ a.Description }}</Option>
+            <Option v-for="a in lookupInfo[attr.attribute]" :value="a.Id" :key="a.Id">{{ a.Description }}</Option>
           </Select>
           <Row v-if="attr.type=='date'">
             <Col span="24">
@@ -116,16 +104,16 @@
 </template>
 <script>
   export default {
-    props: ['isCollapsed','menuitemClasses'],
     data () {
       return {
+        isCollapsed: false,
         ConfigTreeData: '', //树状目录
         ConfigThead: [],  //表头
         ConfigTdata: [],  //表格数据
         //页面配置：
         loading: true,
         groupName: JSON.parse(sessionStorage.getItem('groupInfo')).Code,  //组名
-        tableName: 'Server',  //表名
+        tableName: '',  //表名
         recordId: '',     //记录id
         pageNum: 1,       //当前页
         pageSize: 20,     //每页条数
@@ -143,30 +131,48 @@
     },
     created: function(){
       let _this = this;
-        let thead = sessionStorage.getItem('config_' + _this.tableName + '_attribute');
-        if(!thead){
-          _this.$http.post('/cardController/getAttributeList',{"table": _this.tableName})
-                  .then(function(info){
-                    sessionStorage.setItem('config_' + _this.tableName + '_attribute',JSON.stringify(info.data));
-                  });
-      }
-
-      //侧栏树形菜单数据获取
-      _this.getTableHead();
-      _this.getTreeData();
-      _this.getTableData();
+      _this.getTreeData();  //侧栏树形菜单
     },
     computed:{
-
+      rotateIcon(){
+        return ["menu-icon", this.isCollapsed ? "rotate-icon" : ""];
+      },
+      menuitemClasses(){
+        return [
+          'menu-item',
+          this.isCollapsed ? 'collapsed-menu' : ''
+        ]
+      }
     },
     methods: {
-      getTreeData: function(){
+      collapsedSider() {
+        this.$refs.side1.toggleCollapse();
+      },
+      getTreeData(){
         let _this = this;
         //侧栏树形菜单数据获取
         _this.$http.post('/authorityController/getMenu?groupName='+_this.groupName)
                 .then(function(info){
                   let oData = info.data.children;
-                  _this.ConfigTreeData = objFunc(oData);  //将转换好的对象传给ConfigTreeData
+                  sessionStorage.setItem(_this.groupName+"_menu",JSON.stringify(oData));
+                  let objTree = objFunc(oData);
+                  _this.ConfigTreeData = newTreeFunc(objTree);  //打开侧栏第一个选项
+
+                  function newTreeFunc(obj){
+                    if(obj.length > 0){
+                      obj[0].expand = true;
+                      if(obj[0].children){
+                        newTreeFunc(obj[0].children);
+                      }else {
+                        let eName = obj[0].idElementClass.split("\"").join("");
+                        _this.tableName = eName; //获取表名
+                        _this.getTableAttribute();
+                        _this.getTableHead();
+                        _this.getTableData();  //渲染表格表格
+                      }
+                    }
+                    return obj;
+                  }
                   function objFunc(d){
                     //此方法是将拿到的接口数据转换成新的格式，便于渲染树形菜单
                     let oTree = [];
@@ -176,15 +182,39 @@
                       oBranch.expand = false;         //菜单是否展开 true展开
                       if (v.children.length != 0){
                         oBranch.children = objFunc(v.children);
+                      }else {
+                        oBranch.idElementClass = v.idElementClass;  //表名英文
                       }
                       oTree.push(oBranch);    //对象追加到数组末尾
                     });
                     return oTree;       //返回新生成的数组对象
                   }
+
                 });
       },
-      getTableHead: function(){
-        let thead = sessionStorage.getItem('configTableHead');
+      getTreeNodes(select){
+        let _this = this;
+        if(!select.children){
+          let eName = select[0].idElementClass.split("\"").join("");
+          _this.tableName = eName; //获取表名
+          console.log(eName);//点击的表
+          _this.getTableAttribute();
+          _this.getTableHead();
+          _this.getTableData();  //重新加载表格
+        }
+      },
+      getTableAttribute(){
+        let _this = this;
+        let thead = sessionStorage.getItem('config_' + _this.tableName + '_attribute');
+        if(!thead){
+          _this.$http.post('/cardController/getAttributeList',{"table": _this.tableName})
+            .then(function(info){
+              sessionStorage.setItem('config_' + _this.tableName + '_attribute',JSON.stringify(info.data));
+            });
+        }
+      },
+      getTableHead(){
+        let thead = sessionStorage.getItem('config_' + this.tableName + '_head');
         if(!thead){
           let _this = this;
           _this.$http.get('/cardController/getCardList?table=' +
@@ -207,7 +237,7 @@
                         arrObj.push(oTemp);
                       }
                     });
-                    sessionStorage.setItem('configTableHead',JSON.stringify(arrObj));
+                    sessionStorage.setItem('config_' + _this.tableName + '_head',JSON.stringify(arrObj));
                     let newArr = arrObj;
                     _this.ConfigThead = _this.pushBtn(newArr);
                   });
@@ -216,7 +246,7 @@
           this.ConfigThead = this.pushBtn(JSON.parse(thead));
         }
       },
-      getTableData: function(){
+      getTableData(){
         //表格数据获取
         let _this = this;
         _this.loading = true;//加载中
@@ -228,9 +258,9 @@
                           _this.totalBar = info.data.totalRecord;
                           let ConfigTdata = info.data.list;
                           ConfigTdata.forEach(function (v, i) {
-                            for(let i in v){
-                              if(v[i] != null && (typeof v[i]) == 'object'){
-                                v[i] = v[i].value;
+                            for(let a in v){
+                              if(v[a] != null && (typeof v[a]) == 'object'){
+                                v[a] = v[a].Description;
                               }
                             }
                           });
@@ -238,7 +268,7 @@
                           _this.loading = false;//加载完成时
                         });
       },
-      attributeCName: function(eName){
+      attributeCName(eName){
         let _this = this;
         let cNameObj = JSON.parse(sessionStorage.getItem('config_' + _this.tableName + '_attribute'));
         let c = cNameObj.filter(function (v, i) {
@@ -248,11 +278,34 @@
           return c[0].cname;
         }
       },
-      pageChange: function(page){
+      pageChange(page){
         this.pageNum = page;
-        this.getTableData();
+        this.getTableData(this.tableName);
       },
-      pushBtn: function(arr){
+      fuzzy(){
+        //模糊查询
+        let _this = this;
+        _this.loading = true;//加载中
+        let result = _this.$http.post('cardController/fuzzyQuery?tableName=' +
+            _this.tableName + '&condition=' +
+            _this.configCondition + '&pageNum=' +
+            _this.pageNum + '&pageSize=' +
+            _this.pageSize)
+          .then(function(info){
+            _this.totalBar = info.data.totalRecord;
+            let ConfigTdata = info.data.list;
+            ConfigTdata.forEach(function (v, i) {
+              for(let i in v){
+                if(v[i] != null && (typeof v[i]) == 'object'){
+                  v[i] = v[i].value;
+                }
+              }
+            });
+            _this.ConfigTdata = ConfigTdata;
+            _this.loading = false;//加载完成时
+          });
+      },
+      pushBtn(arr){
         let _this = this;
         arr.push({
           title: '操作',
@@ -371,7 +424,7 @@
         });
         return arr;
       },
-      configDele: function(){
+      configDele(){
         let _this = this;
         _this.deleLoading = true;
         _this.$http.delete('/cardController/card?table=' + _this.tableName + '&&Id=' + _this.recordId)
@@ -389,25 +442,24 @@
                 });
 
       },
-      configAdd: function () {
+      configAdd() {
         let _this = this;
+        let lookup = sessionStorage.getItem('config_' + _this.tableName + '_lookup');
+        if(!lookup){
+          _this.$http.post('/relationController/getLookuplistByTable?table='+ _this.tableName)
+            .then(function(info){
+              sessionStorage.setItem('config_' + _this.tableName + '_lookup',JSON.stringify(info.data));
+            });
+        }
+        _this.lookupInfo = JSON.parse(sessionStorage.getItem('config_' + _this.tableName + '_lookup'));
+        console.log(_this.lookupInfo);
         _this.configAddModal = true;
         _this.attributes = JSON.parse(sessionStorage.getItem('config_' + _this.tableName + '_attribute'));
       },
-      configAddOk: function(){
+
+      configAddOk(){
 
       },
-      getLookUp: function(req){
-        let _this = this;
-        _this.lookupInfo =[{"Description":"aaa","Id":1},{"Description":"bbb","Id":2}]
-          /*_this.$http.post('/relationController/lookupQuery?lookup='+req)
-          .then(function (info) {
-            console.log(info);
-            console.log(_this.attributes);
-            _this.lookupInfo = info.data;
-          console.log(info.data)
-          })*/
-      }
 
     },
     mounted () {
@@ -468,7 +520,13 @@
     }
   }
 
+  .ivu-tree-title{
+    color: #c7c7c7;
+  }
 
+  .ivu-tree-title:hover{
+    color: #373f50;
+  }
 
 
 html, body {
@@ -505,13 +563,12 @@ line-height: 0;
 
 .treeContent{
   overflow-y: scroll;
-  height: 500px;
+  height: 400px;
   text-align: left
 }
 
 .pageContainer{
   padding: 10px 0;
 }
-
 
 </style>
