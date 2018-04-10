@@ -22,6 +22,7 @@ const store = new Vuex.Store({
     tableMsg: '', //中英文对应表
     searchMsg: '', //这个是搜索时输入的数据
     editMsg: '', //点击编辑的时候传入的数据
+    lookupMsg: '', //存储lookup数据类型
   },
   mutations: {//里面放方法
     getsearchMsg(state, val){//后面可以传参数val, 是为了适应下面传的参数, 不是必须的
@@ -32,13 +33,16 @@ const store = new Vuex.Store({
     },
     geteditMsg(state, val){
       state.editMsg = val;
+    },
+    getlookupMsg(state, val){
+      state.lookupMsg = val;
     }
   }
 })
 //某一个组建的方法中使用下面方法改变数据, 里面可以传别的参数val,但是getsearchMsg这个方法必须要接收这个参数才行, vuex会自动把添加的参数
-// this.$store.commit('getsearchMsg', val);
+// this.$store.commit('getlookupMsg', val);
 //另一个组件通过以下方法就可以获取, searchMsg就是要获取的数据
-// this.$store.state.searchMsg
+// this.$store.state.lookupMsg
 
 
 new Vue({

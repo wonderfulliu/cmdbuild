@@ -345,13 +345,27 @@ export default {
       // 获取到表头的数据(主要获取改数据的格式)
       let titleData = this.columns;
       let contentData = this.data[params.index];
+      let tableName = this.tableName;
       let editMsg = {
         titleData,
-        contentData
+        contentData,
+        tableName
       }
-      this.$store.commit('geteditMsg', editMsg);
+      this.$store.commit('geteditMsg', editMsg);//
       // 页面跳转
       this.$router.push({path: '/edit'});
+      this.getSelect();//调用lookup函数获取并上传lookup数据
+    },
+    // 获取select框的数据
+    getSelect(){
+      let data = '?table=' + this.tableName;
+      this.$http.post('/relationController/getLookuplistByTable' + data).then(info => {
+        // console.log(info);
+        if (info.status == 200) {
+          let val = info.data;
+          this.$store.commit('getlookupMsg', val);//lookup数据传到公共仓库
+        }
+      })
     },
     // 下载功能
     exportData() {
