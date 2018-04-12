@@ -23,6 +23,9 @@ const store = new Vuex.Store({
     searchMsg: '', //这个是搜索时输入的数据
     editMsg: '', //点击编辑的时候传入的数据
     lookupMsg: '', //存储lookup数据类型
+    editTable: '',
+    chooseMsg: '',//reference选择好的信息
+    refrelationTable: '',//存储关系表名
   },
   mutations: {//里面放方法
     getsearchMsg(state, val){//后面可以传参数val, 是为了适应下面传的参数, 不是必须的
@@ -36,7 +39,16 @@ const store = new Vuex.Store({
     },
     getlookupMsg(state, val){
       state.lookupMsg = val;
-    }
+    },
+    getedittableMsg(state, val){
+      state.editTable = val;
+    },
+    getchooseMsg(state, val){
+      state.chooseMsg = val;
+    },
+    getrefrelationTable(state, val){
+      state.refrelationTable = val;
+    },
   }
 })
 //某一个组建的方法中使用下面方法改变数据, 里面可以传别的参数val,但是getsearchMsg这个方法必须要接收这个参数才行, vuex会自动把添加的参数

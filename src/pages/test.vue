@@ -1,12 +1,39 @@
+<template>
+    <div>
+      <p>
+          Name: {{ value }}
+      </p>
+      <p>
+          <Button @click="handleRender">Custom content</Button>
+      </p>
+    </div>
+</template>
 <script>
-// let len = 0;
-// let width = 200;
-// for (var k in dataArr[0]) {
-//   len++;
-// }
-// 设置表头每个td的宽度--77是action的宽度
-// let theadWidth =
-//   document.querySelector("ivu-table ivu-table-border")
-//     .offsetWidth - 77;
-// width = theadWidth / len > 200 ? theadWidth / len : 200;
+export default {
+  data() {
+    return {
+      value: ""
+    };
+  },
+  methods: {
+    handleRender() {
+      this.$Modal.confirm({
+        render: h => {
+          return h("Input", {
+            props: {
+              value: this.value,
+              autofocus: true,
+              placeholder: "Please enter your name..."
+            },
+            on: {
+              input: val => {
+                this.value = val;
+              }
+            }
+          });
+        }
+      });
+    }
+  }
+};
 </script>

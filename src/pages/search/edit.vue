@@ -2,13 +2,9 @@
   <div id="editContainer">
     <div class="head">
       <h2>编辑信息</h2>
-      <Button type="primary" @click="backWard">
-          <Icon type="chevron-left"></Icon>
-          Backward
-      </Button>
     </div>
     <div class="body">
-      <Form :model="formItem" :label-width="100">
+      <Form :label-width="100">
           <FormItem :label="item.title" v-for="(item, index) in editMsg" :key="index">  
               <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
               <Select v-if="item.type == 'lookup'" v-model="item.content">
@@ -24,30 +20,25 @@
                       <TimePicker type="time" placeholder="请选择时间" v-model="item.content"></TimePicker>
                   </Col>
               </Row>
-              <Input v-if="item.type == 'reference'" v-model="item.content" icon="document" placeholder="Enter something..." @on-click='getreferenceData'></Input>
+              <Input v-if="item.type == 'reference'" v-model="item.content" icon="document" placeholder="Enter something..." @on-click='getreferenceData(item.relationTable)'></Input>
               <RadioGroup v-if="item.type == 'bool'" v-model="item.content">
                   <Radio label="true">是</Radio>
                   <Radio label="false">否</Radio>
               </RadioGroup>
           </FormItem>
           <FormItem>
-              <Button type="primary">提交</Button>
-              <Button type="ghost" style="margin-left: 8px">取消</Button>
+              <Button type="ghost" style="margin-left: 8px" @click="cancel">取消</Button>
+              <Button type="primary" @click="submit">提交</Button>
           </FormItem>
       </Form>
     </div>
-    <Modal v-model="modal" title="请选择" width='900' @on-ok="ok" @on-cancel="cancel">
-      <Table :loading='loading' stripe height="300" border ref="selection" :columns="columns" :data="data"></Table>
-    </Modal>
   </div>
 </template>
 <script>
 export default {
   data() {
     return {
-      columns: [],
-      data: [],
-      formItem: {
+      formItem1: {
         input: "",
         select: "",
         radio: "male",
@@ -58,9 +49,8 @@ export default {
         slider: [20, 50],
         textarea: ""
       },
-      editMsg: "",
+      editMsg: "",//用于渲染的数据
       lookupMsg: "",
-      modal: false,
       // 以下是表格相关数据
       relationcnameTitle: "",
       tableName: "",//该条记录所在表的表名, 已获取
@@ -68,97 +58,79 @@ export default {
       NorOne: "",//关系表与原表的对应关系
       // 分页的各种数据
       pageNum: "",
-      loading: true,
+      // loading: true,
       total: "", //表格数据总条数
       totalBar: 0,
       pageSize: 20 //每页显示的数量
     };
   },
   created() {
-    this.getlookupMsg();
     this.renderMsg();
-    this.getdomainList();
   },
   methods: {
-    // 返回按钮事件
-    backWard() {
-      this.$router.go(-1);
-    },
     // 渲染form表单数据
     renderMsg() {
+      let relationTable = this.$store.state.refrelationTable;
+      let chooseMsg = this.$store.state.chooseMsg;
       let editMsg = this.$store.state.editMsg; //拿到要编辑的数据
-      let IdtitleData = editMsg.titleData.slice(
-        0,
-        editMsg.titleData.length - 1
-      ); //arr 删除最后一个action
-      let titleData = IdtitleData.slice(0, IdtitleData.length - 1); //arr 删除最后id
       this.tableName = editMsg.tableName; //获取到传过来的表名
-      let contentData = editMsg.contentData; //obj
-      let lookupMsg = this.lookupMsg;
-
-      for (var k in contentData) {
-        if (k != "Id") {
-          titleData[k - 1].content = contentData[k];
-        }
-      }
-      // 添加lookup数据
-      titleData.forEach(function(v, i) {
-        if (v.type == "lookup") {
-          for (var k in lookupMsg) {
-            if (k == v.attribute) {
-              v.lookupContent = lookupMsg[k];
-            }
+      this.editMsg = editMsg.titleDatanoId;
+      console.log(this.editMsg);
+      console.log(chooseMsg);
+      console.log(relationTable);
+      if (chooseMsg) {
+        this.editMsg.forEach(function (v, i) {
+          if (v.type == "reference" && v.relationTable == relationTable) {
+            v.content = chooseMsg.description;
+            v.Id = chooseMsg.Id;
           }
-        }
-        if (v.type == "bool") {
-          v.content = v.content == true ? "true" : "false";
-        }
-      });
-      this.editMsg = titleData;
-      // console.log(titleData);
-    },
-    // 获取到lookup数据
-    getlookupMsg() {
-      this.lookupMsg = this.$store.state.lookupMsg;
+        })
+      }
+      this.getdomainList();//一进来就为reference数据做准备
     },
 
-    // 获取关系表名
+    // 获取关系表名, 为下面获取关系表的数据
     getdomainList(){
       let data = '?table=' + this.tableName;
       this.$http.get('/relationController/getDomainList' + data).then(info => {
+        // console.log(info.data);
         if (info.status == 200) {
-          let middleTable = info.data[0];
-          let NandOne = middleTable.domaincardinality.split(':');
-          // 取出跟这张表有关系的表的名字, 还要注意n:1的关系
-          if (middleTable.domainclass2 == this.tableName) {
-            this.relationTable = middleTable.domainclass1;
-            this.NorOne = NandOne[0];
-          } else {
-            this.relationTable = middleTable.domainclass2;
-            this.NorOne = NandOne[1];
-          }
-          this.getrelationCtitle();
+          // 拿到对应的关系表之后, 取出每个reference数据对应的表
+          let relationTableList = info.data;
+          this.editMsg.forEach(function (v, i) {
+            if (v.type == "reference") {
+              relationTableList.forEach(function (val, index) {
+                if (val.domainname == v.lr) {
+                  v.relationTable = v.table==val.domainclass2?val.domainclass1:val.domainclass2;
+                }
+              })
+            }
+          })
         }
       })
     },
-    // 获取该关系表对应的中文名
-    getrelationCtitle(){
-      let data = { table: this.relationTable };
-      this.$http.post('/cardController/getAttributeList', data).then(info => {
+    // 获取reference数据
+    getreferenceData(relationTable) {
+      this.$store.commit('getrefrelationTable', relationTable);
+      this.relationTable = relationTable;
+      let data = "?table=" + relationTable + "&pageNum=" + this.pageNum;
+      this.$http.get("/cardController/getCardList" + data).then(info => {
         if (info.status == 200) {
-          this.relationcnameTitle = info.data;
+          let thisInfo = info;
+          this.getrelationCtitle(thisInfo);
+          // 跳转到editTable页面
+          this.$router.push({path: 'editTable'});
         }
       });
     },
-    // 获取模态框中的reference数据
-    getreferenceData() {
-      this.modal = true; //显示模态框
-      let data = "?table=" + this.relationTable + "&pageNum=" + this.pageNum;
-      this.$http.get("/cardController/getCardList" + data).then(info => {
+    // 获取该关系表对应的中文名
+    getrelationCtitle(thisInfo){
+      let data = { table: this.relationTable };
+      console.log(data);
+      this.$http.post('/cardController/getAttributeList', data).then(info => {
         if (info.status == 200) {
-          console.log(info.data);
-          console.log();
-          this.dataProcess(info);
+          this.relationcnameTitle = info.data;
+          this.dataProcess(thisInfo);
         }
       });
     },
@@ -168,7 +140,7 @@ export default {
       let dataArr = info.data.list; //要处理和渲染的表格数据
       // 设置开头多选
       let start = {
-        type: "selection",
+        type: "index",
         width: 60,
         align: "center"
       };
@@ -196,8 +168,6 @@ export default {
         };
         newtitleArr.push(Id);
       }
-      // newtitleArr.push(end);
-      this.columns = newtitleArr; //将获取到的表头字段赋值给table的columns
       // 渲染表格数据
       let newcontentArr = []; //存储最终要赋给表格的数据
       dataArr.forEach(function(v, i) {
@@ -225,8 +195,12 @@ export default {
         }
         newcontentArr.push(newObj);
       });
-      this.data = newcontentArr;
-      this.loading = false;
+      let edittableMsg = {
+        columns: newtitleArr,
+        data: newcontentArr,
+        totalRecord: info.data.totalRecord,
+      }
+      this.$store.commit('getedittableMsg', edittableMsg);
     },
     // 判断返回的数据中是否包含Id
     hasId(info) {
@@ -238,12 +212,13 @@ export default {
       }
       return flag;
     },
+
     // 模态框控制函数
-    ok() {
+    submit() {
       // this.$Message.info('Clicked ok');
     },
     cancel() {
-      // this.$Message.info('Clicked cancel');
+      this.$router.push({path: '/result'});
     },
   }
 };

@@ -60,6 +60,7 @@ export default {
       columns: [],
       // 表格详细数据
       data: [],
+      lookupMsg: '',
       loading: true,
       total: "", //表格数据总条数
       totalBar: 0,
@@ -73,6 +74,7 @@ export default {
   },
   created() {
     this.getasideMsg();
+    this.getSelect();//一进来就拿到lookup数据
   },
   computed: {
     rotateIcon() {
@@ -341,36 +343,62 @@ export default {
         });
     },
     // 编辑功能
-    edit(params){
+    edit(params) {
       // 获取到表头的数据(主要获取改数据的格式)
       let titleData = this.columns;
       let contentData = this.data[params.index];
       let tableName = this.tableName;
-      let editMsg = {
-        titleData,
-        contentData,
-        tableName
+
+      let IdtitleData = titleData.slice(0, titleData.length - 1); //arr删除最后一个action
+      let titleDatanoId = IdtitleData.slice(0, IdtitleData.length - 1); //arr 删除最后id
+      
+      let lookupMsg = this.lookupMsg;
+      // 将contentData的内容整合到titleData中
+      for (var k in contentData) {
+        if (k != "Id") {
+          titleDatanoId[k - 1].content = contentData[k];
+        }
       }
-      this.$store.commit('geteditMsg', editMsg);//
+      // 添加lookup数据
+      console.log(titleDatanoId);
+      titleDatanoId.forEach(function(v, i) {
+        if (v.type == "lookup") {
+          for (var k in lookupMsg) {
+            if (k == v.attribute) {
+              v.lookupContent = lookupMsg[k];
+            }
+          }
+        }
+        if (v.type == "bool") {
+          v.content = v.content == true ? "true" : "false";
+        }
+      });
+      // console.log(titleDatanoId);
+
+      let editMsg = {
+        titleDatanoId,
+        tableName
+      };
+      
+      this.$store.commit("geteditMsg", editMsg); //
+      this.$store.commit('getchooseMsg', '');//清空choose数据
       // 页面跳转
-      this.$router.push({path: '/edit'});
-      this.getSelect();//调用lookup函数获取并上传lookup数据
+      this.$router.push({ path: "/edit" });
     },
     // 获取select框的数据
-    getSelect(){
-      let data = '?table=' + this.tableName;
-      this.$http.post('/relationController/getLookuplistByTable' + data).then(info => {
-        // console.log(info);
-        if (info.status == 200) {
-          let val = info.data;
-          this.$store.commit('getlookupMsg', val);//lookup数据传到公共仓库
-        }
-      })
+    getSelect() {
+      let data = "?table=" + this.tableName;
+      this.$http
+        .post("/relationController/getLookuplistByTable" + data)
+        .then(info => {
+          if (info.status == 200) {
+            this.lookupMsg = info.data;
+          }
+        });
     },
     // 下载功能
     exportData() {
       let data = "?functionName=" + this.tableName;
-      // window.open('/viewController/downLoadViewExcel' + data, '_self');
       this.$http.get("/viewController/downLoadViewExcel" + data).then(
         info => {
           if (info.status == 200) {
@@ -408,7 +436,7 @@ export default {
       .ivu-btn-error {
         width: 45px;
       }
-      .ivu-btn-success{
+      .ivu-btn-success {
         width: 45px;
         margin: 0 12px;
       }
