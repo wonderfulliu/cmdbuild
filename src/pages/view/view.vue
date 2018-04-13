@@ -175,6 +175,7 @@ export default {
           info => {
             // 成功的回调
             if (info.status == 200) {
+              // console.log(info);
               this.dataProcess(info);
             }
           },

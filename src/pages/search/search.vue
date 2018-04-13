@@ -72,7 +72,7 @@ export default {
         }
       );
     },
-    // 获取所有表名
+    // 获取所有表的中文名
     gettableName() {
       this.$http.get("/cardController/getTableList").then(info => {
         if (info.status == 200) {
@@ -85,8 +85,6 @@ export default {
     alertMsg() {
       this.$Message.warning({
         content: "您搜索的内容为空"
-        // top: 550,
-        // duration: 2 不写有默认值
       });
     }
   }

@@ -10,10 +10,7 @@
             <Layout>
                 <Header :style="{padding: 0}" class="layout-header-bar">
                     <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
-                    <!-- <div class="btnContainer">
-                        <Button type="primary" size="large" icon="ios-search" @click="search">Search</Button>
-                        <Input v-model="searchMsg" size="large" placeholder="Enter something..." clearable style="width: 280px"></Input>
-                    </div> -->
+                    <Button type="primary" icon="plus-round" @click="add"></Button>
                 </Header>
                 <Content :style="{margin: '15px'}">
                     <Table stripe height="410" :loading='loading' border :columns="columns" :data="data" ref="table"></Table>
@@ -64,6 +61,7 @@ export default {
       columns: [],
       // 表格详细数据
       data: [],
+      lookupMsg: "",
       loading: true,
       total: "", //表格数据总条数
       totalBar: 0,
@@ -72,7 +70,8 @@ export default {
       delData: {
         delData: "",
         index: ""
-      } //删除的数据
+      }, //删除的数据
+      relationTable: '',
     };
   },
   created() {
@@ -123,8 +122,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.$router.push({path: '/edit'})
-                    console.log(params.index);
+                    this.edit(params);
                   }
                 }
               },
@@ -218,9 +216,7 @@ export default {
     // 获取侧边栏数据
     getasideMsg() {
       //给侧边栏赋search页面传来的侧边栏数据
-      // console.log(this.$store.state.searchMsg);
       this.asideMsg[0].children = this.$store.state.searchMsg;
-
       //如果表名为空, 即第一次进入该表, 那么将表名赋值为第一个名字, ids也是一样的
       if (this.tableName == "") {
         for (var k in this.asideMsg[0].children[0]) {
@@ -231,6 +227,8 @@ export default {
       }
       this.getcnameTitle();
       this.gettableMsg();
+      this.getSelect(); //防止刚进来的时候没有lookup数据
+      this.getrelationTable();
     },
     // 获取表格数据
     gettableMsg() {
@@ -275,6 +273,8 @@ export default {
       }
       this.getcnameTitle();
       this.gettableMsg();
+      this.getSelect();
+      this.getrelationTable();
     },
     // 获取不同表格的表头字段所对应的中文名结合(需要筛选)
     getcnameTitle() {
@@ -346,24 +346,122 @@ export default {
           }
         });
     },
+    // 获取lookup数据
+    getSelect() {
+      let data = "?table=" + this.tableName;
+      this.$http
+        .post("/relationController/getLookuplistByTable" + data)
+        .then(info => {
+          if (info.status == 200) {
+            this.lookupMsg = info.data;
+          }
+        });
+    },
+
     // 下载功能
     exportData() {
-      let data = "?functionName=" + this.tableName;
-      // window.open('/viewController/downLoadViewExcel' + data, '_self');
-      this.$http.get("/viewController/downLoadViewExcel" + data).then(
+      let data = "?ids=" + this.ids + "&table=" + this.tableName;
+      console.log(data);
+      this.$http.get("/cardController/downLoadExcelByIds" + data).then(
         info => {
           if (info.status == 200) {
-            window.open("/viewController/downLoadViewExcel" + data, "_self");
+            window.open("/cardController/downLoadExcelByIds" + data, "_self");
           }
         },
         info => {
           console.log(info);
         }
       );
+    },
+
+    // 编辑功能
+    edit(params) {
+      // 获取到表头的数据(主要获取改数据的格式), 并处理action
+      let titleMsg = this.columns.slice(0, this.columns.length - 1);
+      let editcontentMsg = this.data[params.index];
+      // 将editcontentMsg的内容整合到titleMsg中
+      for (var k in editcontentMsg) {
+        if (k != 'Id') {
+          titleMsg[k - 1].content = editcontentMsg[k];
+        } else if (k == "Id") {
+          titleMsg[titleMsg.length - 1].content = editcontentMsg[k];
+        }
+      }
+      // 添加lookup数据
+      titleMsg.forEach((v, i) => {
+        if (v.type == "lookup") {
+          for (let k in this.lookupMsg) {
+            if (k == v.attribute) {
+              v.lookupMsg = this.lookupMsg[k];
+            }
+          }
+        }
+        if (v.type == "reference") {
+          this.relationTable.forEach((val, index) => {
+            if (v.lr == val.domainname) {
+              v.relationTable = v.table == val.domainclass2 ? val.domainclass1 : val.domainclass2;
+            }
+          })
+        }
+      });
+
+      let data = {
+        tableName: this.tableName,
+        titleMsg: titleMsg,
+      }
+      this.$store.commit('getaddMsg', data);//将整合好的数据推至公共仓库
+      this.$router.push({ path: "/edit" });//跳转至新增页面
+    },
+
+    // 点击添加的时候调用的函数
+    add() {
+      // 添加时表头数据处理: 
+        // 1. 处理掉表头最后的action
+        // 2. 关系表名放置到对应的reference中
+      // 处理掉表头最后的action
+      let titleMsg = this.columns.slice(0, this.columns.length - 1);
+      // 这一步是将关系表名放置到对应的reference数据中, lookup数据放置到对应的lookup数据中
+      titleMsg.forEach((v, i) => {
+        v.content = '';
+        if (v.type == "reference") {
+          this.relationTable.forEach(function (val, index) {
+            if (v.lr == val.domainname) {
+              v.relationTable = v.table == val.domainclass2 ? val.domainclass1 : val.domainclass2;
+            }
+          })
+        }
+        if (v.type == "lookup") {
+          for(let k in this.lookupMsg){
+            if (k == v.attribute) {
+              v.lookupMsg = this.lookupMsg[k];
+            }
+          }
+        }
+      })
+      let data = {
+        tableName: this.tableName,
+        titleMsg: titleMsg,
+      }
+      this.$store.commit('getaddMsg', data);//将整合好的数据推至公共仓库
+      this.$router.push({path: '/add'});//跳转至新增页面
+    },
+
+    // 一进入该页面, 就获取关系表的表名
+    getrelationTable() {
+      let data = "?table=" + this.tableName;
+      this.$http.get("/relationController/getDomainList" + data).then(info => {
+        if (info.status == 200) {
+          this.relationTable = info.data;
+        }
+      });
     }
+
   }
 };
+
 </script>
+
+
 <style lang="scss">
 #searchforContainer {
   height: 100%;
@@ -387,7 +485,7 @@ export default {
       .ivu-btn-error {
         width: 45px;
       }
-      .ivu-btn-success{
+      .ivu-btn-success {
         width: 45px;
         margin: 0 12px;
       }

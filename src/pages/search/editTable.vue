@@ -25,46 +25,148 @@
 export default {
   data() {
     return {
-      columns: [],
+      columns: [],//表格数据渲染
       data: [],
-      totalRecord: 0,
+      totalRecord: 0,//分页
       pageNum: 1,
-      relationTable: "",
-      loading: false,
+      relationTable: "",//上一页传来的信息
+      reftitleMsg: '',
+      reftableMsg: '',
+      loading: false,//表格loading
       searchMsg: "",// 搜索
       rowMsg: '',//存储该行的信息
-      chooseMsg: '',
     };
   },
   created() {
-    this.getTabledata();
+    this.getrefMsg();
   },
   methods: {
+    // 获取中文表头和表格详细数据
+    getrefMsg() {
+      let refMsg = this.$store.state.refMsg;
+      this.relationTable = refMsg.relationTable;
+      this.reftitleMsg = refMsg.reftitleMsg;
+      this.reftableMsg = refMsg.reftableMsg;
+      this.dataProcess(this.reftitleMsg, this.reftableMsg);
+    },
+    //刚进入该页面时表格数据的处理
+    dataProcess(titleMsg, tableMsg) {
+      this.totalRecord = tableMsg.totalRecord;
+      let dataArr = tableMsg.list; //要处理和渲染的表格数据
+      // 设置开头多选
+      let start = {
+        type: "index",
+        width: 60,
+        align: "center"
+      };
+
+      // 设置每个td的宽度(写在此处)
+      let width = 200;
+      //判断返回的表格数据是否有Id
+      let flag = this.hasId(dataArr[0]);
+      //获取表头
+      let newtitleArr = []; //存储最终要给columns的表头数据
+      newtitleArr.push(start);
+      let j = 0;
+      titleMsg.forEach(function(v, i) {
+        v.title = v.cname;
+        v.key = ++j;
+        v.width = width;
+        newtitleArr.push(v);
+      });
+      if (flag) {
+        var Id = {
+          title: "Id",
+          key: "Id",
+          width: 200
+        };
+        newtitleArr.push(Id);
+      }
+      this.columns = newtitleArr;
+
+      // 渲染表格数据
+      let newtableArr = []; //存储最终要赋给表格的数据
+      dataArr.forEach(function(v, i) {
+        //v表示待过滤数据中的每个对象, 一共6个对象
+        let newObj = {};
+        for (var key in v) {
+          //key表示每个待过滤对象的键
+          if (key == "Id") {
+            newObj.Id = v[key];
+          } else {
+            newtitleArr.forEach(function(val, index) {
+              //val表示表头每个字段对象
+              if (key == val.attribute) {
+                if (v[key] != null && typeof v[key] == "object") {
+                  //如果是对象, 那么值为123
+                  newObj[val.key] = v[key].Description;
+                } else if (v[key] == null) {
+                  newObj[val.key] = v[key];
+                } else {
+                  newObj[val.key] = v[key];
+                }
+              }
+            });
+          }
+        }
+        newtableArr.push(newObj);
+      });
+      this.data = newtableArr;
+      this.loading = false;
+    },
+    // 判断返回的数据中是否包含Id
+    hasId(info) {
+      let flag = false;
+      for (var k in info) {
+        if (k == "Id") {
+          flag = true;
+        }
+      }
+      return flag;
+    },
+    // --------------------------------------
     // 点击分页切换分页
     pageChange(page) {
       this.pageNum = page;
       this.loading = true;
       this.getreferenceData();
     },
-    // 直接获取处理好的表格数据: 表头, 第一页内容, 总条数, 关系表名
-    getTabledata() {
-      let tableData = this.$store.state.editTable;
-      this.data = tableData.data;
-      this.columns = tableData.columns;
-      this.totalRecord = tableData.totalRecord;
-      this.relationTable = tableData.relationTable;
-    },
     // 获取模态框中的reference数据
     getreferenceData() {
       let data = "?table=" + this.relationTable + "&pageNum=" + this.pageNum;
       this.$http.get("/cardController/getCardList" + data).then(info => {
         if (info.status == 200) {
-          this.dataProcess(info);
+          this.contentdataProcess(info);
         }
       });
     },
-    //表格数据的处理
-    dataProcess(info) {
+    // 搜索功能
+    search() {
+      console.log(this.relationTable);
+      this.loading = true;
+      let data = {
+        tableName: this.relationTable,
+        pageNum: this.pageNum,
+        condition: this.searchMsg
+      }; 
+      this.$http
+        .post("/cardController/fuzzyQuery", this.$qs.stringify(data))
+        .then(
+          info => {
+            if (info.status == 200) {
+              this.contentdataProcess(info);
+            }
+          },
+          info => {
+            this.$Message.error({
+              content: "查询失败"
+            });
+            this.loading = false;
+          }
+        );
+    },
+    //搜索与分页表格数据的处理
+    contentdataProcess(info) {
       this.totalBar = info.data.totalRecord;
       let dataArr = info.data.list; //要处理和渲染的表格数据
       // 设置开头多选
@@ -109,37 +211,7 @@ export default {
       this.data = newcontentArr;
       this.loading = false;
     },
-    // 判断返回的数据中是否包含Id
-    hasId(info) {
-      let flag = false;
-      for (var k in info) {
-        if (k == "Id") {
-          flag = true;
-        }
-      }
-      return flag;
-    },
-    // 搜索功能
-    search() {
-      this.loading = true;
-      let data = {
-        functionName: this.relationTable,
-        pageNum: this.pageNum,
-        condition: this.searchMsg
-      }; 
-      this.$http
-        .post("/viewController/fuzzyQuery", this.$qs.stringify(data))
-        .then(
-          info => {
-            if (info.status == 200) {
-              this.dataProcess(info);
-            }
-          },
-          info => {
-            console.log(info);
-          }
-        );
-    },
+    // --------------------------------------
     // 选择行: 把该行的信息获取到
     selectRow(selection, index){
       // 两个参数分别代表已选择的项和选择项的index
@@ -152,9 +224,9 @@ export default {
       let title = this.columns;
       let chooseMsg = {
         description: '',
-        Id: ''
+        Id: '',
+        relationTable: this.relationTable
       }
-      this.chooseMsg = chooseMsg;
       // 取出description
       title.forEach(function (v, i) {
         if (v.attribute == "Description") {
@@ -167,13 +239,14 @@ export default {
         }
       })
       this.$store.commit('getchooseMsg', chooseMsg);//将获取到的数据返回出去
-      this.$router.push({path: '/edit'});
+      this.$router.go(-1);
     },
     // 取消按钮
     cancel(){
-      this.$store.commit('getchooseMsg', '');
-      this.$router.push({path: '/edit'});
+      // this.$store.commit('getchooseMsg', '');
+      this.$router.go(-1);
     },
+
   }
 };
 </script>
@@ -231,4 +304,3 @@ export default {
   }
 }
 </style>
-// =================================bu   neng   xiu   gai=================================

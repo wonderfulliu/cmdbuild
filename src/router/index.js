@@ -28,6 +28,8 @@ import workflow from '@/pages/workFlow/workFlow'
 import search from '@/pages/search/search'
 import result from '@/pages/search/result'
 import edit from '@/pages/search/edit'
+import add from '@/pages/search/add'
+import editTable from '@/pages/search/editTable'
 // 测试 没用
 import test from '@/pages/test'
 
@@ -36,12 +38,12 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/login',
+      path: '/',
       name: 'login',
       component: login
     },
     {
-      path: '/',
+      path: '/home',
       name: 'home',
       component: home,
       children: [
@@ -105,7 +107,7 @@ export default new Router({
         {
           path: '/search',
           name: 'search',
-          component: search
+          component: search,
         },
         {
           path: '/test',
@@ -121,7 +123,17 @@ export default new Router({
           path: '/edit',
           name: 'edit',
           component: edit
-        }
+        },
+        {
+          path: '/editTable',
+          name: 'editTable',
+          component: editTable
+        },
+        {
+          path: '/add',
+          name: 'add',
+          component: add
+        },
       ]
     },
     {

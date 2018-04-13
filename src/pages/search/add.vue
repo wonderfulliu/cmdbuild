@@ -1,14 +1,14 @@
 <template>
-  <div id="editContainer">
+  <div id="addContainer">
     <div class="head">
-      <h2>编辑信息</h2>
+      <h2>添加信息</h2>
     </div>
     <div class="body">
       <Form :label-width="100">
-          <FormItem :label="item.title" v-for="(item, index) in editMsg" :key="index" v-if="item.title != 'Id'">  
+          <FormItem :label="item.title" v-for="(item, index) in addMsg" :key="index" v-if="item.title != 'Id'">  
               <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
               <Select v-if="item.type == 'lookup'" v-model="item.content">
-                  <Option v-for="(attr, i) in item.lookupContent" :key="i" :value="attr.Id">{{attr.Description}}</Option>
+                  <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>
               </Select>
               <Row v-if="item.type == 'date'">
                   <Col span="11">
@@ -32,17 +32,18 @@
     </div>
   </div>
 </template>
+
 <script>
 export default {
   data() {
     return {
-      editMsg: "",//用于渲染的数据
+      addMsg: '',//需要双向绑定的数据
       tableName: '',//表名
       reftableMsg: '',//传到下一页的表格数据
       reftitleMsg: '',//传到下一页的表头中文名数据
       chooseMsg: '',//存储editTable页面传来的数据
-    };
-  },
+    }
+  }, 
   created() {
     this.getchooseMsg();
     this.getaddMsg();
@@ -50,10 +51,10 @@ export default {
   methods: {
     // 获取公共仓库的要渲染的数据
     getaddMsg(){
-      this.editMsg = this.$store.state.addMsg.titleMsg;//待渲染的数据
+      this.addMsg = this.$store.state.addMsg.titleMsg;//待渲染的数据
       this.tableName = this.$store.state.addMsg.tableName;//表名
       if (this.chooseMsg) {//如果有editTable中被选中的数据, 将变化的数据更新至双向绑定的数据
-        this.editMsg.forEach((v, i) => {
+        this.addMsg.forEach((v, i) => {
           if (v.type == "reference" && v.relationTable == this.chooseMsg.relationTable) {
             v.content = this.chooseMsg.description;
             v.Id = this.chooseMsg.Id;
@@ -102,49 +103,43 @@ export default {
     getchooseMsg(){
       this.chooseMsg = this.$store.state.chooseMsg;
     },
-
-
-
-    // 模态框控制函数
-    submit() {
-      let data = {};
-      data.table = this.tableName;
-      this.editMsg.forEach((v, i) => {
+    
+    // 提交按钮
+    submit(){
+      let submitMsg = {};
+      submitMsg.table = this.tableName;
+      this.addMsg.forEach((v, i) => {
         if (v.attribute) {
-          if (v.type == "reference" && v.Id) {
-            data[v.attribute] = v.Id;
-          } else if (v.type == "lookup" && typeof v.content === 'number') {
-            data[v.attribute] = v.content;
-          } else if (v.type == "date" && v.content) {
-            data[v.attribute] = this.transformTime(v.content);
+          if (v.type == "date" && v.content) {//时间格式的数据
+            submitMsg[v.attribute] = this.transformTime(v.content);
+          } else if (v.type == "reference" && v.content) {//reference格式的数据
+            submitMsg[v.attribute] = v.Id;
+          } else { //其它数据类型可能还需要修改
+            submitMsg[v.attribute] = v.content;
           }
-          else if (v.type != "reference" && v.type != "lookup" && v.type != "date") {
-            data[v.attribute] = v.content;
-          }
-        } else {
-          data[v.title] = v.content;
         }
       })
-      // data = JSON.stringify(data);
-      console.log(data);
-      this.$http.put('/cardController/card', data).then(info => {
-        // 成功的回调
-        if (info.status == 200 && info.data == 'ok') {
-          console.log(info);
-          this.$Message.success({
-            content: '修改成功',
-          });
-          this.$store.commit('getchooseMsg', '');//取消编辑的时候, 清空editTable可能传的chooseMsg值
-          this.$router.push({path: '/result'});
-        }
-      }, info => {
-        // 失败的回调
-        this.$Message.error({
-          content: '修改失败',
-        })
+      // console.log(submitMsg);
+      // let data = JSON.stringify(submitMsg);
+      this.$http.post('/cardController/card', submitMsg).then(info => {
+          // 成功的回调
+          if (info.status == 200 && info.data == 'ok') {
+            console.log(info);
+            this.$Message.success({
+              content: '添加成功',
+            });
+            this.$store.commit('getchooseMsg', '');//取消编辑的时候, 清空editTable可能传的chooseMsg值
+            this.$router.push({path: '/result'});
+          }
+        }, info => {
+          // 失败的回调
+          this.$Message.error({
+            content: '添加失败',
+          })
       })
     },
-    cancel() {
+    // 取消按钮
+    cancel(){
       this.$store.commit('getchooseMsg', '');//取消编辑的时候, 清空editTable可能传的chooseMsg值
       this.$router.push({path: '/result'});
     },
@@ -162,7 +157,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#editContainer {
+#addContainer {
   overflow-y: scroll;
   .head {
     h2 {
@@ -175,12 +170,11 @@ export default {
     width: 50%;
     padding: 15px 40px 30px 20px;
     margin: 30px auto;
-    .ivu-form{
+    .ivu-form {
       .ivu-input-icon {
         cursor: pointer;
       }
     }
-    
   }
 }
 </style>
