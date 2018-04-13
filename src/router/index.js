@@ -17,6 +17,7 @@ import workflow from '@/pages/workFlow/workFlow'
 import search from '@/pages/search/search'
 import result from '@/pages/search/result'
 import edit from '@/pages/search/edit'
+import add from '@/pages/search/add'
 import editTable from '@/pages/search/editTable'
 // 测试 没用
 import test from '@/pages/test'
@@ -79,6 +80,11 @@ export default new Router({
           path: '/editTable',
           name: 'editTable',
           component: editTable
+        },
+        {
+          path: '/add',
+          name: 'add',
+          component: add
         },
       ]
     },
