@@ -28,6 +28,8 @@ const store = new Vuex.Store({
     refrelationTable: '',//存储关系表名
     addMsg: '',//新增数据时, 传递的待渲染的数据
     refMsg: '',
+    // 以下是relation组件传递的信息
+    relationMsg: '',
   },
   mutations: {//里面放方法
     getsearchMsg(state, val){//后面可以传参数val, 是为了适应下面传的参数, 不是必须的
@@ -56,6 +58,10 @@ const store = new Vuex.Store({
     },
     getrefMsg(state, val){
       state.refMsg = val;
+    },
+    // 以下是relation组件的信息
+    getrelationMsg(state, val){
+      state.relationMsg = val;
     },
   }
 })

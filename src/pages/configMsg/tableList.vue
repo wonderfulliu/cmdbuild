@@ -85,8 +85,8 @@
           //数据
           ConfigThead: [],  //表头
           ConfigTdata: [],  //表格数据
-//          attributes: '',   //记录的字段 中英文
-//          lookupInfo: '',   //当前表中lookup信息
+          // attributes: '',   //记录的字段 中英文
+          // lookupInfo: '',   //当前表中lookup信息
           //页面配置：
           loading: true,
           //模态框
@@ -217,7 +217,7 @@
           key: 'action',
           width: 230,
           fixed: 'right',
-          render: function(h, params){
+          render: (h, params) => {
             return h('div', [
               //编辑
               h('Button', {
@@ -267,7 +267,7 @@
                         });
                         _this.configViewData = newObj;
                       }).catch(function(error){
-//                      console.log(error);
+                        //  console.log(error);
                     });
                     _this.configViewModal = true;
                   }
@@ -304,9 +304,10 @@
                   marginRight: '5px'
                 },
                 on: {
-                  click: function() {
+                  click: () => {
                     //点击事件
-                    _this.recordId = params.row.Id;// 获取当前行所有信息
+                    this.recordId = params.row.Id;// 获取当前行所有信息
+                    this.getrelationMsg();
                   }
                 }
               }),
@@ -360,7 +361,29 @@
         }
         //跳转到添加页
         this.$router.push({path: '/config/addRecord'});
-      }
+      },
+      // 在跳转页面之前先获取到关系表的详细信息, 如果关系不为空, 再进行页面跳转
+      getrelationMsg(){
+        let data = {table: this.tableName, Id: this.recordId};//获取详细信息
+        this.$http.post('/relationController/getRelationList', data).then(info => {
+          if (info.status == 200) {//请求成功且有数据
+            //将数据存储到公共仓库, 页面跳转... && Object.keys(info.data).length != 0
+            let data = {
+              tableName: this.tableName,
+              Id: this.recordId,
+              relationMsg: info.data
+            }
+            this.$store.commit('getrelationMsg', data);
+            this.$router.push({path: '/config/relation'})
+          } else if (info.status == 200 && Object.keys(info.data).length == 0) {
+            this.$Message.error({
+              content: '该记录尚未与其他记录关联, 查询关系不存在'
+            })
+          }
+        })
+        
+        
+      },
     },
     computed:{
 
