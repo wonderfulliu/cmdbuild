@@ -6,7 +6,7 @@
           <FormItem label="选择类">
             <Select v-model="exportXLSForm.table">
               <Option :value="attr"
-                      v-for="(v, attr) in xlsInfo">
+                      v-for="(v, attr, index) in xlsInfo" :key="index">
                 {{ v }}</Option>
             </Select>
           </FormItem>

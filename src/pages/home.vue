@@ -84,7 +84,7 @@ export default {
       //清除session信息
       sessionStorage.clear();
       //跳转页面
-      this.$router.push({ path: '/login' });
+      this.$router.push({ path: '/' });
     }
   }
 };

@@ -46,7 +46,7 @@
       </p>
       <div>
         <ul class="modalListUl">
-          <li v-for="(val, key ,index) in configViewData">{{ key }} : {{ val }}</li>
+          <li v-for="(val, key ,index) in configViewData" :key="index">{{ key }} : {{ val }}</li>
         </ul>
       </div>
       <div slot="footer">
