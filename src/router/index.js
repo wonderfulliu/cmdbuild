@@ -11,11 +11,14 @@ import config from '@/pages/configMsg/config'
 import tableList from '@/pages/configMsg/tableList'
 import addRecord from '@/pages/configMsg/addRecord'
 import historyRecord from '@/pages/configMsg/history/history'
-//应用组件
+  //应用组件
 import importXLS from '@/pages/configMsg/apply/importXLS'
 import exportXLS from '@/pages/configMsg/apply/exportXLS'
 import importRelate from '@/pages/configMsg/apply/importRelate'
 import exportRelate from '@/pages/configMsg/apply/exportRelate'
+  // relation组件
+import relation from '@/pages/configMsg/relation/relation'
+import relationTable from '@/pages/configMsg/relation/relationTable'
 
 
 // chart
@@ -86,6 +89,16 @@ export default new Router({
               path: 'exportRelate',
               name: 'exportRelate',
               component: exportRelate
+            },
+            {
+              path: 'relation',
+              name: 'relation',
+              component: relation
+            },
+            {
+              path: 'relationTable',
+              name: 'relationTable',
+              component: relationTable
             }
           ]
         },

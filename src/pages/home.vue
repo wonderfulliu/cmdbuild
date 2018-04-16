@@ -106,9 +106,15 @@
         sessionStorage.clear();
         //跳转页面
         this.$router.push({path: '/login'});
+      },
+      logout: function(){
+        //清除session信息
+        sessionStorage.clear();
+        //跳转页面
+        this.$router.push({ path: '/' });
       }
     }
-  };
+  }
 </script>
 
 <style lang="scss">

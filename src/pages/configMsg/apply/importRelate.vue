@@ -6,7 +6,7 @@
           <FormItem label="选择关系">
             <Select v-model="importRelateForm.table">
               <Option :value="v.domainname"
-                      v-for="v in relateInfo">
+                      v-for="(v, index) in relateInfo" :key="index">
                 {{ v.domainname }}</Option>
             </Select>
           </FormItem>
