@@ -84,7 +84,12 @@
         _this.$http.post('/authorityController/getMenu?groupName='+_this.groupName)
                 .then(function(info){
                   let oData = info.data.children;
-                  sessionStorage.setItem(_this.groupName+"_menu",JSON.stringify(oData));
+                  let treeMenu = sessionStorage.getItem(_this.groupName+"_menu");
+                  if(treeMenu){
+
+                  }else {
+                    sessionStorage.setItem(_this.groupName+"_menu",JSON.stringify(oData));
+                  }
                   let objTree = objFunc(oData);
                   _this.ConfigTreeData = newTreeFunc(objTree);  //打开侧栏第一个选项
 

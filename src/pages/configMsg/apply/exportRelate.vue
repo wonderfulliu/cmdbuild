@@ -40,7 +40,7 @@
     methods: {
       formSubmit () {
         let _this = this;
-        window.open('/relationController/downLoadRelationExcel?table=' + _this.exportRelateForm.table);
+        window.open('/relationController/downLoadRelationExcel?table=' + _this.exportRelateForm.table, '_self');
       }
     }
   }

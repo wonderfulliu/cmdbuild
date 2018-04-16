@@ -44,7 +44,7 @@
       methods: {
         formSubmit () {
           let _this = this;
-          window.open('/cardController/downLoadExcel?table=' + _this.exportXLSForm.table);
+          window.open('/cardController/downLoadExcel?table=' + _this.exportXLSForm.table, '_self');
         }
       }
     }

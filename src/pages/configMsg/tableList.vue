@@ -12,7 +12,7 @@
       <div class="btnItem btnItemRight">
         <Button type="ghost" icon="plus-round" @click="configAdd">
         </Button>
-        <Button type="ghost" icon="arrow-down-a"></Button>
+        <Button type="ghost" icon="arrow-down-a" @click="configDownload"></Button>
       </div>
 
     </Header>
@@ -86,7 +86,8 @@
           ConfigThead: [],  //表头
           ConfigTdata: [],  //表格数据
           // attributes: '',   //记录的字段 中英文
-          // lookupInfo: '',   //当前表中lookup信息
+          lookupInfo: '',   //当前表中lookup信息
+          relationInfo: '',     //关系表信息
           //页面配置：
           loading: true,
           //模态框
@@ -101,10 +102,12 @@
       this.getTableAttribute();
       this.getTableHead();
       this.getTableData();
+      this.getlookup();
       this.$watch('tableName', function (newValue, oldValue) {
         this.getTableAttribute();
         this.getTableHead();
         this.getTableData();
+        this.getlookup();
       })
       },
     methods:{
@@ -186,6 +189,21 @@
       pageChange(page){
         this.pageNum = page;
         this.getTableData(this.tableName);
+      },
+      getlookup(){
+        //获取相关数据
+        //lookup
+        let _this = this;
+        _this.$http.post('/relationController/getLookuplistByTable?table='+ _this.tableName)
+          .then(function(info){
+            _this.lookupInfo = info.data;
+          });
+        //relationTable
+        _this.$http.get('/relationController/getDomainList?table='+ _this.tableName)
+          .then(function(res){
+            _this.relationInfo = res.data;
+          });
+
       },
       fuzzy(){
         //模糊查询
@@ -352,15 +370,37 @@
       },
       configAdd() {
         let _this = this;
-        let lookup = sessionStorage.getItem('config_' + _this.tableName + '_lookup');
-        if(!lookup){
-          _this.$http.post('/relationController/getLookuplistByTable?table='+ _this.tableName)
-            .then(function(info){
-              sessionStorage.setItem('config_' + _this.tableName + '_lookup',JSON.stringify(info.data));
-            });
-        }
+        let lookupdt = _this.lookupInfo;
+        let relatedt = _this.relationInfo;
+        let addData = {};
+        let attr = JSON.parse(sessionStorage.getItem('config_' + _this.tableName + '_attribute'));
+        attr.forEach(function(v, i){
+          let a = v.attribute;
+          if(v.type == 'lookup'){
+            v.lookupMsg = lookupdt[v.attribute];
+          }else if(v.type == 'reference'){
+            for(let ri = 0;ri < relatedt.length; ri++){
+              if(v.lr == relatedt[ri].domainname){
+                if(relatedt[ri].domainclass1 == _this.tableName){
+                  v.relationTable = relatedt[ri].domainclass2;
+                }else {
+                  v.relationTable = relatedt[ri].domainclass1;
+                }
+              }
+            }
+          }
+        });
+        addData.tableName = _this.tableName;
+        addData.titleMsg = attr;
+        console.log(addData);
+
+        _this.$store.commit('getaddMsg', addData);
         //跳转到添加页
-        this.$router.push({path: '/config/addRecord'});
+        this.$router.push({path: '/config/add'});
+      },
+      configDownload(){
+        //下载中文字段数据
+        window.open('/cardController/downLoadExcel?table=' + this.tableName, '_self');
       },
       // 在跳转页面之前先获取到关系表的详细信息, 如果关系不为空, 再进行页面跳转
       getrelationMsg(){
@@ -381,8 +421,8 @@
             })
           }
         })
-        
-        
+
+
       },
     },
     computed:{
