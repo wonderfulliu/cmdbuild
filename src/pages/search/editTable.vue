@@ -142,13 +142,13 @@ export default {
     },
     // 搜索功能
     search() {
-      console.log(this.relationTable);
+      // console.log(this.relationTable);
       this.loading = true;
       let data = {
         tableName: this.relationTable,
         pageNum: this.pageNum,
         condition: this.searchMsg
-      }; 
+      };
       this.$http
         .post("/cardController/fuzzyQuery", this.$qs.stringify(data))
         .then(

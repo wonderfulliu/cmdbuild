@@ -230,8 +230,11 @@
                   marginRight: '5px'
                 },
                 on: {
-                  click: function() {
-                    _this.recordId = params.row.Id;// 获取当前行所有信息
+                  click: () => {
+                    this.recordId = params.row.Id;// 获取当前行所有信息
+                    console.log(this.recordId);
+                    console.log(this.tableName);
+                    console.log(this.ConfigThead);
                     //点击事件
                   }
                 }
@@ -367,6 +370,8 @@
         let data = {table: this.tableName, Id: this.recordId};//获取详细信息
         this.$http.post('/relationController/getRelationList', data).then(info => {
           if (info.status == 200) {//请求成功且有数据
+          console.log(info.data);
+          return false;
             //将数据存储到公共仓库, 页面跳转... && Object.keys(info.data).length != 0
             let data = {
               tableName: this.tableName,

@@ -12,6 +12,9 @@
             </OptionGroup>
         </Select>
       </div>
+      <div class="back" @click="back">
+        <Icon type="reply"></Icon>
+      </div>
     </div>
     <div class="body">
       <Table height="400" :columns="columns" :data="data"></Table>
@@ -79,7 +82,7 @@ export default {
       let data = "?table=" + this.relationMsg.tableName;
       this.$http.get("/relationController/getDomainList" + data).then(info => {
         if (info.status == 200 && Object.keys(info.data).length != 0) {
-          // 找到关系表名, 找到n:1关系, 找到中文名, 并且拼在英文表明后面
+          // 找到关系表名, 找到n:1关系, 找到中文名, 并且拼在英文表名后面
           let relationArr = [];
           info.data.forEach((v, i) => {
             let obj = {};
@@ -149,7 +152,11 @@ export default {
           }
         }
       });
-    }
+    },
+    // 返回按钮
+    back(){
+      this.$router.go(-1);
+    },
   }
 };
 </script>
@@ -169,6 +176,15 @@ export default {
         float: left;
         margin-top: 20px;
         margin-left: 30px;
+      }
+      .back{
+        float: right;
+        height: 100%;
+        line-height: 100%;
+        margin-top: 20px;
+        margin-right: 24px;
+        font-size: 34px;
+        cursor: pointer;
       }
     }
     .body{
