@@ -71,6 +71,10 @@
       'rotateIcon': {
         type: Function,
         default: null
+      },
+      'Mode': {
+        type: String,
+        required: true
       }
     },
     data () {
@@ -94,7 +98,7 @@
           configViewModal: false, //查看modal
           configAddModal: false,
           deleLoading: false,
-          configViewData: ''     //查看数据
+          configViewData: '',     //查看数据
         }
     },
     created: function(){
@@ -105,6 +109,8 @@
         this.getTableAttribute();
         this.getTableHead();
         this.getTableData();
+        
+      console.log(this.Mode);
       })
       },
     methods:{
@@ -369,10 +375,9 @@
       getrelationMsg(){
         let data = {table: this.tableName, Id: this.recordId};//获取详细信息
         this.$http.post('/relationController/getRelationList', data).then(info => {
-          if (info.status == 200) {//请求成功且有数据
-          console.log(info.data);
-          return false;
-            //将数据存储到公共仓库, 页面跳转... && Object.keys(info.data).length != 0
+          if (info.status == 200 && Object.keys(info.data).length != 0) {//请求成功且有数据
+            // console.log(info.data);
+            //将数据存储到公共仓库, 页面跳转...
             let data = {
               tableName: this.tableName,
               Id: this.recordId,

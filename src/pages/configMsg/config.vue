@@ -40,6 +40,7 @@
                      :rotateIcon='rotateIcon'
                      @transferRecord='getRecordId'
                      :recordId='recordId'
+                     :Mode='Mode'
         ></router-view>
       </transition>
 
@@ -57,10 +58,13 @@
         //页面配置：
         groupName: JSON.parse(sessionStorage.getItem('groupInfo')).Code,  //组名
         tableName: '',  //表名
-        recordId: ''
+        recordId: '',
+        Authority: '',//存储权限
+        Mode: '',
       }
     },
     created: function(){
+      this.getAuthority(); //获取权限
       this.getTreeData();  //侧栏树形菜单
     },
     computed:{
@@ -84,8 +88,11 @@
         _this.$http.post('/authorityController/getMenu?groupName='+_this.groupName)
                 .then(function(info){
                   let oData = info.data.children;
+                  // console.log(oData);
+                  // console.log(_this.Authority);
                   sessionStorage.setItem(_this.groupName+"_menu",JSON.stringify(oData));
                   let objTree = objFunc(oData);
+                  console.log(objTree);
                   _this.ConfigTreeData = newTreeFunc(objTree);  //打开侧栏第一个选项
 
                   function newTreeFunc(obj){
@@ -96,6 +103,7 @@
                       }else {
                         let eName = obj[0].idElementClass.split("\"").join("");
                         _this.tableName = eName; //获取表名
+                        _this.Mode = obj[0].Mode;
                         _this.$router.push({path: '/config/tableList'});
                       }
                     }
@@ -112,6 +120,7 @@
                         oBranch.children = objFunc(v.children);
                       }else {
                         oBranch.idElementClass = v.idElementClass;  //表名英文
+                        oBranch.Mode = _this.WorR(_this.Authority, v.idElementClass); //权限
                       }
                       oTree.push(oBranch);    //对象追加到数组末尾
                     });
@@ -123,15 +132,35 @@
       getTreeNodes(select){
         let _this = this;
         if(!select.children){
-          let eName = select[0].idElementClass.split("\"").join("");
+          let eName = select[0].idElementClass.split("\"").join("");//获取英文名
           _this.tableName = eName; //获取表名
           _this.$router.push({path: '/config/tableList'});
-          console.log(eName);//点击的表
+          this.Mode = select[0].Mode;
+          // console.log(this.Mode);//点击的表
         }
       },
       getRecordId(msg){
         this.recordId = msg;
-      }
+      },
+      // 获取与处理权限
+      getAuthority(){
+        let groupName = JSON.parse(sessionStorage.getItem('groupInfo')).Description;
+        let data = '?groupName=' + groupName;
+        this.$http.post('/authorityController/getGroup' + data).then(info => {
+          if (info.status == 200) {
+            this.Authority = info.data;
+          }
+        })
+      },
+      WorR(authority, eName){
+        let Mode;
+        authority.forEach(function (v, i) {
+          if (v.table_name == eName.replace(/\"/g, "")) {
+            Mode = v.Mode;
+          }
+        })
+        return Mode;
+      },
     },
   }
 </script>
