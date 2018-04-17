@@ -442,6 +442,7 @@ export default {
         tableName: this.tableName,
         titleMsg: titleMsg,
       }
+      console.log(data);
       this.$store.commit('getaddMsg', data);//将整合好的数据推至公共仓库
       this.$router.push({path: '/add'});//跳转至新增页面
     },
