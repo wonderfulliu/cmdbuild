@@ -1,43 +1,48 @@
 <template>
-  <div id="editTableContainer">
-    <header>
-      <h3>请选择关系: </h3>
-      <div class="btnContainer">
-        <Button @click="cancel">取消</Button>
-        <Button type="primary" @click="confirm">确认</Button>
-      </div>
-    </header>
-    <div class="content">
-      <Table :loading='loading' stripe height="450" border  :columns="columns" :data="data"></Table>
+  <Layout>
+    <div id="relationTableContainer">
+        <header>
+          <h3>请选择关系: </h3>
+          <div class="btnContainer">
+            <Button @click="cancel">取消</Button>
+            <Button type="primary" @click="confirm">确认</Button>
+          </div>
+        </header>
+        <div class="content">
+          <Table v-if="isOne" :loading="loading" highlight-row stripe height="400" border  :columns="columns" :data="data" @on-current-change="selectOne"></Table>
+          <Table v-if="isN" :loading="loading" stripe height="400" border  :columns="columns" :data="data" @on-select="selectN"></Table>
+        </div>
+        <div class="footer">
+          <div class="search">
+            <Input v-model="searchMsg" @on-click="search" @on-enter="search" clearable icon="search" placeholder="Enter something..." style="width: 300px"></Input>
+          </div>
+          <div class="page">
+            <Page @on-change="pageChange" :page-size='20' :total="totalRecord" show-elevator show-total></Page>
+          </div>
+        </div>
     </div>
-    <div class="footer">
-      <div class="search">
-        <Input v-model="searchMsg" @on-click="search" @on-enter="search" clearable icon="search" placeholder="Enter something..." style="width: 300px"></Input>
-      </div>
-      <div class="page">
-        <Page @on-change="pageChange" :page-size='20' :total="totalRecord" show-elevator show-total></Page>
-      </div>
-    </div>
-  </div>
+  </Layout>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      columns: [],//表格数据渲染
+      columns: [], //表格数据渲染{highlightRow: isOne}
       data: [],
-      totalRecord: 0,//分页
+      totalRecord: 0, //分页
       pageNum: 1,
-      relationTable: "",//上一页传来的信息
-      reftitleMsg: '',
-      reftableMsg: '',
-      loading: false,//表格loading
-      searchMsg: "",// 搜索
-      rowMsg: '',//存储该行的信息
-      NorOne: '',//关系n或1
-      One: true,//单选
-      N: '',//多选
+      relationTable: "", //上一页传来的信息
+      tableId: "",
+      reftitleMsg: "",
+      reftableMsg: "",
+      domainlistMsg: "",
+      loading: false, //表格loading
+      searchMsg: "", // 搜索
+      NorOne: "", //关系n或1
+      isOne: true, //单选
+      isN: "", //多选
+      addData: '',//要添加的数据
     };
   },
   created() {
@@ -50,28 +55,33 @@ export default {
       this.relationTable = refMsg.relationTable;
       this.reftitleMsg = refMsg.reftitleMsg;
       this.reftableMsg = refMsg.reftableMsg;
+      this.domainlistMsg = this.$store.state.domainlistMsg;
       this.NorOne = refMsg.NorOne;
-      console.log(this.NorOne);
-      console.log(this.reftitleMsg);
+      this.tableId = refMsg.tableId;
       this.dataProcess(this.reftitleMsg, this.reftableMsg);
     },
     //刚进入该页面时表格数据的处理
     dataProcess(titleMsg, tableMsg) {
       this.totalRecord = tableMsg.totalRecord;
       let dataArr = tableMsg.list; //要处理和渲染的表格数据
-      // if (this.NorOne == '1') {
-      //   this.One = true;
-      //   this.N = '';
-      //   // 设置开头单选
+      if (this.NorOne == '1') {
+        this.isOne = true;
+        this.isN = false;
+        // 设置开头单选
         var start = {
           type: "index",
           width: 60,
           align: "center"
         };
-      // } else if (this.NorOne == 'N') {
-      //   this.One = false;
-      //   this.N = 'selection';
-      // }
+      } else if (this.NorOne == 'N') {
+        this.isOne = false;
+        this.isN = true;
+        var start = {
+          type: 'selection',
+          width: 60,
+          align: 'center'
+        };
+      }
 
       // 设置每个td的宽度(写在此处)
       let width = 200;
@@ -79,10 +89,8 @@ export default {
       let flag = this.hasId(dataArr[0]);
       //获取表头
       let newtitleArr = []; //存储最终要给columns的表头数据
-      // if (this.NorOne == '1') {
-        newtitleArr.push(start);
-      // }
-      
+      newtitleArr.push(start);
+
       let j = 0;
       titleMsg.forEach(function(v, i) {
         v.title = v.cname;
@@ -158,13 +166,13 @@ export default {
     },
     // 搜索功能
     search() {
-      console.log(this.relationTable);
+      // console.log(this.relationTable);
       this.loading = true;
       let data = {
         tableName: this.relationTable,
         pageNum: this.pageNum,
         condition: this.searchMsg
-      }; 
+      };
       this.$http
         .post("/cardController/fuzzyQuery", this.$qs.stringify(data))
         .then(
@@ -228,62 +236,122 @@ export default {
       this.loading = false;
     },
     // --------------------------------------
-    // 选择行: 把该行的信息获取到
-    selectRow(selection, index){
+    // 单选: 以下方法与多选获取参数的方法不一样
+    selectOne(selection, index) {
       // 两个参数分别代表已选择的项和选择项的index
-      this.rowMsg = selection;
+      // console.log(this.relationTable);
+      // console.log(this.domainlistMsg);
+      let data = {};
+      let records = [];
+      this.domainlistMsg.forEach((v, i) => {
+        if (v.domainclass1 == this.relationTable) {
+          let obj = {};
+          data.domainname = v.domainname;
+          obj.domainname = v.domainname;
+          obj.domainclass1 = '"' + this.relationTable + '"';
+          obj.idobj1 = selection.Id;
+          obj.domainclass2 = '"' + v.domainclass2 + '"';
+          obj.idobj2 = this.tableId;
+          records.push(obj);
+          data.records = records;
+        } else if (v.domainclass2 == this.relationTable) {
+          let obj = {};
+          data.domainname = v.domainname;
+          obj.domainname = v.domainname;
+          obj.domainclass2 = '"' + this.relationTable + '"';
+          obj.idobj2 = selection.Id;
+          obj.domainclass1 = '"' + v.domainclass1 + '"';
+          obj.idobj1 = this.tableId;
+          records.push(obj);
+          data.records = records;
+        }
+      })
+      this.addData = data;
+      console.log(data);
+    },
+    // 多选
+    selectN(selection, index){
+      // console.log(selection);
+      // console.log(this.relationTable);
+      // console.log(this.domainlistMsg);
+      let data = {};
+      let records = [];
+      this.domainlistMsg.forEach((v, i) => {
+        if (v.domainclass1 == this.relationTable) {
+          data.domainname = v.domainname;
+          selection.forEach((val, index) => {
+            let obj = {};
+            obj.domainname = v.domainname;
+            obj.domainclass1 = '"' + this.relationTable + '"';
+            obj.idobj1 = val.Id;
+            obj.domainclass2 = '"' + v.domainclass2 + '"';
+            obj.idobj2 = this.tableId;
+            records.push(obj);
+          })
+          data.records = records;
+        } else if (v.domainclass2 == this.relationTable) {
+          data.domainname = v.domainname;
+          selection.forEach((val, index) => {
+            let obj = {};
+            obj.domainname = v.domainname;
+            obj.domainclass2 = '"' + this.relationTable + '"';
+            obj.idobj2 = val.Id;
+            obj.domainclass1 = '"' + v.domainclass1 + '"';
+            obj.idobj1 = this.tableId;
+            records.push(obj);
+          })
+          data.records = records;
+        }
+      })
+      // console.log(data);
+      this.addData = data;
     },
     // 确认按钮
-    confirm(){
-      //获取到该行的信息, 取出description与id
-      let rowData = this.rowMsg;
-      let title = this.columns;
-      let chooseMsg = {
-        description: '',
-        Id: '',
-        relationTable: this.relationTable
-      }
-      // 取出description
-      title.forEach(function (v, i) {
-        if (v.attribute == "Description") {
-          for(let k in rowData) {
-            chooseMsg.description = rowData[v.key];
-            if (k = 'Id') {//取出Id
-              chooseMsg.Id = rowData[k];
-            }
+    confirm() {
+      // console.log(JSON.stringify(this.addData));
+      this.$http.post('/relationController/relation', this.addData).then(info => {
+        if (info.status == 200) {
+          if (info.data == 'ok') {
+            this.$Message.success({
+              content: '关系添加成功'
+            })
+            this.$router.go(-1);
+          } else {
+            this.$Message.error({
+              content: '关系添加失败'
+            })
+            // this.$router.go(-1);
           }
         }
       })
-      this.$store.commit('getchooseMsg', chooseMsg);//将获取到的数据返回出去
-      this.$router.go(-1);
+      // this.$router.go(-1);
     },
     // 取消按钮
-    cancel(){
+    cancel() {
       this.$router.go(-1);
-    },
-
+    }
   }
 };
 </script>
 
 <style lang="scss">
-#editTableContainer {
+#relationTableContainer {
   header {
     height: 30px;
     font-size: 20px;
     text-align: left;
     margin: 10px 30px;
-    h3{
+    h3 {
       float: left;
     }
-    .btnContainer{
+    .btnContainer {
       float: right;
     }
   }
   .content {
-    .ivu-table-header{
-      .ivu-table-column-center{
-        .ivu-checkbox-wrapper{
+    .ivu-table-header {
+      .ivu-table-column-center {
+        .ivu-checkbox-wrapper {
           margin-right: 0px;
         }
       }

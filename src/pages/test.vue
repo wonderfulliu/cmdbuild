@@ -31,9 +31,21 @@ export default {
       pageNum: 1,
       relationTable: "",
       loading: false,
-      searchMsg: "",// 搜索
-      rowMsg: '',//存储该行的信息
-      chooseMsg: '',
+      searchMsg: "", // 搜索
+      rowMsg: "", //存储该行的信息
+      chooseMsg: "",
+      a: {
+        domainname: "AppServiceTime_to_app",
+        records: [
+          {
+            domainname: "AppServiceTime_to_app",
+            domainclass2: '"Application"',
+            idobj2: 31815733,
+            domainclass1: '"Applicationservicetime"',
+            idobj1: 28441950
+          }
+        ]
+      }
     };
   },
   created() {
@@ -126,7 +138,7 @@ export default {
         functionName: this.relationTable,
         pageNum: this.pageNum,
         condition: this.searchMsg
-      }; 
+      };
       this.$http
         .post("/viewController/fuzzyQuery", this.$qs.stringify(data))
         .then(
@@ -141,39 +153,40 @@ export default {
         );
     },
     // 选择行: 把该行的信息获取到
-    selectRow(selection, index){
+    selectRow(selection, index) {
       // 两个参数分别代表已选择的项和选择项的index
       this.rowMsg = selection;
     },
     // 确认按钮
-    confirm(){
+    confirm() {
       //获取到该行的信息, 取出description与id
       let rowData = this.rowMsg;
       let title = this.columns;
       let chooseMsg = {
-        description: '',
-        Id: ''
-      }
+        description: "",
+        Id: ""
+      };
       this.chooseMsg = chooseMsg;
       // 取出description
-      title.forEach(function (v, i) {
+      title.forEach(function(v, i) {
         if (v.attribute == "Description") {
-          for(let k in rowData) {
+          for (let k in rowData) {
             chooseMsg.description = rowData[v.key];
-            if (k = 'Id') {//取出Id
+            if ((k = "Id")) {
+              //取出Id
               chooseMsg.Id = rowData[k];
             }
           }
         }
-      })
-      this.$store.commit('getchooseMsg', chooseMsg);//将获取到的数据返回出去
-      this.$router.push({path: '/edit'});
+      });
+      this.$store.commit("getchooseMsg", chooseMsg); //将获取到的数据返回出去
+      this.$router.push({ path: "/edit" });
     },
     // 取消按钮
-    cancel(){
-      this.$store.commit('getchooseMsg', '');
-      this.$router.push({path: '/edit'});
-    },
+    cancel() {
+      this.$store.commit("getchooseMsg", "");
+      this.$router.push({ path: "/edit" });
+    }
   }
 };
 </script>
@@ -185,17 +198,17 @@ export default {
     font-size: 20px;
     text-align: left;
     margin: 10px 30px;
-    h3{
+    h3 {
       float: left;
     }
-    .btnContainer{
+    .btnContainer {
       float: right;
     }
   }
   .content {
-    .ivu-table-header{
-      .ivu-table-column-center{
-        .ivu-checkbox-wrapper{
+    .ivu-table-header {
+      .ivu-table-column-center {
+        .ivu-checkbox-wrapper {
           margin-right: 0px;
         }
       }

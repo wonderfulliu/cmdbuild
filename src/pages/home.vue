@@ -132,7 +132,8 @@
 
   .layout-nav {
     float: left;
-    margin-left: 100px;
+    margin-left: 90px;
+    margin-right: 0;
     width: 560px;
     overflow: hidden;
   .ivu-menu-item {
