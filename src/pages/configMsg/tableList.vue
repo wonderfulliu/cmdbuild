@@ -1,26 +1,51 @@
 <template>
-  <Layout>
+  <Layout class="miniWindow">
     <Header :style="{padding: 0}" class="layout-header-bar">
-      <div class="btnItem btnItemLeft">
-        <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '4px 20px'}" type="navicon-round" size="24"></Icon>
-        <Button type="ghost">searchFilter</Button>
-      </div>
-      <div class="searchBar">
-        <Input v-model="configCondition"></Input>
-        <Button type="primary" icon="ios-search" @click="fuzzy">搜索</Button>
-      </div>
-      <div class="btnItem btnItemRight">
-        <Button type="ghost" icon="plus-round" @click="configAdd">
-        </Button>
-        <Button type="ghost" icon="arrow-down-a" @click="configDownload"></Button>
-      </div>
-
+      <Row>
+        <Col :xs="9" :sm="6" :md="5" :lg="5">
+          <div class="">
+            <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
+            <Button type="ghost">searchFilter</Button>
+          </div>
+        </Col>
+        <Col :xs="12" :sm="12" :md="10" :lg="11">
+          <Input v-model="configCondition">
+            <Button slot="append" type="primary" icon="ios-search" @click="fuzzy">搜索</Button>
+          </Input>
+        </Col>
+        <Col :xs="14" :sm="12" :md="9" :lg="8">
+          <ButtonGroup>
+            <Button type="ghost" title="下载" icon="ios-download-outline" @click="configDownload"></Button>
+            <Button type="ghost" title="新增" icon="ios-plus-empty" @click="configAdd"></Button>
+            <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit"></Button>
+            <Button type="ghost" title="查看" icon="ios-eye" @click="ctrlView"></Button>
+            <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
+            <Button type="ghost" title="链接" icon="ios-infinite" @click="ctrlRelete"></Button>
+            <Button type="ghost" title="删除" icon="ios-trash-outline" @click="ctrlDele"></Button>
+          </ButtonGroup>
+        </Col>
+      </Row>
     </Header>
     <Content :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
       <div class="contentBody">
-        <Table border size="small" :loading="loading" height="440" :columns="ConfigThead" :data="ConfigTdata"></Table>
+        <Table border
+               size="small"
+               height="440"
+               @on-row-click="getRecordInfo"
+               :highlight-row="highlight"
+               :loading="loading"
+               :columns="ConfigThead"
+               :data="ConfigTdata"></Table>
         <div class="pageContainer clearfix">
-          <Page :total="totalBar" @on-change="pageChange" show-elevator show-total class="floatRight"></Page>
+          <Button type="ghost" class="floatRight" @click="pageLast">尾页</Button>
+          <Page class="floatRight"
+                show-elevator
+                show-total
+                :page-size="20"
+                :current="pageNum"
+                :total="totalBar"
+                @on-change="pageChange"></Page>
+          <Button type="ghost" class="floatRight" @click="pageFirst">首页</Button>
         </div>
       </div>
 
@@ -84,7 +109,8 @@
           recordId: '',     //记录id
           pageNum: 1,       //当前页
           pageSize: 20,     //每页条数
-          totalBar: '',     //总条数
+          totalBar: null,    //总条数
+          totalPage: null,  //总页数
           configCondition: '',  //查询条件
           //数据
           ConfigThead: [],  //表头
@@ -94,12 +120,14 @@
           relationInfo: '',     //关系表信息
           //页面配置：
           loading: true,
+          highlight: true,
+          clickRow: false,
           //模态框
           configDeleModal: false, //删除modal
           configViewModal: false, //查看modal
           configAddModal: false,
           deleLoading: false,
-          configViewData: '',     //查看数据
+          configViewData: ''     //查看数据
         }
     },
     created: function(){
@@ -150,11 +178,11 @@
               });
               sessionStorage.setItem('config_' + _this.tableName + '_head',JSON.stringify(arrObj));
               let newArr = arrObj;
-              _this.ConfigThead = _this.pushBtn(newArr);
+              _this.ConfigThead = newArr;
             });
 
         }else {
-          this.ConfigThead = this.pushBtn(JSON.parse(thead));
+          this.ConfigThead = JSON.parse(thead);
         }
       },
       getTableData(){
@@ -166,6 +194,7 @@
             _this.pageNum +'&pageSize=' +
             _this.pageSize)
           .then(function(info){
+            _this.totalPage = info.data.totalPage;
             _this.totalBar = info.data.totalRecord;
             let ConfigTdata = info.data.list;
             ConfigTdata.forEach(function (v, i) {
@@ -179,6 +208,11 @@
             _this.loading = false;//加载完成时
           });
       },
+      getRecordInfo(res){
+        console.log(res);
+        this.clickRow = true;   //点击状态参数
+        this.recordId = res.Id;   //获取记录id
+      },
       attributeCName(eName){
         let _this = this;
         let cNameObj = JSON.parse(sessionStorage.getItem('config_' + _this.tableName + '_attribute'));
@@ -191,6 +225,14 @@
       },
       pageChange(page){
         this.pageNum = page;
+        this.getTableData(this.tableName);
+      },
+      pageFirst(){
+        this.pageNum = 1;
+        this.getTableData(this.tableName);
+      },
+      pageLast(){
+        this.pageNum = this.totalPage;
         this.getTableData(this.tableName);
       },
       getlookup(){
@@ -231,130 +273,87 @@
             _this.loading = false;//加载完成时
           });
       },
-      pushBtn(arr){
+      ctrlView(){
         let _this = this;
-        arr.push({
-          title: '操作',
-          key: 'action',
-          width: 230,
-          fixed: 'right',
-          render: (h, params) => {
-            return h('div', [
-              //编辑
-              h('Button', {
-                props: {
-                  type: 'text',
-                  size: 'small',
-                  icon: 'compose'
-                },
-                style: {
-                  marginRight: '5px'
-                },
-                on: {
-                  click: () => {
-                    this.recordId = params.row.Id;// 获取当前行所有信息
-                    console.log(this.recordId);
-                    console.log(this.tableName);
-                    console.log(this.ConfigThead);
-                    //点击事件
+        if(_this.clickRow == true){
+          //选中行
+          _this.$http.get('/cardController/card?table='+_this.tableName+'&Id='+_this.recordId)
+            .then(function(info){
+              let newObj = {};
+              Object.keys(info.data).forEach(function(v, i){
+                if(_this.attributeCName(v)){
+                  let attr = _this.attributeCName(v);
+                  if(typeof info.data[v] == 'object' && info.data[v] != null){
+                    newObj[attr] = info.data[v].Description;
+                  }else {
+                    newObj[attr] = info.data[v];
                   }
                 }
-              }),
-              //查看
-              h('Button', {
-                props: {
-                  type: 'text',
-                  size: 'small',
-                  icon: 'eye'
-                },
-                style: {
-                  marginRight: '5px'
-                },
-                on: {
-                  click: function() {
-                    //查看  点击事件
-                    _this.recordId = params.row.Id;// 获取当前行所有信息
+              });
+              _this.configViewData = newObj;
+            }).catch(function(error){
+            //  console.log(error);
+          });
+          _this.configViewModal = true;
 
-                    _this.$http.get('/cardController/card?table='+_this.tableName+'&Id='+_this.recordId)
-                      .then(function(info){
-                        let newObj = {};
-                        Object.keys(info.data).forEach(function(v, i){
-                          if(_this.attributeCName(v)){
-                            let attr = _this.attributeCName(v);
-                            if(typeof info.data[v] == 'object' && info.data[v] != null){
-                              newObj[attr] = info.data[v].Description;
-                            }else {
-                              newObj[attr] = info.data[v];
-                            }
+        }else {
+          //未选中行
+          _this.$Message.error('您未选中行！');
+        }
+      },
+      ctrlDele(){
+        if(this.clickRow == true){
+          this.configDeleModal = true;
+        }else {
+          this.$Message.error('您未选中行！');
+        }
 
-                          }
-                        });
-                        _this.configViewData = newObj;
-                      }).catch(function(error){
-                        //  console.log(error);
-                    });
-                    _this.configViewModal = true;
-                  }
-                }
-              }),
-              //历史
-              h('Button', {
-                props: {
-                  type: 'text',
-                  size: 'small',
-                  icon: 'clipboard'
-                },
-                style: {
-                  marginRight: '5px'
-                },
-                on: {
-                  click: function() {
-                    //点击事件
-                    _this.recordId = params.row.Id;// 获取当前行所有信息
-                    _this.$emit('transferRecord', params.row.Id);
-                    //跳转到添加页
-                    _this.$router.push({path: '/config/historyRecord'});
-                  }
-                }
-              }),
-              //关系
-              h('Button', {
-                props: {
-                  type: 'text',
-                  size: 'small',
-                  icon: 'link'
-                },
-                style: {
-                  marginRight: '5px'
-                },
-                on: {
-                  click: () => {
-                    //点击事件
-                    this.recordId = params.row.Id;// 获取当前行所有信息
-                    this.getrelationMsg();
-                  }
-                }
-              }),
-              //删除
-              h('Button', {
-                props: {
-
-                  type: 'text',
-                  size: 'small',
-                  icon: 'trash-a'
-                },
-                on: {
-                  click: function() {
-                    //点击事件
-                    _this.recordId = params.row.Id;// 获取当前行所有信息
-                    _this.configDeleModal = true;
-                  }
-                }
-              })
-            ]);
+      },
+      ctrlEdit(){
+        if(this.clickRow == true){
+          //将已选中行进行编辑
+          console.log("将已选中行进行编辑");
+        }else {
+          this.$Message.error('您未选中行！');
+        }
+      },
+      ctrlHistory(){
+        if(this.clickRow == true){
+          //将跳转到历史记录
+          this.$emit('transferRecord', this.recordId);
+          //跳转到添加页
+          this.$router.push({path: '/config/historyRecord'});
+//          console.log("将跳转到历史记录");
+        }else {
+          this.$Message.error('您未选中行！');
+        }
+      },
+      ctrlRelete(){
+        if(this.clickRow == true){
+          //将跳转到关系页面  表名 记录id 已获取
+//          console.log("将跳转到关系页面");
+          let data = {table: this.tableName, Id: this.recordId};//获取详细信息
+          this.$http.post('/relationController/getRelationList', data).then(info => {
+            if (info.status == 200 && Object.keys(info.data).length != 0) {//请求成功且有数据
+            // console.log(info.data);
+            //将数据存储到公共仓库, 页面跳转...
+            let data = {
+              tableName: this.tableName,
+              Id: this.recordId,
+              relationMsg: info.data
+            }
+            this.$store.commit('getrelationMsg', data);
+            this.$router.push({path: '/config/relation'})
+          } else if (info.status == 200 && Object.keys(info.data).length == 0) {
+            this.$Message.error({
+              content: '该记录尚未与其他记录关联, 查询关系不存在'
+            })
           }
-        });
-        return arr;
+        })
+
+        }else {
+          this.$Message.error('您未选中行！');
+        }
       },
       configDele(){
         let _this = this;
@@ -430,7 +429,7 @@
         })
 
 
-      },
+      }
     },
     computed:{
 
@@ -438,6 +437,17 @@
   }
 </script>
 
-<style>
-
+<style lang="scss">
+  .miniWindow.ivu-layout{
+    .ivu-layout-header{
+      height: auto;
+      .ivu-input-group{
+        padding-top: 16px;
+      }
+    }
+  }
+  .menuCtrl{
+    margin: 4px 20px;
+    line-height: 2;
+  }
 </style>
