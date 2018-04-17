@@ -131,10 +131,10 @@
   .ivu-layout-header {
 
   .layout-nav {
-    margin: 0 auto;
-    margin-left: 250px;
-    width: 550px;
-
+    float: left;
+    margin-left: 100px;
+    width: 560px;
+    overflow: hidden;
   .ivu-menu-item {
 
   a {

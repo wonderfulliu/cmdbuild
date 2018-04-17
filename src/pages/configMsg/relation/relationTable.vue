@@ -8,7 +8,7 @@
       </div>
     </header>
     <div class="content">
-      <Table highlight-row :loading='loading' @on-row-click="selectRow" stripe height="450" border  :columns="columns" :data="data"></Table>
+      <Table :loading='loading' stripe height="450" border  :columns="columns" :data="data"></Table>
     </div>
     <div class="footer">
       <div class="search">
@@ -35,6 +35,9 @@ export default {
       loading: false,//表格loading
       searchMsg: "",// 搜索
       rowMsg: '',//存储该行的信息
+      NorOne: '',//关系n或1
+      One: true,//单选
+      N: '',//多选
     };
   },
   created() {
@@ -47,18 +50,28 @@ export default {
       this.relationTable = refMsg.relationTable;
       this.reftitleMsg = refMsg.reftitleMsg;
       this.reftableMsg = refMsg.reftableMsg;
+      this.NorOne = refMsg.NorOne;
+      console.log(this.NorOne);
+      console.log(this.reftitleMsg);
       this.dataProcess(this.reftitleMsg, this.reftableMsg);
     },
     //刚进入该页面时表格数据的处理
     dataProcess(titleMsg, tableMsg) {
       this.totalRecord = tableMsg.totalRecord;
       let dataArr = tableMsg.list; //要处理和渲染的表格数据
-      // 设置开头多选
-      let start = {
-        type: "index",
-        width: 60,
-        align: "center"
-      };
+      // if (this.NorOne == '1') {
+      //   this.One = true;
+      //   this.N = '';
+      //   // 设置开头单选
+        var start = {
+          type: "index",
+          width: 60,
+          align: "center"
+        };
+      // } else if (this.NorOne == 'N') {
+      //   this.One = false;
+      //   this.N = 'selection';
+      // }
 
       // 设置每个td的宽度(写在此处)
       let width = 200;
@@ -66,7 +79,10 @@ export default {
       let flag = this.hasId(dataArr[0]);
       //获取表头
       let newtitleArr = []; //存储最终要给columns的表头数据
-      newtitleArr.push(start);
+      // if (this.NorOne == '1') {
+        newtitleArr.push(start);
+      // }
+      
       let j = 0;
       titleMsg.forEach(function(v, i) {
         v.title = v.cname;

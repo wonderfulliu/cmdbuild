@@ -50,188 +50,192 @@
 
 </template>
 <script>
-  export default {
-    data () {
-      return {
-        isCollapsed: false,
-        ConfigTreeData: '', //树状目录
-        //页面配置：
-        groupName: JSON.parse(sessionStorage.getItem('groupInfo')).Code,  //组名
-        tableName: '',  //表名
-        recordId: '',
-        Authority: '',//存储权限
-        Mode: '',
+export default {
+  data() {
+    return {
+      isCollapsed: false,
+      ConfigTreeData: "", //树状目录
+      //页面配置：
+      groupName: JSON.parse(sessionStorage.getItem("groupInfo")).Code, //组名
+      tableName: "", //表名
+      recordId: "",
+      Authority: "", //存储权限
+      Mode: ""
+    };
+  },
+  created: function() {
+    this.getAuthority(); //获取权限
+    this.getTreeData(); //侧栏树形菜单
+  },
+  computed: {
+    menuitemClasses() {
+      return ["menu-item", this.isCollapsed ? "collapsed-menu" : ""];
+    },
+    rotateIcon() {
+      return ["menu-icon", this.isCollapsed ? "rotate-icon" : ""];
+    }
+  },
+  methods: {
+    collapsedSider() {
+      this.$refs.side1.toggleCollapse();
+    },
+    getTreeData() {
+      let _this = this;
+      //侧栏树形菜单数据获取
+      _this.$http
+        .post("/authorityController/getMenu?groupName=" + _this.groupName)
+        .then(function(info) {
+          let oData = info.data.children;
+          let treeMenu = sessionStorage.getItem(_this.groupName + "_menu");
+          if (treeMenu) {
+          } else {
+            sessionStorage.setItem(
+              _this.groupName + "_menu",
+              JSON.stringify(oData)
+            );
+          }
+          let objTree = objFunc(oData);
+          console.log(objTree);
+          _this.ConfigTreeData = newTreeFunc(objTree); //打开侧栏第一个选项
+
+          function newTreeFunc(obj) {
+            if (obj.length > 0) {
+              obj[0].expand = true;
+              if (obj[0].children) {
+                newTreeFunc(obj[0].children);
+              } else {
+                let eName = obj[0].idElementClass.split('"').join("");
+                _this.tableName = eName; //获取表名
+                _this.Mode = obj[0].Mode;
+                _this.$router.push({ path: "/config/tableList" });
+              }
+            }
+            return obj;
+          }
+          function objFunc(d) {
+            //此方法是将拿到的接口数据转换成新的格式，便于渲染树形菜单
+            let oTree = [];
+            d.forEach(function(v, i) {
+              let oBranch = {};
+              oBranch.title = v.description;
+              oBranch.expand = false; //菜单是否展开 true展开
+              if (v.children.length != 0) {
+                oBranch.children = objFunc(v.children);
+              } else {
+                oBranch.idElementClass = v.idElementClass; //表名英文
+                oBranch.Mode = _this.WorR(_this.Authority, v.idElementClass); //权限
+              }
+              oTree.push(oBranch); //对象追加到数组末尾
+            });
+            return oTree; //返回新生成的数组对象
+          }
+        });
+    },
+    getTreeNodes(select) {
+      let _this = this;
+      if (!select.children) {
+        let eName = select[0].idElementClass.split('"').join(""); //获取英文名
+        _this.tableName = eName; //获取表名
+        _this.$router.push({ path: "/config/tableList" });
+        this.Mode = select[0].Mode;
+        // console.log(this.Mode);//点击的表
       }
     },
-    created: function(){
-      this.getAuthority(); //获取权限
-      this.getTreeData();  //侧栏树形菜单
+    getRecordId(msg) {
+      this.recordId = msg;
     },
-    computed:{
-      menuitemClasses(){
-        return [
-          'menu-item',
-          this.isCollapsed ? 'collapsed-menu' : ''
-        ]
-      },
-      rotateIcon(){
-        return ["menu-icon", this.isCollapsed ? "rotate-icon" : ""];
-      }
-    },
-    methods: {
-      collapsedSider() {
-        this.$refs.side1.toggleCollapse();
-      },
-      getTreeData(){
-        let _this = this;
-        //侧栏树形菜单数据获取
-        _this.$http.post('/authorityController/getMenu?groupName='+_this.groupName)
-                .then(function(info){
-                  let oData = info.data.children;
-                  // console.log(oData);
-                  // console.log(_this.Authority);
-                  sessionStorage.setItem(_this.groupName+"_menu",JSON.stringify(oData));
-                  let objTree = objFunc(oData);
-                  console.log(objTree);
-                  _this.ConfigTreeData = newTreeFunc(objTree);  //打开侧栏第一个选项
-
-                  function newTreeFunc(obj){
-                    if(obj.length > 0){
-                      obj[0].expand = true;
-                      if(obj[0].children){
-                        newTreeFunc(obj[0].children);
-                      }else {
-                        let eName = obj[0].idElementClass.split("\"").join("");
-                        _this.tableName = eName; //获取表名
-                        _this.Mode = obj[0].Mode;
-                        _this.$router.push({path: '/config/tableList'});
-                      }
-                    }
-                    return obj;
-                  }
-                  function objFunc(d){
-                    //此方法是将拿到的接口数据转换成新的格式，便于渲染树形菜单
-                    let oTree = [];
-                    d.forEach(function(v,i){
-                      let oBranch = {};
-                      oBranch.title = v.description;
-                      oBranch.expand = false;         //菜单是否展开 true展开
-                      if (v.children.length != 0){
-                        oBranch.children = objFunc(v.children);
-                      }else {
-                        oBranch.idElementClass = v.idElementClass;  //表名英文
-                        oBranch.Mode = _this.WorR(_this.Authority, v.idElementClass); //权限
-                      }
-                      oTree.push(oBranch);    //对象追加到数组末尾
-                    });
-                    return oTree;       //返回新生成的数组对象
-                  }
-
-                });
-      },
-      getTreeNodes(select){
-        let _this = this;
-        if(!select.children){
-          let eName = select[0].idElementClass.split("\"").join("");//获取英文名
-          _this.tableName = eName; //获取表名
-          _this.$router.push({path: '/config/tableList'});
-          this.Mode = select[0].Mode;
-          // console.log(this.Mode);//点击的表
+    // 获取与处理权限
+    getAuthority() {
+      let groupName = JSON.parse(sessionStorage.getItem("groupInfo"))
+        .Description;
+      let data = "?groupName=" + groupName;
+      this.$http.post("/authorityController/getGroup" + data).then(info => {
+        if (info.status == 200) {
+          this.Authority = info.data;
         }
-      },
-      getRecordId(msg){
-        this.recordId = msg;
-      },
-      // 获取与处理权限
-      getAuthority(){
-        let groupName = JSON.parse(sessionStorage.getItem('groupInfo')).Description;
-        let data = '?groupName=' + groupName;
-        this.$http.post('/authorityController/getGroup' + data).then(info => {
-          if (info.status == 200) {
-            this.Authority = info.data;
-          }
-        })
-      },
-      WorR(authority, eName){
-        let Mode;
-        authority.forEach(function (v, i) {
-          if (v.table_name == eName.replace(/\"/g, "")) {
-            Mode = v.Mode;
-          }
-        })
-        return Mode;
-      },
+      });
     },
+    WorR(authority, eName) {
+      let Mode;
+      authority.forEach(function(v, i) {
+        if (v.table_name == eName.replace(/\"/g, "")) {
+          Mode = v.Mode;
+        }
+      });
+      return Mode;
+    }
   }
+};
 </script>
 
 <style lang="scss">
-  .btnItem{
-    width: 25%;
+.btnItem {
+  width: 25%;
+  float: left;
+  padding-top: 17px;
+  button {
     float: left;
-    padding-top: 17px;
-    button{
-      float: left;
-      .ivu-icon{
-        margin-top: 2px;
-        margin-right: -2px;
-        font-size: 14px;
-      }
+    .ivu-icon {
+      margin-top: 2px;
+      margin-right: -2px;
+      font-size: 14px;
     }
   }
+}
 
-  .btnItemLeft{
-    button{
-      margin-left: 15px;
-      float: left;
-    }
-  }
-
-  .btnItemRight{
-    button{
-      margin-right: 15px;
-      float: right;
-    }
-  }
-  .searchBar{
-    width: 50%;
+.btnItemLeft {
+  button {
+    margin-left: 15px;
     float: left;
-    padding-top: 15px;
-    .ivu-input-wrapper{
-      width: 80%;
-      float: left;
+  }
+}
+
+.btnItemRight {
+  button {
+    margin-right: 15px;
+    float: right;
+  }
+}
+.searchBar {
+  width: 50%;
+  float: left;
+  padding-top: 15px;
+  .ivu-input-wrapper {
+    width: 80%;
+    float: left;
+  }
+  button {
+    float: right;
+    width: 18%;
+    .ivu-icon {
+      margin-top: 3px;
     }
-    button{
-      float: right;
-      width: 18%;
-      .ivu-icon{
-        margin-top: 3px;
-      }
+  }
+}
+
+.ivu-row {
+  .ivu-col {
+    .ivu-date-picker {
+      width: 100%;
     }
   }
+}
 
-  .ivu-row{
-    .ivu-col{
-      .ivu-date-picker{
-        width: 100%;
-      }
-    }
-  }
+.ivu-tree-title {
+  color: #c7c7c7;
+}
 
-  .ivu-tree-title{
-    color: #c7c7c7;
-  }
+.ivu-tree-title:hover {
+  color: #373f50;
+}
 
-  .ivu-tree-title:hover{
-    color: #373f50;
-  }
-
-
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
 }
-ul,li{
+ul,
+li {
   list-style: none;
 }
 
@@ -239,12 +243,12 @@ ul,li{
   height: 100%;
 }
 
-.floatRight{
+.floatRight {
   float: right;
   margin-right: 15px;
 }
 
-.floatLeft{
+.floatLeft {
   float: left;
   margin-left: 15px;
 }
@@ -254,19 +258,18 @@ ul,li{
   display: block;
   clear: both;
   visibility: hidden;
-line-height: 0;
+  line-height: 0;
   height: 0;
-  font-size:0;
+  font-size: 0;
 }
 
-.treeContent{
+.treeContent {
   overflow-y: scroll;
   height: 400px;
-  text-align: left
+  text-align: left;
 }
 
-.pageContainer{
+.pageContainer {
   padding: 10px 0;
 }
-
 </style>
