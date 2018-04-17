@@ -37,7 +37,7 @@
       <transition name="fade" mode="out-in">
         <router-view :tableName='tableName'
                      :collapsedSider='collapsedSider'
-                     :rotateIcon='rotateIcon'
+                     @rotateIcon='rotateIcon'
                      @transferRecord='getRecordId'
                      :recordId='recordId'
         ></router-view>
@@ -136,8 +136,9 @@
       },
       getRecordId(msg){
         this.recordId = msg;
-      }
-    },
+      },
+
+    }
   }
 </script>
 

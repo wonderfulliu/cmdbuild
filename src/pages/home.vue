@@ -113,7 +113,7 @@
         //跳转页面
         this.$router.push({ path: '/' });
       }
-    }
+  }
   }
 </script>
 
