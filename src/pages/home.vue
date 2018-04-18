@@ -99,13 +99,6 @@
         return ["menu-item", this.isCollapsed ? "collapsed-menu" : ""];
       }
     },
-    created: function() {
-      this.path = this.$route.path;
-      this.$watch('path', function (newValue, oldValue) {
-        this.path = this.$route.path;
-        console.log(this.path);
-      })
-    },
     methods: {
       collapsedSider() {
         this.$refs.side1.toggleCollapse();

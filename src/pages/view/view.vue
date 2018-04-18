@@ -52,8 +52,16 @@
             :columns="columns"
             :data="data"
             ref="table"></Table>
-          <div style="margin-top: 10px;margin-right: 30px;float:right;">
-            <Page :total="totalBar" @on-change="pageChange" :page-size=20 show-elevator show-total></Page>
+          <div class="pageContainer clearfix floatRight">
+            <Button type="ghost" class="floatLeft" @click="pageFirst">首页</Button>
+            <Page class="floatLeft"
+                  show-elevator
+                  show-total
+                  :page-size=20
+                  :current="pageNum"
+                  :total="totalBar"
+                  @on-change="pageChange"></Page>
+            <Button type="ghost" class="floatLeft" @click="pageLast">尾页</Button>
           </div>
         </Content>
       </Layout>
@@ -82,6 +90,7 @@ export default {
       total:'',//表格数据总条数
       pageNum: 1,
       totalBar: 0,
+      totalPage: null,  //总页数
       searched: false,
     };
   },
@@ -133,6 +142,7 @@ export default {
     //表格数据的处理
     dataProcess(info) {
       this.totalBar = info.data.totalRecord;
+      this.totalPage = info.data.totalPage;
       let dataArr = info.data.list;
       let end = {
         title: "Action",
@@ -236,6 +246,14 @@ export default {
       } else {
         this.gettableMsg();
       }
+    },
+    pageFirst(){
+      this.pageNum = 1;
+      this.gettableMsg();
+    },
+    pageLast(){
+      this.pageNum = this.totalPage;
+      this.gettableMsg();
     },
     // 搜索
     search() {
