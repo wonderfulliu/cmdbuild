@@ -1,34 +1,64 @@
 <template>
-    <div id="viewContainer">
-      <div class="layout">
-        <Layout>
-            <!-- 侧边栏 -->
-            <Sider ref="side1" hide-trigger collapsible :collapsed-width="0" v-model="isCollapsed">
-                <Tree :data="asideMsg" @on-select-change='getSelectedNodes' ref='tree'></Tree>
-            </Sider>
-            <!-- 内容区域 -->
-            <Layout>
-                <Header :style="{padding: 0}" class="layout-header-bar">
-                    <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
-                    <div class="btnContainer">
-                        <Button type="primary" size="large" icon="ios-search" @click="search">Search</Button>
-                        <Input v-model="searchMsg" size="large" placeholder="Enter something..." clearable style="width: 280px"></Input>
-                    </div>
-                </Header>
-                <Content :style="{margin: '15px'}">
-                    <Table stripe height="410" :loading='loading' border :columns="columns" :data="data" ref="table"></Table>
-                    <div style="margin-top: 10px;margin-right: 30px;float:right;">
-                        <Page :total="totalBar" @on-change="pageChange" :page-size=20 show-elevator show-total></Page>
-                    </div>
-                    <br>
-                    <div class="btn">
-                      <Button type="primary" size="small" @click="exportData"><Icon type="ios-download-outline"></Icon> 下载</Button>
-                    </div>
-                </Content>
-            </Layout>
-        </Layout>
-      </div>
-    </div>
+  <div id="viewContainer">
+    <Layout>
+      <!-- 侧边栏 -->
+      <Sider ref="side1" hide-trigger collapsible :collapsed-width="0" v-model="isCollapsed">
+        <Menu active-name="1-2"
+              theme="dark"
+              width="auto"
+              :open-names="['1']"
+              :class="menuitemClasses" accordion>
+          <Submenu name="1">
+            <template slot="title">
+              <Icon type="ios-analytics"></Icon>
+              视图信息列表
+            </template>
+            <div class="treeContent">
+              <!--树状菜单-->
+              <Tree :data="asideMsg" @on-select-change='getSelectedNodes' ref='tree'></Tree>
+            </div>
+          </Submenu>
+        </Menu>
+      </Sider>
+      <!-- 内容区域 -->
+      <Layout class="miniWindow">
+        <Header :style="{padding: 0}" class="layout-header-bar">
+          <Row>
+            <Col span="5">
+            <div class="">
+              <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
+            </div>
+            </Col>
+            <Col span="14">
+              <Input v-model="searchMsg" placeholder="Enter something...">
+                <Button slot="append" type="primary" icon="ios-search" @click="search">搜索</Button>
+              </Input>
+            </Col>
+            <Col span="5">
+            <ButtonGroup>
+              <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
+            </ButtonGroup>
+            </Col>
+          </Row>
+        </Header>
+
+        <Content :style="{margin: '15px'}">
+          <Table
+            stripe
+            border
+            size="small"
+            height="410"
+            :loading='loading'
+            :columns="columns"
+            :data="data"
+            ref="table"></Table>
+          <div style="margin-top: 10px;margin-right: 30px;float:right;">
+            <Page :total="totalBar" @on-change="pageChange" :page-size=20 show-elevator show-total></Page>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
+  </div>
 </template>
 <script>
 export default {
@@ -147,6 +177,7 @@ export default {
         newObj.title = k;
         newObj.key = ++i;
         newObj.width = width;
+        newObj.ellipsis = true;
         newtitleArr.push(newObj);
       }
       newtitleArr.push(end);
@@ -282,11 +313,6 @@ export default {
       .ivu-table-body tbody td {
         text-align: center;
       }
-    }
-    .ivu-layout-sider {
-      background-color: #f5f7f9;
-      overflow: scroll;
-      text-align: left
     }
     .ivu-table-fixed-right {
       .ivu-btn-primary {

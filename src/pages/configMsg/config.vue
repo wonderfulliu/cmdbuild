@@ -40,8 +40,8 @@
                      @rotateIcon='rotateIcon'
                      @transferRecord='getRecordId'
                      :recordId='recordId'
-                     :Mode='Mode'
-        ></router-view>
+                     :Mode='Mode'>
+        </router-view>
       </transition>
 
     </Layout>
@@ -162,107 +162,8 @@ export default {
 </script>
 
 <style lang="scss">
-.btnItem {
-  width: 25%;
-  float: left;
-  padding-top: 17px;
-  button {
-    float: left;
-    .ivu-icon {
-      margin-top: 2px;
-      margin-right: -2px;
-      font-size: 14px;
-    }
-  }
-}
-
-.btnItemLeft {
-  button {
-    margin-left: 15px;
-    float: left;
-  }
-}
-
-.btnItemRight {
-  button {
-    margin-right: 15px;
-    float: right;
-  }
-}
-.searchBar {
-  width: 50%;
-  float: left;
-  padding-top: 15px;
-  .ivu-input-wrapper {
-    width: 80%;
-    float: left;
-  }
-  button {
-    float: right;
-    width: 18%;
-    .ivu-icon {
-      margin-top: 3px;
-    }
-  }
-}
-
-.ivu-row {
-  .ivu-col {
-    .ivu-date-picker {
-      width: 100%;
-    }
-  }
-}
-
-.ivu-tree-title {
-  color: #c7c7c7;
-}
-
-.ivu-tree-title:hover {
-  color: #373f50;
-}
-
-html,
-body {
-  width: 100%;
-  height: 100%;
-}
-ul,
-li {
-  list-style: none;
-}
-
 #configContainer {
   height: 100%;
 }
 
-.floatRight {
-  float: right;
-  margin-right: 15px;
-}
-
-.floatLeft {
-  float: left;
-  margin-left: 15px;
-}
-
-.clearfix:after {
-  content: ".";
-  display: block;
-  clear: both;
-  visibility: hidden;
-  line-height: 0;
-  height: 0;
-  font-size: 0;
-}
-
-.treeContent {
-  overflow-y: scroll;
-  height: 400px;
-  text-align: left;
-}
-
-.pageContainer {
-  padding: 10px 0;
-}
 </style>

@@ -1,17 +1,18 @@
 <template>
   <Layout>
     <Header :offset-top="64" :style="{padding: 0}" class="layout-header-bar">
-      <div class="btnItem btnItemLeft">
-        <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '4px 20px'}" type="navicon-round" size="24"></Icon>
-        <Button type="ghost" @click="backBtn">返回</Button>
-      </div>
-      <div class="btnItemRight floatRight">
-
+      <Row>
+        <Col span="4">
+          <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" :style="{margin: '4px 20px'}" type="navicon-round" size="24"></Icon>
+          <Button type="ghost" @click="backBtn">返回</Button>
+        </Col>
+        <Col span="5" offset="15">
         <ButtonGroup>
           <Button type="info" @click="gethistoryInfo">信息</Button>
           <Button type="info" @click="gethistoryRelate">关系</Button>
         </ButtonGroup>
-      </div>
+        </Col>
+      </Row>
     </Header>
 
     <Content :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
@@ -213,11 +214,8 @@
 </script>
 
 <style lang="scss">
-  .btnItemRight{
-    .ivu-btn-group{
-      button{
-        margin-right: 0;
-      }
-    }
+  .menuCtrl{
+    margin: 4px 20px;
+    line-height: 2;
   }
 </style>
