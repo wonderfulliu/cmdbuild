@@ -232,6 +232,8 @@
   text-align: left; }
   .treeContent .ivu-tree-title {
     color: #c7c7c7; }
+  .treeContent .ivu-tree-title.ivu-tree-title-selected {
+    color: #2a3f54; }
   .treeContent .ivu-tree-title:hover {
     color: #373f50; }
 
@@ -239,5 +241,8 @@
   height: auto; }
   .miniWindow.ivu-layout .ivu-layout-header .ivu-input-group {
     padding: 16px 0; }
+
+.pageContainer {
+  padding-top: 10px; }
 
 /*# sourceMappingURL=base.css.map */

@@ -36,16 +36,16 @@
                :loading="loading"
                :columns="ConfigThead"
                :data="ConfigTdata"></Table>
-        <div ref="pageCont" class="pageContainer clearfix">
-          <Button type="ghost" class="floatRight" @click="pageLast">尾页</Button>
-          <Page class="floatRight"
+        <div ref="pageCont" class="pageContainer clearfix floatRight">
+          <Button type="ghost" class="floatLeft" @click="pageFirst">首页</Button>
+          <Page class="floatLeft"
                 show-elevator
                 show-total
                 :page-size="20"
                 :current="pageNum"
                 :total="totalBar"
                 @on-change="pageChange"></Page>
-          <Button type="ghost" class="floatRight" @click="pageFirst">首页</Button>
+          <Button type="ghost" class="floatLeft" @click="pageLast">尾页</Button>
         </div>
       </div>
     </Content>
@@ -142,14 +142,15 @@
       })
       },
     mounted(){
-      let _this = this;
-      let clientH = document.documentElement.clientHeight;
-      let conBheadH = 64;
+
+//      let _this = this;
+//      let clientH = document.documentElement.clientHeight;
+//      let conBheadH = 64;
 //      let conBbodyH = _this.$refs.contentBody.$el.offsetHeight;
 //      let pageContH = _this.$refs.pageCont.$el.clientHeight;
 //      console.log(_this.$refs);
-      console.log(conBbodyH);
-      _this.contentbodyH = (clientH - 64) + 'px';
+//      console.log(conBbodyH);
+//      _this.contentbodyH = (clientH - 64) + 'px';
     },
     methods:{
       getTableAttribute(){
@@ -180,10 +181,12 @@
                 let cname;
                 if(markName != null){
                   cname = markName;
-                  oTemp.title = cname;
-                  oTemp.key = v;
-                  oTemp.width = 170;
-                  oTemp.ellipsis = true;
+                  oTemp = {
+                    title: cname,
+                    key: v,
+                    width: 170,
+                    ellipsis: true
+                  }
                   arrObj.push(oTemp);
                 }
               });
@@ -448,7 +451,7 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .menuCtrl{
     margin: 4px 20px;
     line-height: 2;

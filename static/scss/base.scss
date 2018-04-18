@@ -294,6 +294,9 @@
   .ivu-tree-title {
     color: #c7c7c7;
   }
+  .ivu-tree-title.ivu-tree-title-selected {
+    color: #2a3f54;
+  }
   .ivu-tree-title:hover {
     color: #373f50;
   }
@@ -307,4 +310,9 @@
       padding: 16px 0;
     }
   }
+}
+
+//pager
+.pageContainer{
+  padding-top: 10px;
 }
