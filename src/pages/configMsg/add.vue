@@ -1,11 +1,12 @@
 <template>
+<Layout>
   <div id="addContainer">
     <div class="head">
       <h2>添加信息</h2>
     </div>
     <div class="body">
       <Form :label-width="100">
-          <FormItem :label="item.title" v-for="(item, index) in addMsg" :key="index" v-if="item.title != 'Id'">  
+          <FormItem :label="item.cname" v-for="(item, index) in addMsg" :key="index" v-if="item.title != 'Id'">  
               <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
               <Select v-if="item.type == 'lookup'" v-model="item.content">
                   <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>
@@ -31,6 +32,7 @@
       </Form>
     </div>
   </div>
+  </Layout> 
 </template>
 
 <script>
@@ -129,7 +131,7 @@ export default {
               content: '添加成功',
             });
             this.$store.commit('getchooseMsg', '');//取消编辑的时候, 清空editTable可能传的chooseMsg值
-            this.$router.push({path: '/result'});
+            this.$router.go(-1);
           }
         }, info => {
           // 失败的回调
@@ -141,7 +143,7 @@ export default {
     // 取消按钮
     cancel(){
       this.$store.commit('getchooseMsg', '');//取消编辑的时候, 清空editTable可能传的chooseMsg值
-      this.$router.push({path: '/result'});
+      this.$router.go(-1);
     },
     //日期格式转化
     transformTime(time){
@@ -156,8 +158,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-#addContainer {
+<style lang="scss">
+  #addContainer {
   overflow-y: scroll;
   .head {
     h2 {

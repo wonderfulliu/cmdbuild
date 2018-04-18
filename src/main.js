@@ -20,6 +20,7 @@ Vue.prototype.$qs = querystring;
 //公共仓库存储数据
 const store = new Vuex.Store({
   state: {//里面放数据
+    Mode: '',//权限
     tableMsg: '', //中英文对应表
     searchMsg: '', //这个是搜索时输入的数据
     editMsg: '', //点击编辑的时候传入的数据
@@ -34,6 +35,9 @@ const store = new Vuex.Store({
     domainlistMsg: '',
   },
   mutations: {//里面放方法
+    getMode(state, val){
+      state.Mode = val
+    },
     getsearchMsg(state, val){//后面可以传参数val, 是为了适应下面传的参数, 不是必须的
       state.searchMsg = val
     },

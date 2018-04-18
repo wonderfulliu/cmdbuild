@@ -45,6 +45,18 @@ export default {
             idobj1: 28441950
           }
         ]
+      },
+      b: {
+        domainname: "AppServiceTime_to_app",
+        records: [
+          {
+            domainname: "AppServiceTime_to_app",
+            domainclass2: '"Application"',
+            idobj2: 31815634,
+            domainclass1: '"Applicationservicetime"',
+            idobj1: 28441950
+          }
+        ]
       }
     };
   },

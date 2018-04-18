@@ -61,6 +61,7 @@
             if( v.Code == _this.formInline.select){
               let arra = v;
               arra.user = _this.formInline.user;
+              _this.getAuthority(arra.Description);//将获取到的权限信息推送到公共仓库
               sessionStorage.setItem('groupInfo', JSON.stringify(arra)); //分组信息存入session
             }
           });
@@ -78,8 +79,17 @@
       inpChange: function(){
         let _this = this;
         _this.groupInfo = '';
-      }
-
+      },
+      // 获取权限
+      getAuthority(groupName) {
+        let data = "?groupName=" + groupName;
+        this.$http.post("/authorityController/getGroup" + data)
+          .then(info => {
+          if (info.status == 200) {
+            this.$store.commit('getMode', info.data);
+          }
+        });
+    },
     }
   };
 </script>
@@ -89,7 +99,7 @@
     transition: .2s;
     width: 35%;
     padding: 40px 65px 30px;
-    background-color: #fff;
+    background-color: transparent;
     margin: 145px auto;
     div.ivu-form-item:nth-child(2) {
       margin-bottom: 30px;
@@ -103,11 +113,7 @@
   }
   #loginContainer:hover{
     margin-top: 140px;
-    box-shadow: 0px 0px 25px #ccc;
-  }
-
-  #selectContainer .ivu-form-item-content{
-
+    // box-shadow: 0px 0px 25px #ccc;
   }
 </style>
 

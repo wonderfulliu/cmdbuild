@@ -10,7 +10,7 @@
             <Layout>
                 <Header :style="{padding: 0}" class="layout-header-bar">
                     <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
-                    <Button type="primary" icon="plus-round" @click="add"></Button>
+                    <Button :disabled='isdisable' type="primary" icon="plus-round" @click="add"></Button>
                 </Header>
                 <Content :style="{margin: '15px'}">
                     <Table stripe height="410" :loading='loading' border :columns="columns" :data="data" ref="table"></Table>
@@ -72,9 +72,13 @@ export default {
         index: ""
       }, //删除的数据
       relationTable: '',
+      Mode: '',//权限
+      Authority: '',//权限表
+      isdisable: '',//是否禁用
     };
   },
   created() {
+    this.getAuthority();
     this.getasideMsg();
   },
   computed: {
@@ -118,7 +122,8 @@ export default {
               {
                 props: {
                   type: "success",
-                  size: "small"
+                  size: "small",
+                  disabled: this.isdisable
                 },
                 on: {
                   click: () => {
@@ -133,7 +138,8 @@ export default {
               {
                 props: {
                   type: "error",
-                  size: "small"
+                  size: "small",
+                  disabled: this.isdisable
                 },
                 on: {
                   click: () => {
@@ -155,9 +161,7 @@ export default {
         len++;
       }
       // 设置表头每个td的宽度--77是action的宽度
-      let theadWidth =
-        document.querySelector(".ivu-layout-content .ivu-table-header")
-          .offsetWidth - 77;
+      let theadWidth = document.querySelector(".ivu-layout-content .ivu-table-header").offsetWidth - 197;
       width = theadWidth / len > 200 ? theadWidth / len : 200;
 
       // console.log(this.cnameTitle);//根据这个将英文名转换为中文名进行数据处理
@@ -217,14 +221,25 @@ export default {
     getasideMsg() {
       //给侧边栏赋search页面传来的侧边栏数据
       this.asideMsg[0].children = this.$store.state.searchMsg;
-      //如果表名为空, 即第一次进入该表, 那么将表名赋值为第一个名字, ids也是一样的
-      if (this.tableName == "") {
-        for (var k in this.asideMsg[0].children[0]) {
-          this.tableName = k.replace(/\"/g, "");
-          this.ids = this.asideMsg[0].children[0][k];
-          break; //只获取第一个键与值
+      // 应该是进入该表后遍历所有侧边栏数据, 显示selected的那一项
+      this.asideMsg[0].children.forEach((v, i) => {
+        if (v.selected == true) {
+          for(let k in v) {
+            if (k != 'nodeKey' && k != 'selected' && k != 'title') {
+              this.tableName = k.replace(/\"/g, "");
+              this.ids = v[k];
+            }
+          }
+          // 刚进来的时候也要获取一下权限, 因为没有点击侧边栏
+          this.Authority.forEach((v, i) => {
+            if (v.table_name == this.tableName) {
+              this.Mode = v.Mode;
+            }
+          })
+          this.isdisable = this.Mode == 'r' ? true : false;
         }
-      }
+      })
+      
       this.getcnameTitle();
       this.gettableMsg();
       this.getSelect(); //防止刚进来的时候没有lookup数据
@@ -262,15 +277,26 @@ export default {
         });
     },
     // 点击侧边栏每个表触发的事件
-    getSelectedNodes() {
+    getSelectedNodes(value) {
       // 单击侧边栏时, 分页改为1
       this.pageNum = 1;
-      // console.log(this.$refs.tree.getSelectedNodes());
+      // 更新完表民后再获取权限
       for (var k in this.$refs.tree.getSelectedNodes()[0]) {
         this.tableName = k.replace(/\"/g, "");
         this.ids = this.$refs.tree.getSelectedNodes()[0][k];
         break; //只获取第一个键与值
       }
+      
+      // 获取表格权限
+      this.Authority.forEach((v, i) => {
+        if (v.table_name == this.tableName) {
+          this.Mode = v.Mode;
+        }
+      })
+      // console.log(this.Mode);
+      // 判断是否禁用
+      this.isdisable = this.Mode == 'r' ? true : false;
+
       this.getcnameTitle();
       this.gettableMsg();
       this.getSelect();
@@ -446,7 +472,7 @@ export default {
       this.$store.commit('getaddMsg', data);//将整合好的数据推至公共仓库
       this.$router.push({path: '/add'});//跳转至新增页面
     },
-
+  
     // 一进入该页面, 就获取关系表的表名
     getrelationTable() {
       let data = "?table=" + this.tableName;
@@ -455,8 +481,11 @@ export default {
           this.relationTable = info.data;
         }
       });
-    }
-
+    },
+    // 获取权限
+    getAuthority() {
+      this.Authority = this.$store.state.Mode;
+    },
   }
 };
 
@@ -508,6 +537,13 @@ export default {
     }
     .ivu-layout {
       height: 100%;
+      .layout-header-bar{
+        .ivu-btn-primary{
+          float: right;
+          margin-right: 25px;
+          margin-top: 20px;
+        }
+      }
       .btn {
         float: left;
         overflow: hidden;
