@@ -61,7 +61,17 @@ export default {
       };
 
       // 设置每个td的宽度(写在此处)
+      // let len = 0;
       let width = 200;
+      // for (var k in dataArr[0]) {
+      //   len ++;
+      // }
+      // 设置表头每个td的宽度--77是action的宽度
+      // console.log(document.querySelector('#editTableContainer'));
+      // let theadWidth = document.querySelector('#editTableContainer .content .ivu-table-header').offsetWidth - 60;
+      // console.log(theadWidth);
+      // width = theadWidth / len > 200?theadWidth / len : 200;
+
       //判断返回的表格数据是否有Id
       let flag = this.hasId(dataArr[0]);
       //获取表头

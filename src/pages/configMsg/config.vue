@@ -138,7 +138,7 @@ export default {
         _this.tableName = eName; //获取表名
         _this.$router.push({ path: "/config/tableList" });
         this.Mode = select[0].Mode;
-        // console.log(this.Mode);//点击的表
+        console.log(this.Mode);//点击的表
       }
     },
     getRecordId(msg) {
@@ -146,15 +146,7 @@ export default {
     },
     // 获取与处理权限
     getAuthority() {
-      let groupName = JSON.parse(sessionStorage.getItem("groupInfo"))
-        .Description;
-      let data = "?groupName=" + groupName;
-      this.$http.post("/authorityController/getGroup" + data)
-        .then(info => {
-        if (info.status == 200) {
-          this.Authority = info.data;
-        }
-      });
+      this.Authority = this.$store.state.Mode;
     },
     WorR(authority, eName) {
       let Mode;

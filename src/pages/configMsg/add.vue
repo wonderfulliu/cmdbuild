@@ -129,7 +129,7 @@ export default {
               content: '添加成功',
             });
             this.$store.commit('getchooseMsg', '');//取消编辑的时候, 清空editTable可能传的chooseMsg值
-            this.$router.push({path: '/result'});
+            this.$router.go(-1);
           }
         }, info => {
           // 失败的回调
@@ -141,7 +141,7 @@ export default {
     // 取消按钮
     cancel(){
       this.$store.commit('getchooseMsg', '');//取消编辑的时候, 清空editTable可能传的chooseMsg值
-      this.$router.push({path: '/result'});
+      this.$router.go(-1);
     },
     //日期格式转化
     transformTime(time){
@@ -157,24 +157,3 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#addContainer {
-  overflow-y: scroll;
-  .head {
-    h2 {
-      text-align: left;
-      padding-left: 55px;
-      padding-top: 15px;
-    }
-  }
-  .body {
-    width: 50%;
-    padding: 15px 40px 30px 20px;
-    margin: 30px auto;
-    .ivu-form {
-      .ivu-input-icon {
-        cursor: pointer;
-      }
-    }
-  }
-}
-</style>
