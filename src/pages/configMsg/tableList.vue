@@ -1,6 +1,6 @@
 <template>
-  <Layout class="miniWindow">
-    <Header :style="{padding: 0}" class="layout-header-bar">
+  <Layout class="miniWindow" ref="contentBody" :style="{height:contentbodyH}">
+    <Header ref="conBhead" :style="{padding: 0}" class="layout-header-bar">
       <Row>
         <Col :xs="9" :sm="6" :md="5" :lg="5">
           <div class="">
@@ -9,7 +9,7 @@
           </div>
         </Col>
         <Col :xs="12" :sm="12" :md="10" :lg="11">
-          <Input v-model="configCondition">
+          <Input v-model="configCondition" placeholder="Enter something...">
             <Button slot="append" type="primary" icon="ios-search" @click="fuzzy">搜索</Button>
           </Input>
         </Col>
@@ -26,9 +26,9 @@
         </Col>
       </Row>
     </Header>
-    <Content :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
+    <Content ref="conBbody" :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
       <div class="contentBody">
-        <Table border
+        <Table ref="tableCont" border
                size="small"
                height="440"
                @on-row-click="getRecordInfo"
@@ -36,7 +36,7 @@
                :loading="loading"
                :columns="ConfigThead"
                :data="ConfigTdata"></Table>
-        <div class="pageContainer clearfix">
+        <div ref="pageCont" class="pageContainer clearfix">
           <Button type="ghost" class="floatRight" @click="pageLast">尾页</Button>
           <Page class="floatRight"
                 show-elevator
@@ -48,9 +48,7 @@
           <Button type="ghost" class="floatRight" @click="pageFirst">首页</Button>
         </div>
       </div>
-
     </Content>
-
     <!--模态框-->
     <Modal v-model="configDeleModal" width="360">
       <p slot="header" style="color:#f60;text-align:center">
@@ -127,7 +125,9 @@
           configViewModal: false, //查看modal
           configAddModal: false,
           deleLoading: false,
-          configViewData: ''     //查看数据
+          configViewData: '',     //查看数据
+          //样式
+          contentbodyH: ''
         }
     },
     created: function(){
@@ -141,6 +141,16 @@
         this.getTableData();
       })
       },
+    mounted(){
+      let _this = this;
+      let clientH = document.documentElement.clientHeight;
+      let conBheadH = 64;
+//      let conBbodyH = _this.$refs.contentBody.$el.offsetHeight;
+//      let pageContH = _this.$refs.pageCont.$el.clientHeight;
+//      console.log(_this.$refs);
+      console.log(conBbodyH);
+      _this.contentbodyH = (clientH - 64) + 'px';
+    },
     methods:{
       getTableAttribute(){
         let _this = this;
@@ -173,6 +183,7 @@
                   oTemp.title = cname;
                   oTemp.key = v;
                   oTemp.width = 170;
+                  oTemp.ellipsis = true;
                   arrObj.push(oTemp);
                 }
               });
@@ -438,14 +449,6 @@
 </script>
 
 <style lang="scss">
-  .miniWindow.ivu-layout{
-    .ivu-layout-header{
-      height: auto;
-      .ivu-input-group{
-        padding-top: 16px;
-      }
-    }
-  }
   .menuCtrl{
     margin: 4px 20px;
     line-height: 2;

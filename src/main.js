@@ -8,6 +8,7 @@ import 'iview/dist/styles/iview.css'
 import axios from 'axios'
 import querystring from 'querystring'
 import Vuex from 'vuex'
+import '../static/scss/base.css'   //公共样式
 
 Vue.config.productionTip = false
 Vue.use(iView)
