@@ -231,17 +231,17 @@ export default {
         });
     },
     getRecordInfo(res) {
-      console.log(res);//本行具体信息
+      // console.log(res);//本行具体信息
       this.clickRow = true; //点击状态参数
       this.recordId = res.Id; //获取记录id
       let lookupdt = this.lookupInfo;
-      console.log(lookupdt);//lookup数据
+      // console.log(lookupdt);//lookup数据
       let relatedt = this.relationInfo;
       let addData = {};
       let attr = JSON.parse(//表头信息
         sessionStorage.getItem("config_" + this.tableName + "_attribute")
       );
-      console.log(attr);
+      // console.log(attr);
       attr.forEach((v, i) => {
         for(let k in res){
           if (v.attribute == k) {
