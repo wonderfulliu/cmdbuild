@@ -36,16 +36,16 @@
                :loading="loading"
                :columns="ConfigThead"
                :data="ConfigTdata"></Table>
-        <div ref="pageCont" class="pageContainer clearfix">
-          <Button type="ghost" class="floatRight" @click="pageLast">尾页</Button>
-          <Page class="floatRight"
+        <div ref="pageCont" class="pageContainer clearfix floatRight">
+          <Button type="ghost" class="floatLeft" @click="pageFirst">首页</Button>
+          <Page class="floatLeft"
                 show-elevator
                 show-total
                 :page-size="20"
                 :current="pageNum"
                 :total="totalBar"
                 @on-change="pageChange"></Page>
-          <Button type="ghost" class="floatRight" @click="pageFirst">首页</Button>
+          <Button type="ghost" class="floatLeft" @click="pageLast">尾页</Button>
         </div>
       </div>
     </Content>
@@ -142,14 +142,14 @@ export default {
     });
   },
   mounted(){
-    let _this = this;
-    let clientH = document.documentElement.clientHeight;
-    let conBheadH = 64;
-    //let conBbodyH = _this.$refs.contentBody.$el.offsetHeight;
-    //let pageContH = _this.$refs.pageCont.$el.clientHeight;
-    //console.log(_this.$refs);
-    console.log(conBbodyH);
-    _this.contentbodyH = (clientH - 64) + 'px';
+//    let _this = this;
+//    let clientH = document.documentElement.clientHeight;
+//    let conBheadH = 64;
+//    let conBbodyH = _this.$refs.contentBody.$el.offsetHeight;
+//    let pageContH = _this.$refs.pageCont.$el.clientHeight;
+//    console.log(_this.$refs);
+//    console.log(conBbodyH);
+//    _this.contentbodyH = (clientH - 64) + 'px';
   },
   methods: {
     getTableAttribute() {
@@ -235,14 +235,14 @@ export default {
       this.clickRow = true; //点击状态参数
       this.recordId = res.Id; //获取记录id
       let lookupdt = this.lookupInfo;
-      // console.log(lookupdt);//lookup数据
+      console.log(lookupdt);//lookup数据
       let relatedt = this.relationInfo;
       let addData = {};
       let attr = JSON.parse(//表头信息
         sessionStorage.getItem("config_" + this.tableName + "_attribute")
       );
-      // console.log(attr);
-      attr.forEach((v, i) => {
+      console.log(attr);
+      attr.forEach(function(v, i){
         for(let k in res){
           if (v.attribute == k) {
             v.content = res[k];
