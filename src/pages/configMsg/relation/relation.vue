@@ -44,6 +44,7 @@ export default {
       selectFuture: "",
       domainname: '',//selectF的某个中间表名
       domainnamen: '', //selectN的某个中间表
+      zhongjianbiao: '',//纯中间表
       now: [],
       future: [],
       // 表格数据
@@ -122,6 +123,7 @@ export default {
       this.$http.get("/relationController/getDomainList" + data).then(info => {
         if (info.status == 200 && Object.keys(info.data).length != 0) {
           // 找到关系表名, 找到n:1关系, 找到中文名, 并且拼在英文表名后面
+          this.zhongjianbiao = info.data;
           let relationArr = [];
           // console.log(info.data);
           info.data.forEach((v, i) => {
@@ -265,10 +267,14 @@ export default {
     // 删除
     del(value, index){
       // console.log(value);
-      let thisId;
+      let thisId;//关系Id
       let Description = value.row.Description;
       let data = this.relationMsg;
-      // console.log(data);
+      let tableName = data.tableName;//表名
+      console.log(this.zhongjianbiao);
+      console.log(data);
+      // console.log(this.domainnamen);
+      // console.log(this.domainListMsg);
       for(var k in data.relationMsg){
         if (this.domainnamen == k.split('Map_')[1]) {
           data.relationMsg[k].forEach((v, i) => {
@@ -278,8 +284,19 @@ export default {
           })
         }
       }
-      let delData = {domainname: this.domainnamen, idobj1: this.tableId, idobj2: thisId};
-      console.log(JSON.stringify(delData));
+      let delData = {};
+      this.zhongjianbiao.forEach((v, i) => {
+        if (v.domainname == this.domainnamen) {
+          if (v.domainclass1 == tableName) {
+            delData = {domainname: this.domainnamen, idobj1: this.tableId, idobj2: thisId};
+          } 
+          if (v.domainclass2 == tableName) {
+            delData = {domainname: this.domainnamen, idobj1: thisId, idobj2: this.tableId};
+          }
+        }
+      })
+      // console.log(JSON.stringify(delData));
+      console.log(delData);
       this.$http.delete('/relationController/relation', {data: delData}).then(info => {
         if (info.status == 200) {
           if (info.data == 'ok') {

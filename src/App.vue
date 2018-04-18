@@ -26,5 +26,7 @@ html, body {
   color: #2c3e50;
   overflow: hidden;
   background-color: #eee;
+  background: url('./img/login.jpg');
+  background-size: cover;
 }
 </style>

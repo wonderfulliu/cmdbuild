@@ -99,7 +99,7 @@
     transition: .2s;
     width: 35%;
     padding: 40px 65px 30px;
-    background-color: #fff;
+    background-color: transparent;
     margin: 145px auto;
     div.ivu-form-item:nth-child(2) {
       margin-bottom: 30px;
@@ -113,11 +113,7 @@
   }
   #loginContainer:hover{
     margin-top: 140px;
-    box-shadow: 0px 0px 25px #ccc;
-  }
-
-  #selectContainer .ivu-form-item-content{
-
+    // box-shadow: 0px 0px 25px #ccc;
   }
 </style>
 

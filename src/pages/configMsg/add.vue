@@ -1,11 +1,12 @@
 <template>
+<Layout>
   <div id="addContainer">
     <div class="head">
       <h2>添加信息</h2>
     </div>
     <div class="body">
       <Form :label-width="100">
-          <FormItem :label="item.title" v-for="(item, index) in addMsg" :key="index" v-if="item.title != 'Id'">  
+          <FormItem :label="item.cname" v-for="(item, index) in addMsg" :key="index" v-if="item.title != 'Id'">  
               <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
               <Select v-if="item.type == 'lookup'" v-model="item.content">
                   <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>
@@ -31,6 +32,7 @@
       </Form>
     </div>
   </div>
+  </Layout> 
 </template>
 
 <script>
@@ -156,4 +158,25 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+  #addContainer {
+  overflow-y: scroll;
+  .head {
+    h2 {
+      text-align: left;
+      padding-left: 55px;
+      padding-top: 15px;
+    }
+  }
+  .body {
+    width: 50%;
+    padding: 15px 40px 30px 20px;
+    margin: 30px auto;
+    .ivu-form {
+      .ivu-input-icon {
+        cursor: pointer;
+      }
+    }
+  }
+}
+</style>
