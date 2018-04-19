@@ -1,25 +1,53 @@
 <template>
-  <Layout>
+  <Layout class="miniWindow">
     <div id="relationTableContainer">
-        <header>
-          <h3>请选择关系: </h3>
-          <div class="btnContainer">
-            <Button @click="cancel">取消</Button>
-            <Button type="primary" @click="confirm">确认</Button>
+      <Header class="layout-header-bar" style="padding: 0">
+        <Row>
+          <Col span="6" offset="1">
+            <h3 style="text-align: left">请选择关系: </h3>
+          </Col>
+          <Col span="10">
+            <Input v-model="searchMsg" @on-click="search" @on-enter="search" clearable icon="search" placeholder="Enter something..."></Input></Col>
+          <Col span="4" offset="3">
+            <div class="btnContainer">
+              <Button @click="cancel">取消</Button>
+              <Button type="primary" @click="confirm">确认</Button>
+            </div>
+          </Col>
+        </Row>
+      </Header>
+      <Content ref="conBbody" class="contentTable">
+        <div class="contentBody">
+          <Table border
+                 highlight-row
+                 stripe
+                 height="400"
+                 size="small"
+                 v-if="isOne"
+                 :loading="loading"
+                 :data="data"
+                 :columns="columns"
+                 @on-current-change="selectOne"></Table>
+          <Table border
+                 stripe
+                 height="400"
+                 size="small"
+                 v-if="isN"
+                 :loading="loading"
+                 :data="data"
+                 :columns="columns"
+                 @on-select="selectN"></Table>
+          <div class="pageContainer clearfix floatRight">
+            <Page sclass="floatLeft"
+                  how-elevator
+                  show-total
+                  :page-size='20'
+                  :current="pageNum"
+                  :total="totalRecord"
+                  @on-change="pageChange"></Page>
           </div>
-        </header>
-        <div class="content">
-          <Table v-if="isOne" :loading="loading" highlight-row stripe height="400" border  :columns="columns" :data="data" @on-current-change="selectOne"></Table>
-          <Table v-if="isN" :loading="loading" stripe height="400" border  :columns="columns" :data="data" @on-select="selectN"></Table>
         </div>
-        <div class="footer">
-          <div class="search">
-            <Input v-model="searchMsg" @on-click="search" @on-enter="search" clearable icon="search" placeholder="Enter something..." style="width: 300px"></Input>
-          </div>
-          <div class="page">
-            <Page @on-change="pageChange" :page-size='20' :total="totalRecord" show-elevator show-total></Page>
-          </div>
-        </div>
+      </Content>
     </div>
   </Layout>
 </template>
@@ -96,6 +124,7 @@ export default {
         v.title = v.cname;
         v.key = ++j;
         v.width = width;
+        v.ellipsis = true;
         newtitleArr.push(v);
       });
       if (flag) {
@@ -336,54 +365,7 @@ export default {
 
 <style lang="scss">
 #relationTableContainer {
-  header {
-    height: 30px;
-    font-size: 20px;
-    text-align: left;
-    margin: 10px 30px;
-    h3 {
-      float: left;
-    }
-    .btnContainer {
-      float: right;
-    }
-  }
-  .content {
-    .ivu-table-header {
-      .ivu-table-column-center {
-        .ivu-checkbox-wrapper {
-          margin-right: 0px;
-        }
-      }
-    }
-    .ivu-table-tbody {
-      .ivu-table-column-center {
-        .ivu-table-cell {
-          .ivu-checkbox-wrapper {
-            margin-right: 0px;
-          }
-        }
-      }
-    }
-    .ivu-table {
-      th,
-      td {
-        text-align: center;
-      }
-    }
-  }
-  .footer {
-    overflow: hidden;
-    .search {
-      float: left;
-      margin-left: 50px;
-      margin-top: 15px;
-    }
-    .page {
-      float: right;
-      margin-right: 30px;
-      margin-top: 15px;
-    }
-  }
+
+
 }
 </style>

@@ -26,7 +26,7 @@
         </Col>
       </Row>
     </Header>
-    <Content ref="conBbody" :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
+    <Content ref="conBbody"  class="contentTable">
       <div class="contentBody">
         <Table ref="tableCont" border
                size="small"
