@@ -6,7 +6,7 @@
       </div>
       <div class="body">
         <Form :label-width="100">
-            <FormItem :label="item.title" v-for="(item, index) in editMsg" :key="index" v-if="item.title != 'Id'">  
+            <FormItem :label="item.cname" v-for="(item, index) in editMsg" :key="index" v-if="item.title != 'Id'">  
                 <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
                 <Select v-if="item.type == 'lookup'" v-model="item.content">
                     <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>

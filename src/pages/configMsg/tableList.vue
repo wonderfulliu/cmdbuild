@@ -227,7 +227,7 @@ export default {
         });
     },
     getRecordInfo(res) {
-      console.log(res);//本行具体信息
+      // console.log(res);//本行具体信息
       this.clickRow = true; //点击状态参数
       this.recordId = res.Id; //获取记录id
       let lookupdt = this.lookupInfo;

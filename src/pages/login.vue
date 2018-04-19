@@ -55,7 +55,9 @@
       login:function() {
         let _this = this;
         if (_this.formInline.select == ''){
-
+          _this.$Message.warning({
+            content: '请先选择分组'
+          })
         }else {
           _this.groupInfo.forEach(function(v, i){
             if( v.Code == _this.formInline.select){
@@ -71,10 +73,34 @@
       },
       getGroup: function () {
         let _this = this;
-        _this.$http.post('/authorityController/login?username=' + _this.formInline.user + '&password=' + _this.formInline.password)
+        if (_this.formInline.user && _this.formInline.password) {
+          _this.$http.post('/authorityController/login?username=' + _this.formInline.user + '&password=' + _this.formInline.password)
           .then(function (info) {
-            _this.groupInfo = info.data.data;
+            // console.log(info);
+            if (info.status == 200) {
+              if (info.data.Status == 0) {
+                _this.$Message.error({
+                  content: info.data.data,
+                  duration: 2
+                })
+              } else if (info.data.Status == 1) {
+                _this.$Message.error({
+                  content:  info.data.data,
+                })
+              } else if (info.data.Status == 2) {
+                _this.$Message.success({
+                  content: "请选择分组",
+                })
+                _this.groupInfo = info.data.data;
+              }
+            }
           })
+        } else {
+          _this.$Message.warning({
+            content: '请输入账号或密码'
+          })
+        }
+        
       },
       inpChange: function(){
         let _this = this;
@@ -97,9 +123,11 @@
 <style lang="scss">
   #loginContainer {
     transition: .2s;
-    width: 35%;
-    padding: 40px 65px 30px;
-    background-color: transparent;
+    width: 350px;
+    // padding: 40px 65px 30px;
+    padding: 20px 20px 20px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, .5);
     margin: 145px auto;
     div.ivu-form-item:nth-child(2) {
       margin-bottom: 30px;

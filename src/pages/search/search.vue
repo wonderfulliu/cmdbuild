@@ -1,13 +1,17 @@
 <template>
     <div id="searchContainer">
       <div class="btnContainerAll">
-          <Input v-model="searchMsg"
+          <Row>
+            <Col span="10" offset="7">
+              <Input v-model="searchMsg"
                  size="large"
                  placeholder="Search for..."
-                 style="width: 400px; height: 46px"
+                 style=" height: 46px"
                  icon="arrow-right-c"
                  @on-click='getsearchMsg'
                  @on-enter="getsearchMsg"></Input>
+            </Col>
+          </Row>
       </div>
     </div>
 </template>
@@ -97,7 +101,7 @@ export default {
   background-size: cover;
   height: 100%;
   .btnContainerAll {
-    margin-top: 100px;
+    margin-top: 150px;
     .ivu-input-wrapper {
       .ivu-input-large {
         font-size: 18px;

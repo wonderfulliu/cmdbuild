@@ -7,8 +7,8 @@
       <Form :label-width="150">
           <FormItem :label="item.title" v-for="(item, index) in editMsg" :key="index" v-if="item.title != 'Id'">
               <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
-              <Select v-if="item.type == 'lookup'" v-model="item.content">
-                  <Option v-for="(attr, i) in item.lookupContent" :key="i" :value="attr.Id">{{attr.Description}}</Option>
+              <Select v-if="item.type == 'lookup'" :v-model="item.content">
+                  <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>
               </Select>
               <Row v-if="item.type == 'date'">
                   <Col span="11">
@@ -51,6 +51,7 @@ export default {
     // 获取公共仓库的要渲染的数据
     getaddMsg(){
       this.editMsg = this.$store.state.addMsg.titleMsg;//待渲染的数据
+      console.log(this.editMsg);
       this.tableName = this.$store.state.addMsg.tableName;//表名
       if (this.chooseMsg) {//如果有editTable中被选中的数据, 将变化的数据更新至双向绑定的数据
         this.editMsg.forEach((v, i) => {
@@ -109,6 +110,7 @@ export default {
     submit() {
       let data = {};
       data.table = this.tableName;
+      data.Id = this.$store.state.addMsg.thisjiluId;
       this.editMsg.forEach((v, i) => {
         if (v.attribute) {
           if (v.type == "reference" && v.Id) {
@@ -126,8 +128,9 @@ export default {
         }
       })
       // data = JSON.stringify(data);
-      console.log(data);
+      // console.log(data);
       this.$http.put('/cardController/card', data).then(info => {
+        // console.log(info);
         // 成功的回调
         if (info.status == 200 && info.data == 'ok') {
           console.log(info);
@@ -136,6 +139,10 @@ export default {
           });
           this.$store.commit('getchooseMsg', '');//取消编辑的时候, 清空editTable可能传的chooseMsg值
           this.$router.push({path: '/result'});
+        } else if (info.status == 200 && info.data == 'faild') {
+          this.$Message.error({
+            content: '修改失败'
+          })
         }
       }, info => {
         // 失败的回调

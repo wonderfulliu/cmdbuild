@@ -50,25 +50,9 @@
                   <p>{{ group }}</p>
                 </div>
               </MenuItem>
-              <MenuItem name="5">
-                <router-link to="/">
-                  <Icon class="logoutIcon" type="android-exit"></Icon>
-                </router-link>
+              <MenuItem name="5" @click.native="logout">
+                <Icon class="logoutIcon" type="android-exit"></Icon>
               </MenuItem>
-
-              <!--<Dropdown trigger="click" >
-                  <Avatar icon="person" size="small" />
-                  <a href="javascript:void(0)">
-                       {{ userName }}
-                      <Icon type="chevron-down"></Icon>
-                  </a>
-                  <DropdownMenu slot="list">
-                      <DropdownItem>{{ group }}</DropdownItem>
-                      <DropdownItem>
-                          <a @click="logout">退出</a>
-                      </DropdownItem>
-                  </DropdownMenu>
-              </Dropdown>-->
             </div>
           </Menu>
         </Header>
@@ -102,12 +86,6 @@
     methods: {
       collapsedSider() {
         this.$refs.side1.toggleCollapse();
-      },
-      logout: function () {
-        //清除session信息
-        sessionStorage.clear();
-        //跳转页面
-        this.$router.push({path: '/login'});
       },
       logout: function(){
         //清除session信息
