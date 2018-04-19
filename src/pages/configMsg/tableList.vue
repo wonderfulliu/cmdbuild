@@ -92,7 +92,7 @@ export default {
       default: null
     },
     rotateIcon: {
-      type: Function,
+      type: Array,
       default: null
     },
     Mode: {
@@ -127,28 +127,33 @@ export default {
       configAddModal: false,
       deleLoading: false,
       configViewData: "", //查看数据
-      isdisable: ''//禁用与否
+      isdisable: ''//禁用与否, ''就是false
     };
   },
   created() {
-    this.getTableAttribute();
-    this.getTableHead();
-    this.getTableData();
-    this.getlookup();
+    this.heightAdaptive();
+    this.isgetTablename();
     this.$watch("tableName", function(newValue, oldValue) {
       this.getTableAttribute();
       this.getTableHead();
       this.getTableData();
+      this.getlookup();
       this.isDisabled();
     });
   },
-  mounted(){
-    let _this = this;
-    let clientH = document.documentElement.clientHeight;
-    _this.contentbodyH = (clientH - 64) + 'px';
-  },
   methods: {
-    getTableAttribute() {
+    // 如果表名已经获取到, 可以调用以下函数
+    isgetTablename(){
+      if (this.tableName) {
+        this.isDisabled();
+        console.log(this.Mode);
+        this.getTableAttribute();
+        this.getTableHead();
+        this.getTableData();
+        this.getlookup();
+      }
+    },
+    getTableAttribute() {//先从session中获取表头详细信息, 如果为空, 那么重新请求并存储在session中
       let _this = this;
       let thead = sessionStorage.getItem(
         "config_" + _this.tableName + "_attribute"
@@ -309,7 +314,7 @@ export default {
         });
     },
     fuzzy() {
-      //模糊查询
+      // 模糊查询
       let _this = this;
       _this.loading = true; //加载中
       let result = _this.$http
@@ -479,7 +484,7 @@ export default {
       });
       addData.tableName = _this.tableName;
       addData.titleMsg = attr;
-      console.log(addData);
+      // console.log(addData);
       _this.$store.commit("getaddMsg", addData);
       //跳转到添加页
       this.$router.push({ path: "/config/cadd" });
@@ -518,6 +523,11 @@ export default {
     // 禁用于否
     isDisabled(){
       this.isdisable = this.Mode=='w' ? false : true;
+    },
+    // 高度自适应
+    heightAdaptive(){
+      let clientH = document.documentElement.clientHeight;
+      this.contentbodyH = (clientH - 64) + 'px';
     },
   },
   computed: {}

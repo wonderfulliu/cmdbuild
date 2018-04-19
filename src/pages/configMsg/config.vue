@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       isCollapsed: false,
-      ConfigTreeData: "", //树状目录
+      ConfigTreeData: [], //树状目录
       //页面配置：
       groupName: JSON.parse(sessionStorage.getItem("groupInfo")).Code, //组名
       tableName: "", //表名
@@ -93,10 +93,10 @@ export default {
               JSON.stringify(oData)
             );
           }
-          let objTree = objFunc(oData);
+          let objTree = objFunc(oData);//将得到的数据转换成需要的格式
           _this.ConfigTreeData = newTreeFunc(objTree); //打开侧栏第一个选项
 
-          function newTreeFunc(obj) {
+          function newTreeFunc(obj) {//这里第一次获取表名
             if (obj.length > 0) {
               obj[0].expand = true;
               if (obj[0].children) {
@@ -106,13 +106,13 @@ export default {
                 let eName = obj[0].idElementClass.split('"').join("");
                 _this.tableName = eName; //获取表名
                 _this.Mode = obj[0].Mode;
-                _this.$router.push({ path: "/config/tableList" });
+                _this.$router.push({ path: "/config/tableList" });//刚进入config页面, 处理完侧边栏数据, 展开第一个选项后, 在这里跳到tableList页面
               }
             }
             return obj;
           }
           function objFunc(d) {
-            //此方法是将拿到的接口数据转换成新的格式，便于渲染树形菜单
+            //此方法是将拿到的接口数据转换成新的格式，便于渲染树形菜单, 也是在这里将权限放到了每个侧边栏中
             let oTree = [];
             d.forEach(function(v, i) {
               let oBranch = {};
@@ -130,7 +130,7 @@ export default {
           }
         });
     },
-    // 权限
+    // 权限, 点击侧边栏的时候表格变化
     getTreeNodes(select) {
       let _this = this;
       if (!select.children) {
