@@ -16,12 +16,12 @@
         <Col :xs="14" :sm="12" :md="9" :lg="8">
           <ButtonGroup>
             <Button type="ghost" title="下载" icon="ios-download-outline" @click="configDownload"></Button>
-            <Button :disabled='isdisable' type="ghost" title="新增" icon="ios-plus-empty" @click="configAdd"></Button>
-            <Button :disabled='isdisable' type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit"></Button>
+            <Button type="ghost" title="新增" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'></Button>
+            <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'></Button>
             <Button type="ghost" title="查看" icon="ios-eye" @click="ctrlView"></Button>
             <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
             <Button type="ghost" title="链接" icon="ios-infinite" @click="ctrlRelete"></Button>
-            <Button :disabled='isdisable' type="ghost" title="删除" icon="ios-trash-outline" @click="ctrlDele"></Button>
+            <Button type="ghost" title="删除" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'></Button>
           </ButtonGroup>
         </Col>
       </Row>
@@ -120,6 +120,7 @@ export default {
       loading: true,
       highlight: true,
       clickRow: false,
+      contentBody: '',
       //模态框
       configDeleModal: false, //删除modal
       configViewModal: false, //查看modal
@@ -142,7 +143,9 @@ export default {
     });
   },
   mounted(){
-    
+    let _this = this;
+    let clientH = document.documentElement.clientHeight;
+    _this.contentbodyH = (clientH - 64) + 'px';
   },
   methods: {
     getTableAttribute() {

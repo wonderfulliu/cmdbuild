@@ -1,6 +1,6 @@
 <template>
   <div id="loginContainer">
-    <i-form v-ref:form-inline :model="formInline" :rules="ruleInline">
+    <i-form ref="formInline" :model="formInline" :rules="ruleInline">
         <Form-item prop="user">
             <i-input type="text" v-model="formInline.user" placeholder="Username" @input="inpChange()">
                 <Icon type="ios-person-outline" slot="prepend"></Icon>

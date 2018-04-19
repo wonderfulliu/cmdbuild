@@ -10,7 +10,6 @@
               :class="menuitemClasses" accordion>
           <Submenu name="1">
             <template slot="title">
-              <Icon type="ios-analytics"></Icon>
               视图信息列表
             </template>
             <div class="treeContent">

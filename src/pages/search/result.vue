@@ -1,16 +1,34 @@
 <template>
     <div id="searchforContainer">
-      <div class="layout">
         <Layout>
             <!-- 侧边栏 -->
             <Sider ref="side1" hide-trigger collapsible :collapsed-width="0" v-model="isCollapsed">
-                <Tree :data="asideMsg" @on-select-change='getSelectedNodes' ref='tree'></Tree>
+              <Menu active-name="1-2" theme="dark" width="auto" :open-names="['1']" :class="menuitemClasses" accordion>
+                <Submenu name="1">
+                  <template slot="title" style="text-align: left">
+                    视图信息列表
+                  </template>
+                  <div class="treeContent">
+                    <!--树状菜单-->
+                    <Tree :data="asideMsg" @on-select-change='getSelectedNodes' ref='tree'></Tree>
+                  </div>
+                </Submenu>
+              </Menu>
             </Sider>
             <!-- 内容区域 -->
             <Layout>
                 <Header :style="{padding: 0}" class="layout-header-bar">
-                    <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
-                    <Button :disabled='isdisable' type="primary" icon="plus-round" @click="add"></Button>
+                  <Row>
+                    <Col span="2">
+                      <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
+                    </Col>
+                    <Col span="4" offset="18">
+                      <ButtonGroup>
+                        <Button type="ghost" title="新增" icon="ios-plus-empty" @click="add" :disabled='isdisable'></Button>
+                        <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
+                      </ButtonGroup>
+                    </Col>
+                  </Row>
                 </Header>
                 <Content :style="{margin: '15px'}">
                     <Table stripe height="410" :loading='loading' border :columns="columns" :data="data" ref="table"></Table>
@@ -18,13 +36,9 @@
                         <Page :total="totalBar" :current="pageNum" @on-change="pageChange" :page-size=20 show-elevator show-total></Page>
                     </div>
                     <br>
-                    <div class="btn">
-                      <Button type="primary" size="small" @click="exportData"><Icon type="ios-download-outline"></Icon> 下载</Button>
-                    </div>
                 </Content>
             </Layout>
         </Layout>
-      </div>
       <Modal v-model="modal" width="360">
           <p slot="header" style="color:#f60;text-align:center">
               <Icon type="information-circled"></Icon>
@@ -108,7 +122,9 @@ export default {
                   type: "primary",
                   size: "small"
                 },
-                style: {},
+                style: {
+                  marginRight: "10px"
+                },
                 on: {
                   click: () => {
                     this.show(params.index);
@@ -125,6 +141,9 @@ export default {
                   size: "small",
                   disabled: this.isdisable
                 },
+                style: {
+                  marginRight: "10px"
+                },
                 on: {
                   click: () => {
                     this.edit(params);
@@ -140,6 +159,9 @@ export default {
                   type: "error",
                   size: "small",
                   disabled: this.isdisable
+                },
+                style: {
+                  marginRight: "10px"
                 },
                 on: {
                   click: () => {
@@ -239,7 +261,7 @@ export default {
           this.isdisable = this.Mode == 'r' ? true : false;
         }
       })
-      
+
       this.getcnameTitle();
       this.gettableMsg();
       this.getSelect(); //防止刚进来的时候没有lookup数据
@@ -286,7 +308,7 @@ export default {
         this.ids = this.$refs.tree.getSelectedNodes()[0][k];
         break; //只获取第一个键与值
       }
-      
+
       // 获取表格权限
       this.Authority.forEach((v, i) => {
         if (v.table_name == this.tableName) {
@@ -445,7 +467,7 @@ export default {
 
     // 点击添加的时候调用的函数
     add() {
-      // 添加时表头数据处理: 
+      // 添加时表头数据处理:
         // 1. 处理掉表头最后的action
         // 2. 关系表名放置到对应的reference中
       // 处理掉表头最后的action
@@ -476,7 +498,7 @@ export default {
       this.$store.commit('getaddMsg', data);//将整合好的数据推至公共仓库
       this.$router.push({path: '/add'});//跳转至新增页面
     },
-  
+
     // 一进入该页面, 就获取关系表的表名
     getrelationTable() {
       let data = "?table=" + this.tableName;
@@ -502,60 +524,17 @@ export default {
   margin-left: -1px;
   .layout {
     height: 100%;
-    .ivu-layout-content {
-      .ivu-table-header thead th,
-      .ivu-table-body tbody td {
-        text-align: center;
-      }
-    }
     .ivu-layout-sider {
       background-color: #f5f7f9;
       overflow: scroll;
     }
-    .ivu-table-fixed-right {
-      .ivu-btn-primary {
-        width: 45px;
-      }
-      .ivu-btn-error {
-        width: 45px;
-      }
-      .ivu-btn-success {
-        width: 45px;
-        margin: 0 12px;
-      }
-    }
+
     .btnContainer {
       overflow: hidden;
       padding-top: 20px;
       padding-right: 145px;
       .ivu-input-wrapper {
         float: right;
-      }
-      button {
-        float: right;
-        margin-left: 5px;
-        .ivu-icon {
-          margin-top: 3px;
-        }
-      }
-    }
-    .ivu-layout {
-      height: 100%;
-      .layout-header-bar{
-        .ivu-btn-primary{
-          float: right;
-          margin-right: 25px;
-          margin-top: 20px;
-        }
-      }
-      .btn {
-        float: left;
-        overflow: hidden;
-        margin-left: 15px;
-        .ivu-btn-primary {
-          float: left;
-          margin-right: 10px;
-        }
       }
     }
   }
@@ -564,7 +543,7 @@ export default {
   }
 }
 
-// 模态框样式
+/* 模态框样式*/
 .ivu-modal-confirm-body {
   padding-left: 66px;
   padding-top: 4px;
@@ -572,54 +551,4 @@ export default {
   line-height: 28px;
 }
 
-// 以下是原生样式
-.layout {
-  border: 1px solid #d7dde4;
-  background: #f5f7f9;
-  position: relative;
-  border-radius: 4px;
-  overflow: hidden;
-}
-.layout-header-bar {
-  background: #fff;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-}
-.layout-logo-left {
-  width: 90%;
-  height: 30px;
-  background: #5b6270;
-  border-radius: 3px;
-  margin: 15px auto;
-}
-.menu-icon {
-  transition: all 0.3s;
-}
-.rotate-icon {
-  transform: rotate(-90deg);
-}
-.menu-item span {
-  display: inline-block;
-  overflow: hidden;
-  width: 69px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: bottom;
-  transition: width 0.2s ease 0.2s;
-}
-.menu-item i {
-  transform: translateX(0px);
-  transition: font-size 0.2s ease, transform 0.2s ease;
-  vertical-align: middle;
-  font-size: 16px;
-}
-.collapsed-menu span {
-  width: 0px;
-  transition: width 0.2s ease;
-}
-.collapsed-menu i {
-  transform: translateX(5px);
-  transition: font-size 0.2s ease 0.2s, transform 0.2s ease 0.2s;
-  vertical-align: middle;
-  font-size: 22px;
-}
 </style>

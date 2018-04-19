@@ -97,7 +97,8 @@
   .ivu-layout-sider .ivu-menu-submenu-title,
   .ivu-layout-sider .ivu-menu-submenu-title,
   .ivu-menu-dark.ivu-menu-vertical .ivu-menu-opened .ivu-menu-submenu-title {
-    background: #2a3f54; }
+    background: #2a3f54;
+    text-align: left; }
 
 .ivu-menu-dark {
   background: #2a3f54; }
