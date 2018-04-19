@@ -146,7 +146,6 @@ export default {
     isgetTablename(){
       if (this.tableName) {
         this.isDisabled();
-        console.log(this.Mode);
         this.getTableAttribute();
         this.getTableHead();
         this.getTableData();
