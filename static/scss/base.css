@@ -87,6 +87,10 @@
         cursor: pointer; }
       #homeContainer .layout .ivu-layout .ivu-layout-content {
         /*background-color: skyblue !important;*/ }
+        #homeContainer .layout .ivu-layout .ivu-layout-content .contentTable {
+          margin: 20px;
+          background: #fff;
+          min-height: 260px; }
 
 .ivu-layout-header,
 .ivu-layout-sider,

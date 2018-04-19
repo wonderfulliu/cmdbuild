@@ -1,34 +1,36 @@
 <template>
+  <Layout>
   <div id="relationContainer">
-    <div class="head">
-      <h1>查看: </h1>
-      <div class="now">
-        <Select @on-change="selectN" v-model="selectNow" style="width:250px" size="large" clearable filterable>
-            <Option v-for="(item, index) in now" :value="item.value" :key="index">{{ item.label }} </Option>
-        </Select>
+    <Header style="padding: 0" class="layout-header-bar">
+      <Form :label-width="80">
+        <Row>
+          <Col span="10">
+            <FormItem label="查看:">
+              <Select @on-change="selectN" v-model="selectNow" clearable filterable>
+                <Option v-for="(item, index) in now" :value="item.value" :key="index">{{ item.label }} </Option>
+              </Select>
+            </FormItem>
+          </Col>
+          <Col span="10" offset="1">
+            <FormItem label="新增:">
+              <Select @on-change="selectF" label-in-value v-model="selectFuture" clearable filterable>
+                <Option v-for="(item, index) in future" :value="item.value" :key="index">{{ item.label }}</Option>
+              </Select>
+            </FormItem>
+          </Col>
+          <Col span="2" offset="1">
+            <Button type="ghost" title="返回" icon="reply" @click="back"></Button>
+          </Col>
+        </Row>
+      </Form>
+    </Header>
+    <Content class="contentTable">
+      <div class="contentBody">
+        <Table height="400" :columns="columns" :data="data" no-data-text="请选择要查看的数据"></Table>
       </div>
-      <h1>新增: </h1>
-      <div class="future">
-        <Select @on-change="selectF" label-in-value v-model="selectFuture" style="width:250px" size="large" clearable filterable>
-            <Option v-for="(item, index) in future" :value="item.value" :key="index">{{ item.label }}</Option>
-        </Select>
-      </div>
-      <div class="back" @click="back">
-        <Icon type="reply"></Icon>
-      </div>
-    </div>
-    <div class="body">
-      <Table height="400" :columns="columns" :data="data" no-data-text="请选择要查看的数据"></Table>
-    </div>
-    <div class="foot">
-      <div class="search">
-
-      </div>
-      <div class="page">
-        
-      </div>
-    </div>
+    </Content>
   </div>
+  </Layout>
 </template>
 
 <script>
@@ -206,7 +208,7 @@ export default {
     // 查看下拉框变化时触发
     selectN(value){
       console.log(value);
-      this.getTabledata(value); 
+      this.getTabledata(value);
     },
     // 添加数据下拉框变化的时候
     selectF(value){
@@ -289,7 +291,7 @@ export default {
         if (v.domainname == this.domainnamen) {
           if (v.domainclass1 == tableName) {
             delData = {domainname: this.domainnamen, idobj1: this.tableId, idobj2: thisId};
-          } 
+          }
           if (v.domainclass2 == tableName) {
             delData = {domainname: this.domainnamen, idobj1: thisId, idobj2: this.tableId};
           }
@@ -330,34 +332,15 @@ export default {
 
 <style lang="scss" scoped>
 #relationContainer {
-  width: 100%;
-  .head {
-    overflow: hidden;
-    margin-bottom: 15px;
-    h1 {
-      float: left;
-      margin-top: 20px;
-      margin-left: 30px;
+  .ivu-layout-header{
+    .ivu-form{
+      .ivu-col{
+        .ivu-form-item{
+          margin-bottom: 0px;
+          padding-top: 15px;
+        }
+      }
     }
-    .now,
-    .future {
-      float: left;
-      margin-top: 20px;
-      margin-left: 30px;
-    }
-    .back {
-      float: right;
-      height: 100%;
-      line-height: 100%;
-      margin-top: 20px;
-      margin-right: 24px;
-      font-size: 34px;
-      cursor: pointer;
-    }
-  }
-  .body {
-  }
-  .foot {
   }
 }
 </style>
