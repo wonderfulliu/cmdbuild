@@ -79,6 +79,7 @@ export default {
     collapsedSider() {
       this.$refs.side1.toggleCollapse();
     },
+    // 权限
     getTreeData() {
       let _this = this;
       //侧栏树形菜单数据获取
@@ -131,6 +132,7 @@ export default {
           }
         });
     },
+    // 权限
     getTreeNodes(select) {
       let _this = this;
       if (!select.children) {

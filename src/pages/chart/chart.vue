@@ -17,6 +17,6 @@ html, body {
 }
 #chartContainer {
   height: 50px;
-  background-color: green;
+  background-color: red;
 }
 </style>

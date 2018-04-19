@@ -142,14 +142,7 @@ export default {
     });
   },
   mounted(){
-//    let _this = this;
-//    let clientH = document.documentElement.clientHeight;
-//    let conBheadH = 64;
-//    let conBbodyH = _this.$refs.contentBody.$el.offsetHeight;
-//    let pageContH = _this.$refs.pageCont.$el.clientHeight;
-//    console.log(_this.$refs);
-//    console.log(conBbodyH);
-//    _this.contentbodyH = (clientH - 64) + 'px';
+    
   },
   methods: {
     getTableAttribute() {
@@ -231,7 +224,7 @@ export default {
         });
     },
     getRecordInfo(res) {
-      // console.log(res);//本行具体信息
+      console.log(res);//本行具体信息
       this.clickRow = true; //点击状态参数
       this.recordId = res.Id; //获取记录id
       let lookupdt = this.lookupInfo;
