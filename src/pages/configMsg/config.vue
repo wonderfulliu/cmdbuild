@@ -101,6 +101,7 @@ export default {
               if (obj[0].children) {
                 newTreeFunc(obj[0].children);
               } else {
+                obj[0].selected = true;
                 let eName = obj[0].idElementClass.split('"').join("");
                 _this.tableName = eName; //获取表名
                 _this.Mode = obj[0].Mode;
