@@ -123,9 +123,11 @@
 <style lang="scss">
   #loginContainer {
     transition: .2s;
-    width: 35%;
-    padding: 40px 65px 30px;
-    background-color: transparent;
+    width: 350px;
+    // padding: 40px 65px 30px;
+    padding: 20px 20px 20px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, .5);
     margin: 145px auto;
     div.ivu-form-item:nth-child(2) {
       margin-bottom: 30px;
