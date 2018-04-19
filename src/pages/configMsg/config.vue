@@ -5,7 +5,6 @@
         <Menu active-name="1-2" theme="dark" width="auto" :open-names="['1']" :class="menuitemClasses" accordion>
           <Submenu name="1">
             <template slot="title">
-              <Icon type="ios-analytics"></Icon>
               配置信息列表
             </template>
             <div class="treeContent">
@@ -15,7 +14,6 @@
           </Submenu>
           <Submenu name="2">
             <template slot="title">
-              <Icon type="ios-keypad"></Icon>
               应用组件
             </template>
             <router-link to="/config/importXLS">
@@ -37,7 +35,7 @@
       <transition name="fade" mode="out-in">
         <router-view :tableName='tableName'
                      :collapsedSider='collapsedSider'
-                     @rotateIcon='rotateIcon'
+                     :rotateIcon='rotateIcon'
                      @transferRecord='getRecordId'
                      :recordId='recordId'
                      :Mode='Mode'>
@@ -95,7 +93,6 @@ export default {
             );
           }
           let objTree = objFunc(oData);
-          console.log(objTree);
           _this.ConfigTreeData = newTreeFunc(objTree); //打开侧栏第一个选项
 
           function newTreeFunc(obj) {
