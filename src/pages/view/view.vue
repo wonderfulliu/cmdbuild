@@ -287,6 +287,7 @@ export default {
       for (let i = 0; i < this.columns.length - 1; i++) {
         content += this.columns[i].title + `: ${this.data[index][i + 1]}<br>`;
       }
+      content = content.split('null').join('');//详情为null的改为空
       this.$Modal.info({
         title: "详细信息",
         content: content

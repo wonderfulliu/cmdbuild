@@ -94,7 +94,7 @@ export default {
     dataProcess(info) {
       this.totalBar = info.data.totalRecord;
       let dataArr = info.data.list; //要处理和渲染的表格数据
-      let end = {
+      let end = {//表格最后要添加的操作
         title: "Action",
         key: "action",
         fixed: "right",
@@ -176,14 +176,14 @@ export default {
         v.width = width;
         newtitleArr.push(v);
       });
-      if (flag) {
-        var Id = {
-          title: "Id",
-          key: "Id",
-          width: 200
-        };
-        newtitleArr.push(Id);
-      }
+      // if (flag) {
+      //   var Id = {
+      //     title: "Id",
+      //     key: "Id",
+      //     width: 200
+      //   };
+      //   newtitleArr.push(Id);
+      // }
       newtitleArr.push(end);
       this.columns = newtitleArr; //将获取到的表头字段赋值给table的columns
 
@@ -336,6 +336,7 @@ export default {
       for (let i = 0; i < this.columns.length - 1; i++) {
         content += this.columns[i].title + `: ${this.data[index][i + 1]}<br>`;
       }
+      content = content.split('null').join('');//null为空
       this.$Modal.info({
         title: "详细信息",
         content: content
@@ -405,12 +406,14 @@ export default {
       // 获取到表头的数据(主要获取改数据的格式), 并处理action
       let titleMsg = this.columns.slice(0, this.columns.length - 1);
       let editcontentMsg = this.data[params.index];
+      let thisjiluId;
       // 将editcontentMsg的内容整合到titleMsg中
       for (var k in editcontentMsg) {
         if (k != 'Id') {
           titleMsg[k - 1].content = editcontentMsg[k];
         } else if (k == "Id") {
           titleMsg[titleMsg.length - 1].content = editcontentMsg[k];
+          thisjiluId = editcontentMsg[k];
         }
       }
       // 添加lookup数据
@@ -434,6 +437,7 @@ export default {
       let data = {
         tableName: this.tableName,
         titleMsg: titleMsg,
+        thisjiluId: thisjiluId
       }
       this.$store.commit('getaddMsg', data);//将整合好的数据推至公共仓库
       this.$router.push({ path: "/edit" });//跳转至新增页面

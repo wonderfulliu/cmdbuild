@@ -1,6 +1,6 @@
 <template>
   <div id="chartContainer">
-    <h3>我是chart页面</h3>
+    <h3>我就是我, 不一样的表格!</h3>
   </div>
 </template>
 
