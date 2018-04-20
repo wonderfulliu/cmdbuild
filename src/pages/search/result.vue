@@ -188,7 +188,7 @@ export default {
 
       // console.log(this.cnameTitle);//根据这个将英文名转换为中文名进行数据处理
       //判断返回的表格数据是否有Id
-      let flag = this.hasId(dataArr[0]);
+      // let flag = this.hasId(dataArr[0]);
       //获取表头
       let newtitleArr = []; //存储最终要给columns的表头数据
       let j = 0;

@@ -43,6 +43,7 @@ export default {
       reftableMsg: '',//传到下一页的表格数据
       reftitleMsg: '',//传到下一页的表头中文名数据
       chooseMsg: '',//存储editTable页面传来的数据
+      jiluId: '',//记录id
     };
   },
   created() {
@@ -53,6 +54,7 @@ export default {
     // 获取公共仓库的要渲染的数据
     getaddMsg(){
       this.editMsg = this.$store.state.addMsg.titleMsg;//待渲染的数据
+      this.jiluId = this.$store.state.addMsg.Id;//获取记录id
       this.tableName = this.$store.state.addMsg.tableName;//表名
       if (this.chooseMsg) {//如果有editTable中被选中的数据, 将变化的数据更新至双向绑定的数据
         this.editMsg.forEach((v, i) => {
@@ -105,13 +107,11 @@ export default {
       this.chooseMsg = this.$store.state.chooseMsg;
     },
 
-
-
     // 模态框控制函数
     submit() {
-      console.log(this.editMsg);
       let data = {};
       data.table = this.tableName;
+      data.Id = this.jiluId;
       this.editMsg.forEach((v, i) => {
         if (v.attribute) {
           if (v.type == "reference" && v.Id) {
@@ -128,10 +128,11 @@ export default {
           data[v.title] = v.content;
         }
       })
-      // data = JSON.stringify(data);
-      console.log(data);
+      
+      // console.log(data);
+      // console.log(JSON.stringify(data));
       this.$http.put('/cardController/card', data).then(info => {
-          console.log(info);
+          // console.log(info);
         // 成功的回调
         if (info.status == 200 && info.data == 'ok') {
           this.$Message.success({

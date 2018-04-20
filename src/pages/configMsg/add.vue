@@ -121,17 +121,21 @@ export default {
           }
         }
       })
-      // console.log(submitMsg);
+      console.log(submitMsg);
       // let data = JSON.stringify(submitMsg);
       this.$http.post('/cardController/card', submitMsg).then(info => {
+          console.log(info);
           // 成功的回调
           if (info.status == 200 && info.data == 'ok') {
-            console.log(info);
             this.$Message.success({
               content: '添加成功',
             });
             this.$store.commit('getchooseMsg', '');//取消编辑的时候, 清空editTable可能传的chooseMsg值
             this.$router.go(-1);
+          } else if (info.status == 200 && info.data == 'failed') {
+            this.$Message.error({
+              content: '添加失败',
+            });
           }
         }, info => {
           // 失败的回调
