@@ -4,8 +4,8 @@
   background-color: #5bc0de;
   border-color: #46b8da;
   &:hover{
-    background-color: #55b5d1;
-    border-color: #41abcb;
+    background-color: #5fcbea;
+    border-color: #4ac2e6;
   }
 }
 .ivu-btn-success {
@@ -60,90 +60,158 @@
   height: 0;
   font-size: 0;
 }
-
-
-
+/**************************************************/
 //header
 .ivu-menu-horizontal {
   height: 64px;
   line-height: 64px;
 }
+
 #homeContainer {
   height: 100%;
   margin-left: -1px;
-.layout {
-  height: 100%;
-.ivu-layout {
-  height: 100%;
-.ivu-layout-header {
-.layout-nav {
-  float: left;
-  margin-left: 30px;
-  width: 560px;
-  overflow: hidden;
-  a.router-link-exact-active{
-    .ivu-menu-item{
-      color: #fff;
-      background-color: #122f4c;
+  .layout {
+    height: 100%;
+    .ivu-layout {
+      height: 100%;
+      .ivu-layout-header {
+        padding: 0;
+        background: #2a3f54;
+        .layout-nav {
+          float: left;
+          margin-left: 30px;
+          margin-right: 10px;
+          width: 560px;
+          overflow: hidden;
+          a.router-link-exact-active{
+            .ivu-menu-item{
+              color: #fff;
+              background-color: #122f4c;
+            }
+          }
+          .ivu-menu-item{
+            a {
+              color: #e3e3e3;
+              &:hover{
+                color: #fff;
+                background-color: #122f4c;
+              }
+              .ivu-icon {
+                margin-right: 5px;
+              }
+            }
+          }
+        }
+      }
+      .layout-header-bar {
+        .ivu-icon {
+          cursor: pointer;
+        }
+      }
+
+      .ivu-layout{
+        .ivu-layout-sider{
+          background: #2a3f54;
+          .ivu-layout-sider-children{
+            .ivu-menu-dark{
+              .ivu-menu-submenu{
+                background: #2a3f54;
+                .ivu-menu-submenu-title {
+                  background: #2a3f54;
+                  text-align: left;
+                  &:hover{
+                    background: #25394f;
+                  }
+                }
+                .ivu-menu{
+                  .treeContent {
+                    overflow-y: scroll;
+                    height: 400px;
+                    text-align: left;
+                    .ivu-tree{
+                      .ivu-tree-arrow {
+                        i{
+                          color: #38536d;
+                        }
+                      }
+                      .ivu-tree-title {
+                        color: #c7c7c7;
+                        &:hover{
+                          color: #373f50;
+                        }
+                      }
+                      .ivu-tree-title.ivu-tree-title-selected {
+                        color: #2a3f54;
+                      }
+                    }
+
+                  }
+                }
+              }
+              .ivu-menu-submenu.ivu-menu-opened{
+                .ivu-menu-submenu-title {
+                  background: #25394f;
+                }
+              }
+            }
+          }
+        }
+
+        .ivu-layout{
+          .ivu-layout-header{
+            height: auto;
+            background-color: #fff;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+            .ivu-icon{
+              float: left;
+            }
+            .ivu-input-group{
+              padding: 16px 0;
+              .ivu-input{
+                border: 1px solid #41abcb;
+                &:hover{
+                  border: 1px solid #4ac2e6;
+                }
+              }
+              .ivu-btn{
+                .ivu-icon{
+                  float: inherit;
+                }
+              }
+              .ivu-input-group-append{
+                background-color: #55b5d1;
+                border: 1px solid #55b5d1;
+                color: #fff;
+                &:hover{
+                  background-color: #5fcbea;
+                  border-color: #4ac2e6;
+                  border-top-left-radius: 0;
+                  border-bottom-left-radius: 0;
+                }
+              }
+            }
+          }
+          .ivu-layout-content{
+            background: #fff;
+            margin-top: 10px;
+            min-height: 260px;
+            .formContainer{
+              width: 500px;
+              padding: 20px 0;
+              margin: 0 auto;
+              .ivu-select{
+                text-align: left;
+              }
+            }
+          }
+        }
+      }
     }
   }
-.ivu-menu-item{
-  a {
-    color: #e3e3e3;
-  .ivu-icon {
-    margin-right: 5px;
-  }
-  }
-  a:hover {
-    color: #fff;
-  }
-  &:hover{
-    background-color: #122f4c;
-  }
-}
-}
-}
-.layout-header-bar {
-.ivu-icon {
-  float: left;
-  cursor: pointer;
-}
-}
-.ivu-layout-content {
-  /*background-color: skyblue !important;*/
-  .contentTable{
-    margin: 20px;
-    background: #fff;
-    min-height: 260px
-  }
-}
-}
-}
-}
-
-.ivu-layout-header,
-.ivu-layout-sider,
-.ivu-layout-sider,
-.ivu-menu-dark.ivu-menu-vertical .ivu-menu-opened {
-  background: #2a3f54;
-
-  .ivu-menu-submenu-title {
-    background: #2a3f54;
-    text-align: left;
-  }
-
 }
 
 .ivu-menu-dark {
   background: #2a3f54;
-}
-
-.ivu-menu-submenu:hover {
-  background: #243546;
-}
-
-.ivu-tree-arrow i {
-  color: #38536d;
 }
 
 .layout-user {
@@ -186,10 +254,6 @@
   .logoutIcon:hover {
     color: #e5ecf4;
   }
-}
-
-.ivu-layout-header {
-  padding: 0;
 }
 
 .layout-user {
@@ -235,18 +299,6 @@
 .layout-logo img {
   width: 100%;
 }
-
-.layout-nav {
-  width: 420px;
-  margin: 0 auto;
-  margin-right: 10px;
-}
-
-.layout-header-bar {
-  background: #fff;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-}
-
 .layout-logo-left {
   width: 90%;
   height: 30px;
@@ -290,32 +342,6 @@
   transition: font-size 0.2s ease 0.2s, transform 0.2s ease 0.2s;
   vertical-align: middle;
   font-size: 22px;
-}
-
-//sider
-.treeContent {
-  overflow-y: scroll;
-  height: 400px;
-  text-align: left;
-  .ivu-tree-title {
-    color: #c7c7c7;
-  }
-  .ivu-tree-title.ivu-tree-title-selected {
-    color: #2a3f54;
-  }
-  .ivu-tree-title:hover {
-    color: #373f50;
-  }
-}
-
-//contentHead
-.miniWindow.ivu-layout{
-  .ivu-layout-header{
-    height: auto;
-    .ivu-input-group{
-      padding: 16px 0;
-    }
-  }
 }
 
 //pager

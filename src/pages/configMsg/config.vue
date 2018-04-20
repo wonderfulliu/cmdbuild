@@ -64,6 +64,7 @@ export default {
   created: function() {
     this.getAuthority(); //获取权限
     this.getTreeData(); //侧栏树形菜单
+
   },
   computed: {
     menuitemClasses() {

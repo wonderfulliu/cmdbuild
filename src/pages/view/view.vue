@@ -21,7 +21,7 @@
       </Sider>
       <!-- 内容区域 -->
       <Layout class="miniWindow">
-        <Header :style="{padding: 0}" class="layout-header-bar">
+        <Header class="layout-header-bar">
           <Row>
             <Col span="5">
             <div class="">
@@ -30,7 +30,7 @@
             </Col>
             <Col span="14">
               <Input v-model="searchMsg" placeholder="Enter something...">
-                <Button slot="append" type="primary" icon="ios-search" @click="search">搜索</Button>
+                <Button slot="append" type="info" icon="ios-search" @click="search">搜索</Button>
               </Input>
             </Col>
             <Col span="5">
@@ -41,7 +41,7 @@
           </Row>
         </Header>
 
-        <Content :style="{margin: '15px'}">
+        <Content>
           <Table
             stripe
             border

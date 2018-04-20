@@ -4,8 +4,8 @@
   background-color: #5bc0de;
   border-color: #46b8da; }
   .ivu-btn-info:hover {
-    background-color: #55b5d1;
-    border-color: #41abcb; }
+    background-color: #5fcbea;
+    border-color: #4ac2e6; }
 
 .ivu-btn-success {
   background: #26B99A;
@@ -55,6 +55,7 @@
   height: 0;
   font-size: 0; }
 
+/**************************************************/
 .ivu-menu-horizontal {
   height: 64px;
   line-height: 64px; }
@@ -66,52 +67,86 @@
     height: 100%; }
     #homeContainer .layout .ivu-layout {
       height: 100%; }
-      #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav {
-        float: left;
-        margin-left: 30px;
-        width: 560px;
-        overflow: hidden; }
-        #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav a.router-link-exact-active .ivu-menu-item {
-          color: #fff;
-          background-color: #122f4c; }
-        #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav .ivu-menu-item a {
-          color: #e3e3e3; }
-          #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav .ivu-menu-item a .ivu-icon {
-            margin-right: 5px; }
-        #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav .ivu-menu-item a:hover {
-          color: #fff; }
-        #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav .ivu-menu-item:hover {
-          background-color: #122f4c; }
+      #homeContainer .layout .ivu-layout .ivu-layout-header {
+        padding: 0;
+        background: #2a3f54; }
+        #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav {
+          float: left;
+          margin-left: 30px;
+          margin-right: 10px;
+          width: 560px;
+          overflow: hidden; }
+          #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav a.router-link-exact-active .ivu-menu-item {
+            color: #fff;
+            background-color: #122f4c; }
+          #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav .ivu-menu-item a {
+            color: #e3e3e3; }
+            #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav .ivu-menu-item a:hover {
+              color: #fff;
+              background-color: #122f4c; }
+            #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav .ivu-menu-item a .ivu-icon {
+              margin-right: 5px; }
       #homeContainer .layout .ivu-layout .layout-header-bar .ivu-icon {
-        float: left;
         cursor: pointer; }
-      #homeContainer .layout .ivu-layout .ivu-layout-content {
-        /*background-color: skyblue !important;*/ }
-        #homeContainer .layout .ivu-layout .ivu-layout-content .contentTable {
-          margin: 20px;
-          background: #fff;
-          min-height: 260px; }
-
-.ivu-layout-header,
-.ivu-layout-sider,
-.ivu-layout-sider,
-.ivu-menu-dark.ivu-menu-vertical .ivu-menu-opened {
-  background: #2a3f54; }
-  .ivu-layout-header .ivu-menu-submenu-title,
-  .ivu-layout-sider .ivu-menu-submenu-title,
-  .ivu-layout-sider .ivu-menu-submenu-title,
-  .ivu-menu-dark.ivu-menu-vertical .ivu-menu-opened .ivu-menu-submenu-title {
-    background: #2a3f54;
-    text-align: left; }
+      #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout-sider {
+        background: #2a3f54; }
+        #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout-sider .ivu-layout-sider-children .ivu-menu-dark .ivu-menu-submenu {
+          background: #2a3f54; }
+          #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout-sider .ivu-layout-sider-children .ivu-menu-dark .ivu-menu-submenu .ivu-menu-submenu-title {
+            background: #2a3f54;
+            text-align: left; }
+            #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout-sider .ivu-layout-sider-children .ivu-menu-dark .ivu-menu-submenu .ivu-menu-submenu-title:hover {
+              background: #25394f; }
+          #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout-sider .ivu-layout-sider-children .ivu-menu-dark .ivu-menu-submenu .ivu-menu .treeContent {
+            overflow-y: scroll;
+            height: 400px;
+            text-align: left; }
+            #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout-sider .ivu-layout-sider-children .ivu-menu-dark .ivu-menu-submenu .ivu-menu .treeContent .ivu-tree .ivu-tree-arrow i {
+              color: #38536d; }
+            #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout-sider .ivu-layout-sider-children .ivu-menu-dark .ivu-menu-submenu .ivu-menu .treeContent .ivu-tree .ivu-tree-title {
+              color: #c7c7c7; }
+              #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout-sider .ivu-layout-sider-children .ivu-menu-dark .ivu-menu-submenu .ivu-menu .treeContent .ivu-tree .ivu-tree-title:hover {
+                color: #373f50; }
+            #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout-sider .ivu-layout-sider-children .ivu-menu-dark .ivu-menu-submenu .ivu-menu .treeContent .ivu-tree .ivu-tree-title.ivu-tree-title-selected {
+              color: #2a3f54; }
+        #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout-sider .ivu-layout-sider-children .ivu-menu-dark .ivu-menu-submenu.ivu-menu-opened .ivu-menu-submenu-title {
+          background: #25394f; }
+      #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-header {
+        height: auto;
+        background-color: #fff;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); }
+        #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-header .ivu-icon {
+          float: left; }
+        #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-header .ivu-input-group {
+          padding: 16px 0; }
+          #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-header .ivu-input-group .ivu-input {
+            border: 1px solid #41abcb; }
+            #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-header .ivu-input-group .ivu-input:hover {
+              border: 1px solid #4ac2e6; }
+          #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-header .ivu-input-group .ivu-btn .ivu-icon {
+            float: inherit; }
+          #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-header .ivu-input-group .ivu-input-group-append {
+            background-color: #55b5d1;
+            border: 1px solid #55b5d1;
+            color: #fff; }
+            #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-header .ivu-input-group .ivu-input-group-append:hover {
+              background-color: #5fcbea;
+              border-color: #4ac2e6;
+              border-top-left-radius: 0;
+              border-bottom-left-radius: 0; }
+      #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content {
+        background: #fff;
+        margin-top: 10px;
+        min-height: 260px; }
+        #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .formContainer {
+          width: 500px;
+          padding: 20px 0;
+          margin: 0 auto; }
+          #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .formContainer .ivu-select {
+            text-align: left; }
 
 .ivu-menu-dark {
   background: #2a3f54; }
-
-.ivu-menu-submenu:hover {
-  background: #243546; }
-
-.ivu-tree-arrow i {
-  color: #38536d; }
 
 .layout-user .userInfo {
   margin-right: 10px; }
@@ -144,9 +179,6 @@
   color: #bfc5cc; }
 .layout-user .logoutIcon:hover {
   color: #e5ecf4; }
-
-.ivu-layout-header {
-  padding: 0; }
 
 .layout-user {
   float: right;
@@ -183,15 +215,6 @@
 
 .layout-logo img {
   width: 100%; }
-
-.layout-nav {
-  width: 420px;
-  margin: 0 auto;
-  margin-right: 10px; }
-
-.layout-header-bar {
-  background: #fff;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); }
 
 .layout-logo-left {
   width: 90%;
@@ -230,22 +253,6 @@
   transition: font-size 0.2s ease 0.2s, transform 0.2s ease 0.2s;
   vertical-align: middle;
   font-size: 22px; }
-
-.treeContent {
-  overflow-y: scroll;
-  height: 400px;
-  text-align: left; }
-  .treeContent .ivu-tree-title {
-    color: #c7c7c7; }
-  .treeContent .ivu-tree-title.ivu-tree-title-selected {
-    color: #2a3f54; }
-  .treeContent .ivu-tree-title:hover {
-    color: #373f50; }
-
-.miniWindow.ivu-layout .ivu-layout-header {
-  height: auto; }
-  .miniWindow.ivu-layout .ivu-layout-header .ivu-input-group {
-    padding: 16px 0; }
 
 .pageContainer {
   padding-top: 10px; }

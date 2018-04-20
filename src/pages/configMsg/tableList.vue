@@ -10,7 +10,7 @@
         </Col>
         <Col :xs="12" :sm="12" :md="10" :lg="11">
           <Input v-model="configCondition" placeholder="Enter something...">
-            <Button slot="append" type="primary" icon="ios-search" @click="fuzzy">搜索</Button>
+            <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
           </Input>
         </Col>
         <Col :xs="14" :sm="12" :md="9" :lg="8">
