@@ -17,7 +17,7 @@
             </Sider>
             <!-- 内容区域 -->
             <Layout>
-                <Header :style="{padding: 0}" class="layout-header-bar">
+                <Header class="layout-header-bar">
                   <Row>
                     <Col span="2">
                       <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
@@ -30,7 +30,7 @@
                     </Col>
                   </Row>
                 </Header>
-                <Content :style="{margin: '15px'}">
+                <Content>
                     <Table stripe height="410" :loading='loading' border :columns="columns" :data="data" ref="table"></Table>
                     <div style="margin-top: 10px;margin-right: 30px;float:right;">
                         <Page :total="totalBar" :current="pageNum" @on-change="pageChange" :page-size=20 show-elevator show-total></Page>
