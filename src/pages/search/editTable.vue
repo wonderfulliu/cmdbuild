@@ -1,24 +1,49 @@
 <template>
-  <div id="editTableContainer">
-    <header>
-      <h3>请选择关系: </h3>
-      <div class="btnContainer">
-        <Button @click="cancel">取消</Button>
-        <Button type="primary" @click="confirm">确认</Button>
-      </div>
-    </header>
-    <div class="content">
-      <Table highlight-row :loading='loading' @on-row-click="selectRow" stripe height="450" border  :columns="columns" :data="data"></Table>
-    </div>
-    <div class="footer">
-      <div class="search">
-        <Input v-model="searchMsg" @on-click="search" @on-enter="search" clearable icon="search" placeholder="Enter something..." style="width: 300px"></Input>
-      </div>
-      <div class="page">
-        <Page @on-change="pageChange" :page-size='20' :total="totalRecord" show-elevator show-total></Page>
-      </div>
-    </div>
+  <Layout>
+    <Layout>
+      <div id="editTableContainer">
+        <Header class="layout-header-bar">
+          <Row>
+            <Col span="5" offset="1">
+              <h3 style="text-align: left">请选择关系: </h3>
+            </Col>
+            <Col span="11">
+                <Input v-model="searchMsg" @on-click="search" @on-enter="search" clearable icon="search" placeholder="Enter something..."></Input>
+            </Col>
+            <Col span="7">
+              <div class="floatRight">
+                <Button type="primary" style="margin-right: 8px" @click="cancel">取消</Button>
+                <Button type="success" @click="submit">提交</Button>
+              </div>
+            </Col>
+          </Row>
+        </Header>
+        <Content class="contentTable">
+          <div class="contentBody">
+            <Table stripe
+                   border
+                   highlight-row
+                   height="450"
+                   :data="data"
+                   :loading='loading'
+                   :columns="columns"
+                   @on-row-click="selectRow"></Table>
+            <div class="pageContainer clearfix floatRight">
+              <Button type="ghost" class="floatLeft" @click="pageFirst">首页</Button>
+              <Page class="floatLeft"
+                    show-elevator
+                    show-total
+                    :page-size='20'
+                    :current="pageNum"
+                    :total="totalRecord"
+                    @on-change="pageChange"></Page>
+              <Button type="ghost" class="floatLeft" @click="pageLast">尾页</Button>
+            </div>
+          </div>
+        </Content>
   </div>
+    </Layout>
+  </Layout>
 </template>
 
 <script>
@@ -29,6 +54,7 @@ export default {
       data: [],
       totalRecord: 0,//分页
       pageNum: 1,
+      totalPage: null,
       relationTable: "",//上一页传来的信息
       reftitleMsg: '',
       reftableMsg: '',
@@ -52,6 +78,7 @@ export default {
     //刚进入该页面时表格数据的处理
     dataProcess(titleMsg, tableMsg) {
       this.totalRecord = tableMsg.totalRecord;
+      this.totalPage = tableMsg.totalPage;
       let dataArr = tableMsg.list; //要处理和渲染的表格数据
       // 设置开头多选
       let start = {
@@ -138,6 +165,16 @@ export default {
     // 点击分页切换分页
     pageChange(page) {
       this.pageNum = page;
+      this.loading = true;
+      this.getreferenceData();
+    },
+    pageFirst() {
+      this.pageNum = 1;
+      this.loading = true;
+      this.getreferenceData();
+    },
+    pageLast() {
+      this.pageNum = this.totalPage;
       this.loading = true;
       this.getreferenceData();
     },

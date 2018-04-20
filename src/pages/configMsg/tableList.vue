@@ -28,7 +28,9 @@
     </Header>
     <Content ref="conBbody">
       <div class="contentBody">
-        <Table ref="tableCont" border
+        <Table border
+               stripe
+               ref="tableCont"
                size="small"
                :height="tableHeight"
                @on-row-click="getRecordInfo"
