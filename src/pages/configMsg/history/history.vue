@@ -186,6 +186,7 @@
         };
         _this.$http.post('/relationController/getRelationList',data)
           .then(function(info){
+            console.log(info);
             if(JSON.stringify(info.data) == '{}'){
               console.log(null)
             }else {

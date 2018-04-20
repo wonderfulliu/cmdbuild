@@ -14,7 +14,7 @@
           </Col>
         </Row>
       </Header>
-      <Content ref="conBbody"  class="contentForm">
+      <Content class="contentForm">
         <Form :label-width="100" class="formContainer">
           <FormItem :label="item.cname" v-for="(item, index) in editMsg" :key="index" v-if="item.title != 'Id'">
             <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
@@ -181,23 +181,5 @@ export default {
 <style lang="scss" scoped>
 #editContainer {
   overflow-y: scroll;
-  .head {
-    h2 {
-      text-align: left;
-      padding-left: 55px;
-      padding-top: 15px;
-    }
-  }
-  .body {
-    width: 50%;
-    padding: 15px 40px 30px 20px;
-    margin: 30px auto;
-    .ivu-form{
-      .ivu-input-icon {
-        cursor: pointer;
-      }
-    }
-
-  }
 }
 </style>

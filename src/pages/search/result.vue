@@ -6,7 +6,7 @@
               <Menu active-name="1-2" theme="dark" width="auto" :open-names="['1']" :class="menuitemClasses" accordion>
                 <Submenu name="1">
                   <template slot="title" style="text-align: left">
-                    视图信息列表
+                    查询配置信息列表
                   </template>
                   <div class="treeContent">
                     <!--树状菜单-->
@@ -31,11 +31,17 @@
                   </Row>
                 </Header>
                 <Content>
-                    <Table stripe height="410" :loading='loading' border :columns="columns" :data="data" ref="table"></Table>
+                    <Table border
+                           stripe
+                           ref="table"
+                           size="small"
+                           height="440"
+                           :loading='loading'
+                           :columns="columns"
+                           :data="data"></Table>
                     <div style="margin-top: 10px;margin-right: 30px;float:right;">
                         <Page :total="totalBar" :current="pageNum" @on-change="pageChange" :page-size=20 show-elevator show-total></Page>
                     </div>
-                    <br>
                 </Content>
             </Layout>
         </Layout>
@@ -196,6 +202,7 @@ export default {
         v.title = v.cname;
         v.key = ++j;
         v.width = width;
+        v.ellipsis = true;
         newtitleArr.push(v);
       });
       // if (flag) {

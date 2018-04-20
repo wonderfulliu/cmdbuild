@@ -10,8 +10,8 @@
             <Input v-model="searchMsg" @on-click="search" @on-enter="search" clearable icon="search" placeholder="Enter something..."></Input></Col>
           <Col span="4" offset="3">
             <div class="btnContainer">
-              <Button @click="cancel">取消</Button>
-              <Button type="primary" @click="confirm">确认</Button>
+              <Button type="primary" @click="cancel">取消</Button>
+              <Button type="success" @click="confirm">确认</Button>
             </div>
           </Col>
         </Row>

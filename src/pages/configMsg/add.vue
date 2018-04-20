@@ -1,42 +1,55 @@
 <template>
 <Layout>
   <div id="addContainer">
-    <div class="head">
-      <h2>添加信息</h2>
-    </div>
-    <div class="body">
-      <Form :label-width="100">
-          <FormItem :label="item.cname" v-for="(item, index) in addMsg" :key="index" v-if="item.title != 'Id'">  
-              <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
-              <Select v-if="item.type == 'lookup'" v-model="item.content">
-                  <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>
-              </Select>
-              <Row v-if="item.type == 'date'">
-                  <Col span="11">
-                      <DatePicker type="date" placeholder="请选择日期" v-model="item.content"></DatePicker>
-                  </Col>
-              </Row>
-              <Row v-if="item.type == 'time'">
-                  <Col span="11">
-                      <TimePicker type="time" placeholder="请选择时间" v-model="item.content"></TimePicker>
-                  </Col>
-              </Row>
-              <Input v-if="item.type == 'reference'" v-model="item.content" icon="document" placeholder="Enter something..." @on-click='getrefMsg(item.relationTable), getrefctMsg(item.relationTable)'></Input>
-              <Checkbox v-if="item.type == 'bool'" v-model="item.content"></Checkbox>
-              <InputNumber v-if="item.type == 'int4'" :min="0" v-model="item.content"></InputNumber>
-          </FormItem>
-          <FormItem>
-              <Button type="ghost" style="margin-left: 8px" @click="cancel">取消</Button>
-              <Button type="primary" @click="submit">提交</Button>
-          </FormItem>
+    <Header class="layout-header-bar">
+      <Row>
+        <Col span="6" offset="1">
+        <h3 style="text-align: left">添加信息 </h3>
+        </Col>
+        <Col span="12" offset="5">
+        <div class="floatRight">
+          <Button type="primary" style="margin-right: 8px"  @click="cancel">取消</Button>
+          <Button type="success" @click="submit">提交</Button>
+        </div>
+        </Col>
+      </Row>
+    </Header>
+    <Content ref="conBbody"  class="contentForm">
+      <Form :label-width="100" class="formContainer">
+        <FormItem :label="item.cname" v-for="(item, index) in addMsg" :key="index" v-if="item.title != 'Id'">
+          <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
+          <Select v-if="item.type == 'lookup'" v-model="item.content">
+            <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>
+          </Select>
+          <Row v-if="item.type == 'date'">
+            <Col span="11">
+            <DatePicker type="date" placeholder="请选择日期" v-model="item.content"></DatePicker>
+            </Col>
+          </Row>
+          <Row v-if="item.type == 'time'">
+            <Col span="11">
+            <TimePicker type="time" placeholder="请选择时间" v-model="item.content"></TimePicker>
+            </Col>
+          </Row>
+          <Input v-if="item.type == 'reference'" v-model="item.content" icon="document" placeholder="Enter something..." @on-click='getrefMsg(item.relationTable), getrefctMsg(item.relationTable)'></Input>
+          <Checkbox v-if="item.type == 'bool'" v-model="item.content"></Checkbox>
+          <InputNumber v-if="item.type == 'int4'" :min="0" v-model="item.content"></InputNumber>
+        </FormItem>
+        <!--<FormItem>
+          <Button type="ghost" style="margin-left: 8px" @click="cancel">取消</Button>
+          <Button type="primary" @click="submit">提交</Button>
+        </FormItem>-->
       </Form>
+    </Content>
+    <div class="body">
+
     </div>
   </div>
-  </Layout> 
+  </Layout>
 </template>
 
 <script>
-export default { 
+export default {
   data() {
     return {
       addMsg: '',//需要双向绑定的数据
@@ -45,7 +58,7 @@ export default {
       reftitleMsg: '',//传到下一页的表头中文名数据
       chooseMsg: '',//存储editTable页面传来的数据
     }
-  }, 
+  },
   created() {
     this.getchooseMsg();
     this.getaddMsg();
@@ -105,7 +118,7 @@ export default {
     getchooseMsg(){
       this.chooseMsg = this.$store.state.chooseMsg;
     },
-    
+
     // 提交按钮
     submit(){
       let submitMsg = {};
@@ -161,22 +174,5 @@ export default {
 <style lang="scss">
   #addContainer {
   overflow-y: scroll;
-  .head {
-    h2 {
-      text-align: left;
-      padding-left: 55px;
-      padding-top: 15px;
-    }
-  }
-  .body {
-    width: 50%;
-    padding: 15px 40px 30px 20px;
-    margin: 30px auto;
-    .ivu-form {
-      .ivu-input-icon {
-        cursor: pointer;
-      }
-    }
-  }
 }
 </style>
