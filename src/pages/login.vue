@@ -113,6 +113,7 @@
           .then(info => {
           if (info.status == 200) {
             this.$store.commit('getMode', info.data);
+            sessionStorage.setItem('Mode', JSON.stringify(info.data));
           }
         });
     },

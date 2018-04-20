@@ -16,7 +16,7 @@
               </Menu>
             </Sider>
             <!-- 内容区域 -->
-            <Layout>
+            <Layout :style="{height:contentbodyH}">
                 <Header class="layout-header-bar">
                   <Row>
                     <Col span="2">
@@ -31,7 +31,7 @@
                   </Row>
                 </Header>
                 <Content>
-                    <Table stripe height="410" :loading='loading' border :columns="columns" :data="data" ref="table"></Table>
+                    <Table stripe :height="tableHeight" :loading='loading' border :columns="columns" :data="data" ref="table"></Table>
                     <div style="margin-top: 10px;margin-right: 30px;float:right;">
                         <Page :total="totalBar" :current="pageNum" @on-change="pageChange" :page-size=20 show-elevator show-total></Page>
                     </div>
@@ -89,11 +89,14 @@ export default {
       Mode: '',//权限
       Authority: '',//权限表
       isdisable: '',//是否禁用
+      contentbodyH: '',//内容区域高度
+      tableHeight: '',//表格高度
     };
   },
   created() {
     this.getAuthority();
     this.getasideMsg();
+    this.heightAdaptive();
   },
   computed: {
     rotateIcon() {
@@ -175,27 +178,22 @@ export default {
           ]);
         }
       };
-
-      // 设置每个td的宽度
-      let len = 0;
-      let width = 200;
-      for (var k in dataArr[0]) {
-        len++;
-      }
-      // 设置表头每个td的宽度--77是action的宽度
-      let theadWidth = document.querySelector(".ivu-layout-content .ivu-table-header").offsetWidth - 197;
-      width = theadWidth / len > 200 ? theadWidth / len : 200;
-
-      // console.log(this.cnameTitle);//根据这个将英文名转换为中文名进行数据处理
+      
+      let len = this.cnameTitle.length;
+      let theadWidth = document.querySelector(".ivu-table-wrapper .ivu-table-header").offsetWidth - 197;
+      let width = theadWidth / len > 200 ? theadWidth / len : 200;
+      this.cnameTitle.forEach((v, i) => {
+        v.width = width;
+      })
       //判断返回的表格数据是否有Id
       // let flag = this.hasId(dataArr[0]);
       //获取表头
       let newtitleArr = []; //存储最终要给columns的表头数据
       let j = 0;
+      console.log(this.cnameTitle);
       this.cnameTitle.forEach(function(v, i) {
         v.title = v.cname;
         v.key = ++j;
-        v.width = width;
         newtitleArr.push(v);
       });
       // if (flag) {
@@ -511,6 +509,12 @@ export default {
     // 获取权限
     getAuthority() {
       this.Authority = this.$store.state.Mode;
+    },
+    // 高度自适应
+    heightAdaptive(){
+      let clientH = document.documentElement.clientHeight;
+      this.contentbodyH = (clientH - 64) + 'px';
+      this.tableHeight = clientH - 64 - 145;//133包括按钮区域, margin-top, 分页所在区域
     },
   }
 };
