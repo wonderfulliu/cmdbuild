@@ -166,6 +166,7 @@ export default {
         _this.$http
           .post("/cardController/getAttributeList", { table: _this.tableName })
           .then(function(info) {
+            // console.log(info);
             sessionStorage.setItem(
               "config_" + _this.tableName + "_attribute",
               JSON.stringify(info.data)
@@ -253,6 +254,7 @@ export default {
         sessionStorage.getItem("config_" + this.tableName + "_attribute")
       );
       // console.log(attr);
+      // return false;
       attr.forEach(function(v, i){
         for(let k in res){
           if (v.attribute == k) {
@@ -260,14 +262,19 @@ export default {
           }
         }
       })
-      attr.forEach(function(v, i) {
+      attr.forEach((v, i) => {
         let a = v.attribute;
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
+          v.lookupMsg.forEach((val, index) => {
+            if (val.Description && val.Description == v.content) {
+              v.content = val.Id;
+            }
+          })
         } else if (v.type == "reference") {
           for (let ri = 0; ri < relatedt.length; ri++) {
             if (v.lr == relatedt[ri].domainname) {
-              if (relatedt[ri].domainclass1 == _this.tableName) {
+              if (relatedt[ri].domainclass1 == this.tableName) {
                 v.relationTable = relatedt[ri].domainclass2;
               } else {
                 v.relationTable = relatedt[ri].domainclass1;

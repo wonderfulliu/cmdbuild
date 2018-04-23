@@ -146,7 +146,7 @@ export default {
       this.recordId = msg;
     },
     // 获取与处理权限
-    getAuthority() {
+    getAuthority() { 
       if (this.$store.state.Mode) {
         this.Authority = this.$store.state.Mode;
       } else {

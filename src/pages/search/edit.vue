@@ -61,6 +61,9 @@ export default {
     this.getchooseMsg();
     this.getaddMsg();
   },
+  mounted () {
+    this.getHeight();
+  },
   methods: {
     // 获取公共仓库的要渲染的数据
     getaddMsg(){
@@ -177,14 +180,19 @@ export default {
       let date = time.getDate();
       let totalTime = year + '-' + month + '-' + date;
       return totalTime;
-    }
+    },
+    // 获取高度
+    getHeight(){
+      this.height = document.querySelector('#addContainer').offsetHeight - 74 + 'px';
+    },
   }
 };
 </script>
 
 <style lang="scss" scoped>
 #editContainer {
-  overflow-y: scroll;
+  overflow-y: auto;
+  height: 100%;
   .head {
     h2 {
       text-align: left;

@@ -60,10 +60,14 @@ export default {
     this.getchooseMsg();
     this.getaddMsg();
   },
+  mounted () {
+    this.getHeight();
+  },
   methods: {
     // 获取公共仓库的要渲染的数据
     getaddMsg(){
       this.editMsg = this.$store.state.addMsg.titleMsg;//待渲染的数据
+      // console.log(this.$store.state.addMsg.titleMsg);
       this.jiluId = this.$store.state.addMsg.Id;//获取记录id
       this.tableName = this.$store.state.addMsg.tableName;//表名
       if (this.chooseMsg) {//如果有editTable中被选中的数据, 将变化的数据更新至双向绑定的数据
@@ -122,6 +126,7 @@ export default {
       let data = {};
       data.table = this.tableName;
       data.Id = this.jiluId;
+      // console.log(this.editMsg);
       this.editMsg.forEach((v, i) => {
         if (v.attribute) {
           if (v.type == "reference" && v.Id) {
@@ -140,6 +145,7 @@ export default {
       })
       
       // console.log(data);
+      // return false;
       // console.log(JSON.stringify(data));
       this.$http.put('/cardController/card', data).then(info => {
           // console.log(info);
@@ -174,13 +180,19 @@ export default {
       let date = time.getDate();
       let totalTime = year + '-' + month + '-' + date;
       return totalTime;
-    }
+    },
+    // 获取高度
+    getHeight(){
+      this.height = document.querySelector('#addContainer').offsetHeight - 74 + 'px';
+    },
   }
 };
 </script>
 
 <style lang="scss" scoped>
 #editContainer {
-  overflow-y: scroll;
+  overflow-y: auto;
+  height: 100%;
+  
 }
 </style>

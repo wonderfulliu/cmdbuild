@@ -31,9 +31,6 @@
                   </Row>
                 </Header>
                 <Content>
-<<<<<<< HEAD
-                    <Table stripe :height="tableHeight" :loading='loading' border :columns="columns" :data="data" ref="table"></Table>
-=======
                     <Table border
                            stripe
                            ref="table"
@@ -41,13 +38,7 @@
                            :height="tableHeight"
                            :loading='loading'
                            :columns="columns"
-<<<<<<< HEAD
                            :data="data"></Table>
->>>>>>> 3c35f79a911c600a8ff05f7d97edae845d046eb7
-=======
-                           :data="data">
-                    </Table>
->>>>>>> 930103c8e3c95a1a631dd119d46b4e6514fc4f5b
                     <div style="margin-top: 10px;margin-right: 30px;float:right;">
                         <Page :total="totalBar" :current="pageNum" @on-change="pageChange" :page-size=20 show-elevator show-total></Page>
                     </div>
@@ -205,7 +196,7 @@ export default {
       //获取表头
       let newtitleArr = []; //存储最终要给columns的表头数据
       let j = 0;
-      console.log(this.cnameTitle);
+      // console.log(this.cnameTitle);
       this.cnameTitle.forEach(function(v, i) {
         v.title = v.cname;
         v.key = ++j;
@@ -221,7 +212,11 @@ export default {
       //   };
       //   newtitleArr.push(Id);
       // }
+      newtitleArr.sort(function (a, b) {
+        return Number(a.position) - Number(b.position);
+      })
       newtitleArr.push(end);
+      // console.log(newtitleArr);
       this.columns = newtitleArr; //将获取到的表头字段赋值给table的columns
 
       // 渲染表格数据
@@ -255,9 +250,9 @@ export default {
       this.loading = false;
     },
     // 获取侧边栏数据
-    getasideMsg() {
+    getasideMsg() { 
       //给侧边栏赋search页面传来的侧边栏数据
-      this.asideMsg[0].children = this.$store.state.searchMsg;
+      this.asideMsg[0].children = this.$store.state.searchMsg?this.$store.state.searchMsg:JSON.parse(sessionStorage.getItem('searchMsg'));
       // 应该是进入该表后遍历所有侧边栏数据, 显示selected的那一项
       this.asideMsg[0].children.forEach((v, i) => {
         if (v.selected == true) {
@@ -344,6 +339,7 @@ export default {
       let data = { table: this.tableName };
       this.$http.post("/cardController/getAttributeList", data).then(info => {
         if (info.status == 200) {
+          // console.log(info.data);
           this.cnameTitle = info.data;
         }
       });
@@ -525,7 +521,7 @@ export default {
     },
     // 获取权限
     getAuthority() {
-      this.Authority = this.$store.state.Mode;
+      this.Authority = this.$store.state.Mode?this.$store.state.Mode:JSON.parse(sessionStorage.getItem('Mode'));
     },
     // 高度自适应
     heightAdaptive(){
