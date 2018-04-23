@@ -70,8 +70,8 @@
       <p slot="header">
         <span>查看记录</span>
       </p>
-      <div>
-        <ul class="modalListUl">
+      <div class="modalListUl">
+        <ul>
           <li v-for="(val, key ,index) in configViewData" :key="index">{{ key }} : {{ val }}</li>
         </ul>
       </div>
