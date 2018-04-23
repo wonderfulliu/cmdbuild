@@ -26,18 +26,19 @@
         </Col>
       </Row>
     </Header>
-    <Content ref="conBbody"  class="contentTable">
+    <Content ref="conBbody">
       <div class="contentBody">
         <Table border
                stripe
                ref="tableCont"
                size="small"
-               height="440"
+               :height="tableHeight"
                @on-row-click="getRecordInfo"
                :highlight-row="highlight"
                :loading="loading"
                :columns="ConfigThead"
-               :data="ConfigTdata"></Table>
+               :data="ConfigTdata">
+        </Table>
         <div ref="pageCont" class="pageContainer clearfix floatRight">
           <Button type="ghost" class="floatLeft" @click="pageFirst">首页</Button>
           <Page class="floatLeft"
@@ -123,13 +124,15 @@ export default {
       highlight: true,
       clickRow: false,
       contentBody: '',
+      contentbodyH: '',//内容区域高度
+      tableHeight: '',//表格高度
       //模态框
       configDeleModal: false, //删除modal
       configViewModal: false, //查看modal
       configAddModal: false,
       deleLoading: false,
       configViewData: "", //查看数据
-      isdisable: ''//禁用与否, ''就是false
+      isdisable: '',//禁用与否, ''就是false
     };
   },
   created() {
@@ -190,11 +193,17 @@ export default {
                 cname = markName;
                 oTemp.title = cname;
                 oTemp.key = v;
-                oTemp.width = 170;
+                // oTemp.width = 170;在下面根据表头数量设置每格的宽度
                 oTemp.ellipsis = true;
                 arrObj.push(oTemp);
               }
             });
+            let len = arrObj.length; //记录表头数量
+            let theadWidth = document.querySelector(".contentBody .ivu-table-header").offsetWidth - 17;
+            let width = theadWidth / len > 200 ? theadWidth / len : 200;
+            arrObj.forEach((v, i) => {
+              v.width = width;
+            })
             sessionStorage.setItem('config_' + _this.tableName + '_head',JSON.stringify(arrObj));
             let newArr = arrObj;
             _this.ConfigThead = newArr;
@@ -233,17 +242,17 @@ export default {
         });
     },
     getRecordInfo(res) {
-      console.log(res);//本行具体信息
+      // console.log(res);//本行具体信息
       this.clickRow = true; //点击状态参数
       this.recordId = res.Id; //获取记录id
       let lookupdt = this.lookupInfo;
-      console.log(lookupdt);//lookup数据
+      // console.log(lookupdt);//lookup数据
       let relatedt = this.relationInfo;
       let addData = {};
       let attr = JSON.parse(//表头信息
         sessionStorage.getItem("config_" + this.tableName + "_attribute")
       );
-      console.log(attr);
+      // console.log(attr);
       attr.forEach(function(v, i){
         for(let k in res){
           if (v.attribute == k) {
@@ -269,7 +278,8 @@ export default {
       });
       addData.tableName = this.tableName;
       addData.titleMsg = attr;
-      console.log(addData);
+      addData.Id = this.recordId;
+      // console.log(addData);
       this.$store.commit("getaddMsg", addData);
     },
     attributeCName(eName) {
@@ -529,6 +539,7 @@ export default {
     heightAdaptive(){
       let clientH = document.documentElement.clientHeight;
       this.contentbodyH = (clientH - 64) + 'px';
+      this.tableHeight = clientH - 64 - 133;//133包括按钮区域, margin-top, 分页所在区域
     },
   },
   computed: {}

@@ -20,7 +20,7 @@
         </Menu>
       </Sider>
       <!-- 内容区域 -->
-      <Layout class="miniWindow">
+      <Layout class="miniWindow" :style="{height:contentbodyH}">
         <Header class="layout-header-bar">
           <Row>
             <Col span="5">
@@ -46,7 +46,7 @@
             stripe
             border
             size="small"
-            height="410"
+            :height="tableHeight"
             :loading='loading'
             :columns="columns"
             :data="data"
@@ -91,10 +91,13 @@ export default {
       totalBar: 0,
       totalPage: null,  //总页数
       searched: false,
+      contentbodyH: '',//内容区域高度
+      tableHeight: '', //表格高度区域
     };
   },
   created() {
     this.getasideMsg();
+    this.heightAdaptive();
   },
   computed: {
     rotateIcon() {
@@ -316,7 +319,13 @@ export default {
       //   filename: "Sorting and filtering data",
       //   original: false
       // });
-    }
+    },
+    // 高度自适应
+    heightAdaptive(){
+      let clientH = document.documentElement.clientHeight;
+      this.contentbodyH = (clientH - 64) + 'px';
+      this.tableHeight = clientH - 64 - 145;//133包括按钮区域, margin-top, 分页所在区域
+    },
   }
 };
 </script>

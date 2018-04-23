@@ -147,8 +147,12 @@ export default {
     },
     // 获取与处理权限
     getAuthority() {
-      this.Authority = this.$store.state.Mode;
-    },
+      if (this.$store.state.Mode) {
+        this.Authority = this.$store.state.Mode;
+      } else {
+        this.Authority = JSON.parse(sessionStorage.getItem('Mode'));
+      }
+    }, 
     WorR(authority, eName) {
       let Mode;
       authority.forEach(function(v, i) {
