@@ -152,7 +152,7 @@ export default {
       } else {
         this.Authority = JSON.parse(sessionStorage.getItem('Mode'));
       }
-    }, 
+    },
     WorR(authority, eName) {
       let Mode;
       authority.forEach(function(v, i) {
