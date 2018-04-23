@@ -38,7 +38,9 @@
                      :rotateIcon='rotateIcon'
                      @transferRecord='getRecordId'
                      :recordId='recordId'
-                     :Mode='Mode'>
+                     :Mode='Mode'
+                     :tableType='tableType'
+                     :funcionName="funcionName">
         </router-view>
       </transition>
 
@@ -56,6 +58,8 @@ export default {
       //页面配置：
       groupName: JSON.parse(sessionStorage.getItem("groupInfo")).Code, //组名
       tableName: "", //表名
+      funcionName: "",
+      tableType: "",  //表类别
       recordId: "",
       Authority: "", //存储权限
       Mode: ""
@@ -85,6 +89,7 @@ export default {
       _this.$http
         .post("/authorityController/getMenu?groupName=" + _this.groupName)
         .then(function(info) {
+          console.log(info);
           let oData = info.data.children;
           let treeMenu = sessionStorage.getItem(_this.groupName + "_menu");
           if (treeMenu) {
@@ -95,6 +100,7 @@ export default {
             );
           }
           let objTree = objFunc(oData);//将得到的数据转换成需要的格式
+          console.log(objTree);
           _this.ConfigTreeData = newTreeFunc(objTree); //打开侧栏第一个选项
 
           function newTreeFunc(obj) {//这里第一次获取表名
@@ -118,6 +124,10 @@ export default {
             d.forEach(function(v, i) {
               let oBranch = {};
               oBranch.title = v.description;
+              oBranch.type = v.type;
+              if(v.type == 'view'){
+                oBranch.funcionName = v.functionName;
+              }
               oBranch.expand = false; //菜单是否展开 true展开
               if (v.children.length != 0) {
                 oBranch.children = objFunc(v.children);
@@ -139,6 +149,10 @@ export default {
         _this.tableName = eName; //获取表名
         _this.$router.push({ path: "/config/tableList" });
         this.Mode = select[0].Mode;
+        this.tableType = select[0].type;//获取表类别
+        if(select[0].type == "view"){
+          this.funcionName = select[0].funcionName; //viewfuncionName
+        }
         console.log(this.Mode);//点击的表
       }
     },

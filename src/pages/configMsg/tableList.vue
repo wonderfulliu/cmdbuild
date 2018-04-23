@@ -3,26 +3,26 @@
     <Header ref="conBhead" :style="{padding: 0}" class="layout-header-bar">
       <Row>
         <Col :xs="9" :sm="6" :md="5" :lg="5">
-          <div class="">
-            <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
-            <Button type="ghost">searchFilter</Button>
-          </div>
+        <div class="">
+          <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
+          <Button type="ghost">searchFilter</Button>
+        </div>
         </Col>
         <Col :xs="12" :sm="12" :md="10" :lg="11">
-          <Input v-model="configCondition" placeholder="Enter something...">
-            <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
-          </Input>
+        <Input v-model="configCondition" placeholder="Enter something...">
+        <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
+        </Input>
         </Col>
         <Col :xs="14" :sm="12" :md="9" :lg="8">
-          <ButtonGroup>
-            <Button type="ghost" title="下载" icon="ios-download-outline" @click="configDownload"></Button>
-            <Button type="ghost" title="新增" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'></Button>
-            <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'></Button>
-            <Button type="ghost" title="查看" icon="ios-eye" @click="ctrlView"></Button>
-            <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
-            <Button type="ghost" title="链接" icon="ios-infinite" @click="ctrlRelete"></Button>
-            <Button type="ghost" title="删除" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'></Button>
-          </ButtonGroup>
+        <ButtonGroup>
+          <Button type="ghost" title="下载" icon="ios-download-outline" @click="configDownload"></Button>
+          <Button type="ghost" title="新增" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'></Button>
+          <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'></Button>
+          <Button type="ghost" title="查看" icon="ios-eye" @click="ctrlView"></Button>
+          <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
+          <Button type="ghost" title="链接" icon="ios-infinite" @click="ctrlRelete"></Button>
+          <Button type="ghost" title="删除" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'></Button>
+        </ButtonGroup>
         </Col>
       </Row>
     </Header>
@@ -84,106 +84,110 @@
 </template>
 
 <script>
-export default {
-  props: {
-    tableName: {
-      type: String,
-      required: true
+  export default {
+    props: {
+      tableName: {
+        type: String,
+        required: true
+      },
+      tableType: {
+        type: String,
+        required: true
+      },
+      Mode: {
+        type: String,
+        required: true
+      },
+      funcionName: {
+        type: String,
+        required: true
+      },
+      collapsedSider: {
+        type: Function,
+        default: null
+      },
+      rotateIcon: {
+        type: Array,
+        default: null
+      }
     },
-    collapsedSider: {
-      type: Function,
-      default: null
+    data() {
+      return {
+        //参数
+        isCollapsed: false,
+        recordId: "", //记录id
+        pageNum: 1, //当前页
+        pageSize: 20, //每页条数
+        totalBar: null, //总条数
+        totalPage: null, //总页数
+        configCondition: "", //查询条件
+        //数据
+        ConfigThead: [], //表头
+        ConfigTdata: [], //表格数据
+        // attributes: '',   //记录的字段 中英文
+        lookupInfo: "", //当前表中lookup信息
+        relationInfo: "", //关系表信息
+        //页面配置：
+        loading: true,
+        highlight: true,
+        clickRow: false,
+        contentBody: '',
+        contentbodyH: '',//内容区域高度
+        tableHeight: '',//表格高度
+        //模态框
+        configDeleModal: false, //删除modal
+        configViewModal: false, //查看modal
+        configAddModal: false,
+        deleLoading: false,
+        configViewData: "", //查看数据
+        isdisable: '',//禁用与否, ''就是false
+      };
     },
-    rotateIcon: {
-      type: Array,
-      default: null
-    },
-    Mode: {
-      type: String,
-      required: true
-    }
-  },
-  data() {
-    return {
-      //参数
-      isCollapsed: false,
-      recordId: "", //记录id
-      pageNum: 1, //当前页
-      pageSize: 20, //每页条数
-      totalBar: null, //总条数
-      totalPage: null, //总页数
-      configCondition: "", //查询条件
-      //数据
-      ConfigThead: [], //表头
-      ConfigTdata: [], //表格数据
-      // attributes: '',   //记录的字段 中英文
-      lookupInfo: "", //当前表中lookup信息
-      relationInfo: "", //关系表信息
-      //页面配置：
-      loading: true,
-      highlight: true,
-      clickRow: false,
-      contentBody: '',
-      contentbodyH: '',//内容区域高度
-      tableHeight: '',//表格高度
-      //模态框
-      configDeleModal: false, //删除modal
-      configViewModal: false, //查看modal
-      configAddModal: false,
-      deleLoading: false,
-      configViewData: "", //查看数据
-      isdisable: '',//禁用与否, ''就是false
-    };
-  },
-  created() {
-    this.heightAdaptive();
-    this.isgetTablename();
-    this.$watch("tableName", function(newValue, oldValue) {
-      this.getTableAttribute();
-      this.getTableHead();
-      this.getTableData();
-      this.getlookup();
-      this.isDisabled();
-    });
-  },
-  methods: {
-    // 如果表名已经获取到, 可以调用以下函数
-    isgetTablename(){
-      if (this.tableName) {
-        this.isDisabled();
+    created() {
+      this.heightAdaptive();
+      this.isgetTablename();
+      this.$watch("tableName", function(newValue, oldValue) {
         this.getTableAttribute();
-        this.getTableHead();
+//        this.getTableHead();
         this.getTableData();
         this.getlookup();
-      }
+        this.isDisabled();
+      });
     },
-    getTableAttribute() {//先从session中获取表头详细信息, 如果为空, 那么重新请求并存储在session中
-      let _this = this;
-      let thead = sessionStorage.getItem(
-        "config_" + _this.tableName + "_attribute"
-      );
-      if (!thead) {
-        _this.$http
-          .post("/cardController/getAttributeList", { table: _this.tableName })
-          .then(function(info) {
-            sessionStorage.setItem(
-              "config_" + _this.tableName + "_attribute",
-              JSON.stringify(info.data)
-            );
-          });
-      }
-    },
-    getTableHead(){
-      let thead = sessionStorage.getItem('config_' + this.tableName + '_head');
-      if(!thead){
+    methods: {
+      // 如果表名已经获取到, 可以调用以下函数
+      isgetTablename(){
+        if (this.tableName) {
+          this.isDisabled();
+          this.getTableAttribute();
+//          this.getTableHead();
+          this.getTableData();
+          this.getlookup();
+        }
+      },
+      getTableAttribute() {//先从session中获取表头详细信息, 如果为空, 那么重新请求并存储在session中
         let _this = this;
-        _this.$http.get('/cardController/getCardList?table=' +
-            _this.tableName + '&pageNum=' +
-            _this.pageNum +'&pageSize=' +
-            _this.pageSize)
-          .then(function(info2){
+        let thead = sessionStorage.getItem(
+          "config_" + _this.tableName + "_attribute"
+        );
+        if (!thead) {
+          _this.$http
+            .post("/cardController/getAttributeList", { table: _this.tableName })
+            .then(function(info) {
+              sessionStorage.setItem(
+                "config_" + _this.tableName + "_attribute",
+                JSON.stringify(info.data)
+              );
+            });
+        }
+      },
+      getTableHead(info){
+        let thead = sessionStorage.getItem('config_' + this.tableName + '_head');
+        if(!thead){
+          let _this = this;
+
             //获取表头数据：
-            let arrA = Object.keys(info2.data.list[0]);//获取对象内所有属性
+            let arrA = Object.keys(info.data.list[0]);//获取对象内所有属性
             let arrObj = [];
             arrA.forEach(function(v, i){
               let oTemp = {};
@@ -207,130 +211,149 @@ export default {
             sessionStorage.setItem('config_' + _this.tableName + '_head',JSON.stringify(arrObj));
             let newArr = arrObj;
             _this.ConfigThead = newArr;
-          });
 
-      }else {
-        this.ConfigThead = JSON.parse(thead);
-      }
-    },
-    getTableData() {
-      //表格数据获取
-      let _this = this;
-      _this.loading = true; //加载中
-      let result = _this.$http
-        .get(
-          "/cardController/getCardList?table=" +
-            _this.tableName +
-            "&pageNum=" +
-            _this.pageNum +
-            "&pageSize=" +
-            _this.pageSize
-        )
-        .then(function(info) {
-          _this.totalPage = info.data.totalPage;
-          _this.totalBar = info.data.totalRecord;
-          let ConfigTdata = info.data.list;
-          ConfigTdata.forEach(function(v, i) {
-            for (let a in v) {
-              if (v[a] != null && typeof v[a] == "object") {
-                v[a] = v[a].Description;
+        }else {
+          this.ConfigThead = JSON.parse(thead);
+        }
+      },
+      tableDataProce(info){
+        let _this = this;
+        _this.totalPage = info.data.totalPage;
+        _this.totalBar = info.data.totalRecord;
+        let ConfigTdata = info.data.list;
+        ConfigTdata.forEach(function(v, i) {
+          for (let a in v) {
+            if (v[a] != null && typeof v[a] == "object") {
+              v[a] = v[a].Description;
+            }
+          }
+        });
+        _this.ConfigTdata = ConfigTdata;
+        _this.loading = false; //加载完成时
+      },
+      getTableData() {
+        //表格数据获取
+        let _this = this;
+        _this.loading = true; //加载中
+        if(_this.tableType == 'view'){
+          console.log(_this.funcionName);
+          _this.$http
+            .post(
+              "/viewController/getViewCardList?funcionName=" +
+              _this.funcionName +
+              "&pageNum=" +
+              _this.pageNum +
+              "&pageSize=" +
+              _this.pageSize)
+            .then(function(info) {
+              _this.getTableHead(info);
+              _this.tableDataProce(info);
+            });
+        }else {
+          _this.$http
+            .get(
+              "/cardController/getCardList?table=" +
+              _this.tableName +
+              "&pageNum=" +
+              _this.pageNum +
+              "&pageSize=" +
+              _this.pageSize)
+            .then(function(info) {
+              _this.getTableHead(info);
+              _this.tableDataProce(info);
+            });
+        }
+      },
+      getRecordInfo(res) {
+        // console.log(res);//本行具体信息
+        this.clickRow = true; //点击状态参数
+        this.recordId = res.Id; //获取记录id
+        let lookupdt = this.lookupInfo;
+        // console.log(lookupdt);//lookup数据
+        let relatedt = this.relationInfo;
+        let addData = {};
+        let attr = JSON.parse(//表头信息
+          sessionStorage.getItem("config_" + this.tableName + "_attribute")
+        );
+        // console.log(attr);
+        attr.forEach(function(v, i){
+          for(let k in res){
+            if (v.attribute == k) {
+              v.content = res[k];
+            }
+          }
+        })
+        attr.forEach(function(v, i) {
+          let a = v.attribute;
+          if (v.type == "lookup") {
+            v.lookupMsg = lookupdt[v.attribute];
+          } else if (v.type == "reference") {
+            for (let ri = 0; ri < relatedt.length; ri++) {
+              if (v.lr == relatedt[ri].domainname) {
+                if (relatedt[ri].domainclass1 == _this.tableName) {
+                  v.relationTable = relatedt[ri].domainclass2;
+                } else {
+                  v.relationTable = relatedt[ri].domainclass1;
+                }
               }
             }
+          }
+        });
+        addData.tableName = this.tableName;
+        addData.titleMsg = attr;
+        addData.Id = this.recordId;
+        // console.log(addData);
+        this.$store.commit("getaddMsg", addData);
+      },
+      attributeCName(eName) {
+        let _this = this;
+        let cNameObj = JSON.parse(
+          sessionStorage.getItem("config_" + _this.tableName + "_attribute")
+        );
+        let c = cNameObj.filter(function(v, i) {
+          return eName == v.attribute;
+        });
+        if (c.length != 0) {
+          return c[0].cname;
+        }
+      },
+      pageChange(page) {
+        this.pageNum = page;
+        this.getTableData(this.tableName);
+      },
+      pageFirst() {
+        this.pageNum = 1;
+        this.getTableData(this.tableName);
+      },
+      pageLast() {
+        this.pageNum = this.totalPage;
+        this.getTableData(this.tableName);
+      },
+      getlookup() {
+        //获取相关数据
+        //lookup
+        let _this = this;
+        _this.$http
+          .post(
+            "/relationController/getLookuplistByTable?table=" + _this.tableName
+          )
+          .then(function(info) {
+            _this.lookupInfo = info.data;
           });
-          _this.ConfigTdata = ConfigTdata;
-          _this.loading = false; //加载完成时
-        });
-    },
-    getRecordInfo(res) {
-      // console.log(res);//本行具体信息
-      this.clickRow = true; //点击状态参数
-      this.recordId = res.Id; //获取记录id
-      let lookupdt = this.lookupInfo;
-      // console.log(lookupdt);//lookup数据
-      let relatedt = this.relationInfo;
-      let addData = {};
-      let attr = JSON.parse(//表头信息
-        sessionStorage.getItem("config_" + this.tableName + "_attribute")
-      );
-      // console.log(attr);
-      attr.forEach(function(v, i){
-        for(let k in res){
-          if (v.attribute == k) {
-            v.content = res[k];
-          }
-        }
-      })
-      attr.forEach(function(v, i) {
-        let a = v.attribute;
-        if (v.type == "lookup") {
-          v.lookupMsg = lookupdt[v.attribute];
-        } else if (v.type == "reference") {
-          for (let ri = 0; ri < relatedt.length; ri++) {
-            if (v.lr == relatedt[ri].domainname) {
-              if (relatedt[ri].domainclass1 == _this.tableName) {
-                v.relationTable = relatedt[ri].domainclass2;
-              } else {
-                v.relationTable = relatedt[ri].domainclass1;
-              }
-            }
-          }
-        }
-      });
-      addData.tableName = this.tableName;
-      addData.titleMsg = attr;
-      addData.Id = this.recordId;
-      // console.log(addData);
-      this.$store.commit("getaddMsg", addData);
-    },
-    attributeCName(eName) {
-      let _this = this;
-      let cNameObj = JSON.parse(
-        sessionStorage.getItem("config_" + _this.tableName + "_attribute")
-      );
-      let c = cNameObj.filter(function(v, i) {
-        return eName == v.attribute;
-      });
-      if (c.length != 0) {
-        return c[0].cname;
-      }
-    },
-    pageChange(page) {
-      this.pageNum = page;
-      this.getTableData(this.tableName);
-    },
-    pageFirst() {
-      this.pageNum = 1;
-      this.getTableData(this.tableName);
-    },
-    pageLast() {
-      this.pageNum = this.totalPage;
-      this.getTableData(this.tableName);
-    },
-    getlookup() {
-      //获取相关数据
-      //lookup
-      let _this = this;
-      _this.$http
-        .post(
-          "/relationController/getLookuplistByTable?table=" + _this.tableName
-        )
-        .then(function(info) {
-          _this.lookupInfo = info.data;
-        });
-      //relationTable
-      _this.$http
-        .get("/relationController/getDomainList?table=" + _this.tableName)
-        .then(function(res) {
-          _this.relationInfo = res.data;
-        });
-    },
-    fuzzy() {
-      // 模糊查询
-      let _this = this;
-      _this.loading = true; //加载中
-      let result = _this.$http
-        .post(
-          "cardController/fuzzyQuery?tableName=" +
+        //relationTable
+        _this.$http
+          .get("/relationController/getDomainList?table=" + _this.tableName)
+          .then(function(res) {
+            _this.relationInfo = res.data;
+          });
+      },
+      fuzzy() {
+        // 模糊查询
+        let _this = this;
+        _this.loading = true; //加载中
+        let result = _this.$http
+          .post(
+            "cardController/fuzzyQuery?tableName=" +
             _this.tableName +
             "&condition=" +
             _this.configCondition +
@@ -338,182 +361,91 @@ export default {
             _this.pageNum +
             "&pageSize=" +
             _this.pageSize
-        )
-        .then(function(info) {
-          _this.totalBar = info.data.totalRecord;
-          let ConfigTdata = info.data.list;
-          ConfigTdata.forEach(function(v, i) {
-            for (let i in v) {
-              if (v[i] != null && typeof v[i] == "object") {
-                v[i] = v[i].value;
-              }
-            }
-          });
-          _this.ConfigTdata = ConfigTdata;
-          _this.loading = false; //加载完成时
-        });
-    },
-    ctrlView() {
-      let _this = this;
-      if (_this.clickRow == true) {
-        //选中行
-        _this.$http
-          .get(
-            "/cardController/card?table=" +
-              _this.tableName +
-              "&Id=" +
-              _this.recordId
           )
           .then(function(info) {
-            let newObj = {};
-            Object.keys(info.data).forEach(function(v, i) {
-              if (_this.attributeCName(v)) {
-                let attr = _this.attributeCName(v);
-                if (typeof info.data[v] == "object" && info.data[v] != null) {
-                  newObj[attr] = info.data[v].Description;
-                } else {
-                  newObj[attr] = info.data[v];
+            _this.totalBar = info.data.totalRecord;
+            let ConfigTdata = info.data.list;
+            ConfigTdata.forEach(function(v, i) {
+              for (let i in v) {
+                if (v[i] != null && typeof v[i] == "object") {
+                  v[i] = v[i].value;
                 }
               }
             });
-            _this.configViewData = newObj;
-          })
-          .catch(function(error) {
-            //  console.log(error);
+            _this.ConfigTdata = ConfigTdata;
+            _this.loading = false; //加载完成时
           });
-        _this.configViewModal = true;
-      } else {
-        //未选中行
-        _this.$Message.error("您未选中行！");
-      }
-    },
-    ctrlDele() {
-      if (this.clickRow == true) {
-        this.configDeleModal = true;
-      } else {
-        this.$Message.error("您未选中行！");
-      }
-    },
-    ctrlEdit() {
-      if (this.clickRow == true) {
-        //将已选中行进行编辑
-        console.log("将已选中行进行编辑");
-        this.$router.push({ path: "/config/cedit" }); //跳转至新增页面
-      } else {
-        this.$Message.error("您未选中行！");
-      }
-    },
-    ctrlHistory() {
-      if (this.clickRow == true) {
-        //将跳转到历史记录
-        this.$emit("transferRecord", this.recordId);
-        //跳转到添加页
-        this.$router.push({ path: "/config/historyRecord" });
-        //console.log("将跳转到历史记录");
-      } else {
-        this.$Message.error("您未选中行！");
-      }
-    },
-    ctrlRelete() {
-      if (this.clickRow == true) {
-        //将跳转到关系页面  表名 记录id 已获取
-        //console.log("将跳转到关系页面");
-        let data = { table: this.tableName, Id: this.recordId }; //获取详细信息
-        this.$http
-          .post("/relationController/getRelationList", data)
-          .then(info => {
-            if (info.status == 200 && Object.keys(info.data).length != 0) {
-              //请求成功且有数据
-              // console.log(info.data);
-              //将数据存储到公共仓库, 页面跳转...
-              let data = {
-                tableName: this.tableName,
-                Id: this.recordId,
-                relationMsg: info.data
-              };
-              this.$store.commit("getrelationMsg", data);
-              this.$router.push({ path: "/config/relation" });
-            } else if (
-              info.status == 200 &&
-              Object.keys(info.data).length == 0
-            ) {
-              this.$Message.error({
-                content: "该记录尚未与其他记录关联, 查询关系不存在"
+      },
+      ctrlView() {
+        let _this = this;
+        if (_this.clickRow == true) {
+          //选中行
+          _this.$http
+            .get(
+              "/cardController/card?table=" +
+              _this.tableName +
+              "&Id=" +
+              _this.recordId
+            )
+            .then(function(info) {
+              let newObj = {};
+              Object.keys(info.data).forEach(function(v, i) {
+                if (_this.attributeCName(v)) {
+                  let attr = _this.attributeCName(v);
+                  if (typeof info.data[v] == "object" && info.data[v] != null) {
+                    newObj[attr] = info.data[v].Description;
+                  } else {
+                    newObj[attr] = info.data[v];
+                  }
+                }
               });
-            }
-          });
-      } else {
-        this.$Message.error("您未选中行！");
-      }
-    },
-    configDele() {
-      let _this = this;
-      _this.deleLoading = true;
-      _this.$http
-        .delete(
-          "/cardController/card?table=" +
-            _this.tableName +
-            "&&Id=" +
-            _this.recordId
-        )
-        .then(function() {
-          _this.deleLoading = false;
-          _this.configDeleModal = false;
-          _this.getTableData();
-          _this.$Message.success("删除成功");
-        })
-        .catch(function(error) {
-          _this.deleLoading = false;
-          _this.configDeleModal = false;
-          _this.getTableData();
-          _this.$Message.error("删除失败");
-        });
-    },
-    configAdd() {
-      let _this = this;
-      let lookupdt = _this.lookupInfo;
-      let relatedt = _this.relationInfo;
-      let addData = {};
-      let attr = JSON.parse(
-        sessionStorage.getItem("config_" + _this.tableName + "_attribute")
-      );
-      attr.forEach(function(v, i) {
-        let a = v.attribute;
-        if (v.type == "lookup") {
-          v.lookupMsg = lookupdt[v.attribute];
-        } else if (v.type == "reference") {
-          for (let ri = 0; ri < relatedt.length; ri++) {
-            if (v.lr == relatedt[ri].domainname) {
-              if (relatedt[ri].domainclass1 == _this.tableName) {
-                v.relationTable = relatedt[ri].domainclass2;
-              } else {
-                v.relationTable = relatedt[ri].domainclass1;
-              }
-            }
-          }
+              _this.configViewData = newObj;
+            })
+            .catch(function(error) {
+              //  console.log(error);
+            });
+          _this.configViewModal = true;
+        } else {
+          //未选中行
+          _this.$Message.error("您未选中行！");
         }
-      });
-      addData.tableName = _this.tableName;
-      addData.titleMsg = attr;
-      // console.log(addData);
-      _this.$store.commit("getaddMsg", addData);
-      //跳转到添加页
-      this.$router.push({ path: "/config/cadd" });
-    },
-    configDownload() {
-      //下载中文字段数据
-      window.open(
-        "/cardController/downLoadExcel?table=" + this.tableName,
-        "_self"
-      );
-    },
-    // 在跳转页面之前先获取到关系表的详细信息, 如果关系不为空, 再进行页面跳转
-    getrelationMsg() {
-      let data = { table: this.tableName, Id: this.recordId }; //获取详细信息
-      this.$http
-        .post("/relationController/getRelationList", data)
-        .then(info => {
-          if (info.status == 200 && Object.keys(info.data).length != 0) {
+      },
+      ctrlDele() {
+        if (this.clickRow == true) {
+          this.configDeleModal = true;
+        } else {
+          this.$Message.error("您未选中行！");
+        }
+      },
+      ctrlEdit() {
+        if (this.clickRow == true) {
+          //将已选中行进行编辑
+          console.log("将已选中行进行编辑");
+          this.$router.push({ path: "/config/cedit" }); //跳转至新增页面
+        } else {
+          this.$Message.error("您未选中行！");
+        }
+      },
+      ctrlHistory() {
+        if (this.clickRow == true) {
+          //将跳转到历史记录
+          this.$emit("transferRecord", this.recordId);
+          //跳转到添加页
+          this.$router.push({ path: "/config/historyRecord" });
+          //console.log("将跳转到历史记录");
+        } else {
+          this.$Message.error("您未选中行！");
+        }
+      },
+      ctrlRelete() {
+        if (this.clickRow == true) {
+          //将跳转到关系页面  表名 记录id 已获取
+          //console.log("将跳转到关系页面");
+          let data = { table: this.tableName, Id: this.recordId }; //获取详细信息
+          this.$http
+            .post("/relationController/getRelationList", data)
+            .then(info => {
+            if (info.status == 200 && Object.keys(info.data).length != 0) {
             //请求成功且有数据
             // console.log(info.data);
             //将数据存储到公共仓库, 页面跳转...
@@ -524,31 +456,122 @@ export default {
             };
             this.$store.commit("getrelationMsg", data);
             this.$router.push({ path: "/config/relation" });
-          } else if (info.status == 200 && Object.keys(info.data).length == 0) {
+          } else if (
+            info.status == 200 &&
+            Object.keys(info.data).length == 0
+          ) {
             this.$Message.error({
               content: "该记录尚未与其他记录关联, 查询关系不存在"
             });
           }
         });
+        } else {
+          this.$Message.error("您未选中行！");
+        }
+      },
+      configDele() {
+        let _this = this;
+        _this.deleLoading = true;
+        _this.$http
+          .delete(
+            "/cardController/card?table=" +
+            _this.tableName +
+            "&&Id=" +
+            _this.recordId
+          )
+          .then(function() {
+            _this.deleLoading = false;
+            _this.configDeleModal = false;
+            _this.getTableData();
+            _this.$Message.success("删除成功");
+          })
+          .catch(function(error) {
+            _this.deleLoading = false;
+            _this.configDeleModal = false;
+            _this.getTableData();
+            _this.$Message.error("删除失败");
+          });
+      },
+      configAdd() {
+        let _this = this;
+        let lookupdt = _this.lookupInfo;
+        let relatedt = _this.relationInfo;
+        let addData = {};
+        let attr = JSON.parse(
+          sessionStorage.getItem("config_" + _this.tableName + "_attribute")
+        );
+        attr.forEach(function(v, i) {
+          let a = v.attribute;
+          if (v.type == "lookup") {
+            v.lookupMsg = lookupdt[v.attribute];
+          } else if (v.type == "reference") {
+            for (let ri = 0; ri < relatedt.length; ri++) {
+              if (v.lr == relatedt[ri].domainname) {
+                if (relatedt[ri].domainclass1 == _this.tableName) {
+                  v.relationTable = relatedt[ri].domainclass2;
+                } else {
+                  v.relationTable = relatedt[ri].domainclass1;
+                }
+              }
+            }
+          }
+        });
+        addData.tableName = _this.tableName;
+        addData.titleMsg = attr;
+        // console.log(addData);
+        _this.$store.commit("getaddMsg", addData);
+        //跳转到添加页
+        this.$router.push({ path: "/config/cadd" });
+      },
+      configDownload() {
+        //下载中文字段数据
+        window.open(
+          "/cardController/downLoadExcel?table=" + this.tableName,
+          "_self"
+        );
+      },
+      // 在跳转页面之前先获取到关系表的详细信息, 如果关系不为空, 再进行页面跳转
+      getrelationMsg() {
+        let data = { table: this.tableName, Id: this.recordId }; //获取详细信息
+        this.$http
+          .post("/relationController/getRelationList", data)
+          .then(info => {
+          if (info.status == 200 && Object.keys(info.data).length != 0) {
+          //请求成功且有数据
+          // console.log(info.data);
+          //将数据存储到公共仓库, 页面跳转...
+          let data = {
+            tableName: this.tableName,
+            Id: this.recordId,
+            relationMsg: info.data
+          };
+          this.$store.commit("getrelationMsg", data);
+          this.$router.push({ path: "/config/relation" });
+        } else if (info.status == 200 && Object.keys(info.data).length == 0) {
+          this.$Message.error({
+            content: "该记录尚未与其他记录关联, 查询关系不存在"
+          });
+        }
+      });
+      },
+      // 禁用于否
+      isDisabled(){
+        this.isdisable = this.Mode=='w' ? false : true;
+      },
+      // 高度自适应
+      heightAdaptive(){
+        let clientH = document.documentElement.clientHeight;
+        this.contentbodyH = (clientH - 64) + 'px';
+        this.tableHeight = clientH - 64 - 133;//133包括按钮区域, margin-top, 分页所在区域
+      },
     },
-    // 禁用于否
-    isDisabled(){
-      this.isdisable = this.Mode=='w' ? false : true;
-    },
-    // 高度自适应
-    heightAdaptive(){
-      let clientH = document.documentElement.clientHeight;
-      this.contentbodyH = (clientH - 64) + 'px';
-      this.tableHeight = clientH - 64 - 133;//133包括按钮区域, margin-top, 分页所在区域
-    },
-  },
-  computed: {}
-};
+    computed: {}
+  };
 </script>
 
 <style lang="scss" scoped>
-.menuCtrl {
-  margin: 4px 20px;
-  line-height: 2;
-}
+  .menuCtrl {
+    margin: 4px 20px;
+    line-height: 2;
+  }
 </style>

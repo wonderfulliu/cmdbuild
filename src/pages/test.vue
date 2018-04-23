@@ -1,259 +1,558 @@
 <template>
-  <div id="editTableContainer">
-    <header>
-      <h3>请选择关系: </h3>
-      <div class="btnContainer">
-        <Button @click="cancel">取消</Button>
-        <Button type="primary" @click="confirm">确认</Button>
+  <Layout class="miniWindow" ref="contentBody" :style="{height:contentbodyH}">
+    <Header ref="conBhead" :style="{padding: 0}" class="layout-header-bar">
+      <Row>
+        <Col :xs="9" :sm="6" :md="5" :lg="5">
+        <div class="">
+          <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
+          <Button type="ghost">searchFilter</Button>
+        </div>
+        </Col>
+        <Col :xs="12" :sm="12" :md="10" :lg="11">
+        <Input v-model="configCondition" placeholder="Enter something...">
+        <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
+        </Input>
+        </Col>
+        <Col :xs="14" :sm="12" :md="9" :lg="8">
+        <ButtonGroup>
+          <Button type="ghost" title="下载" icon="ios-download-outline" @click="configDownload"></Button>
+          <Button type="ghost" title="新增" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'></Button>
+          <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'></Button>
+          <Button type="ghost" title="查看" icon="ios-eye" @click="ctrlView"></Button>
+          <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
+          <Button type="ghost" title="链接" icon="ios-infinite" @click="ctrlRelete"></Button>
+          <Button type="ghost" title="删除" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'></Button>
+        </ButtonGroup>
+        </Col>
+      </Row>
+    </Header>
+    <Content ref="conBbody">
+      <div class="contentBody">
+        <Table border
+               stripe
+               ref="tableCont"
+               size="small"
+               :height="tableHeight"
+               @on-row-click="getRecordInfo"
+               :highlight-row="highlight"
+               :loading="loading"
+               :columns="ConfigThead"
+               :data="ConfigTdata">
+        </Table>
+        <div ref="pageCont" class="pageContainer clearfix floatRight">
+          <Button type="ghost" class="floatLeft" @click="pageFirst">首页</Button>
+          <Page class="floatLeft"
+                show-elevator
+                show-total
+                :page-size="20"
+                :current="pageNum"
+                :total="totalBar"
+                @on-change="pageChange"></Page>
+          <Button type="ghost" class="floatLeft" @click="pageLast">尾页</Button>
+        </div>
       </div>
-    </header>
-    <div class="content">
-      <Table highlight-row :loading='loading' @on-row-click="selectRow" stripe height="450" border  :columns="columns" :data="data"></Table>
-    </div>
-    <div class="footer">
-      <div class="search">
-        <Input v-model="searchMsg" @on-click="search" @on-enter="search" clearable icon="search" placeholder="Enter something..." style="width: 300px"></Input>
+    </Content>
+    <!--模态框-->
+    <Modal v-model="configDeleModal" width="360">
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="information-circled"></Icon>
+        <span>删除提示</span>
+      </p>
+      <div style="text-align:center">
+        <p>您即将删除此条记录。</p>
+        <p>是否确认删除？</p>
       </div>
-      <div class="page">
-        <Page @on-change="pageChange" :page-size='20' :total="totalRecord" show-elevator show-total></Page>
+      <div slot="footer">
+        <Button type="error" size="large" long :loading="deleLoading" @click="configDele">删除</Button>
       </div>
-    </div>
-  </div>
+    </Modal>
+    <Modal v-model="configViewModal">
+      <p slot="header">
+        <span>查看记录</span>
+      </p>
+      <div class="modalListUl">
+        <ul>
+          <li v-for="(val, key ,index) in configViewData" :key="index">{{ key }} : {{ val }}</li>
+        </ul>
+      </div>
+      <div slot="footer">
+      </div>
+    </Modal>
+  </Layout>
+
+
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      columns: [],
-      data: [],
-      totalRecord: 0,
-      pageNum: 1,
-      relationTable: "",
-      loading: false,
-      searchMsg: "", // 搜索
-      rowMsg: "", //存储该行的信息
-      chooseMsg: "",
-      a: {
-        domainname: "AppServiceTime_to_app",
-        records: [
-          {
-            domainname: "AppServiceTime_to_app",
-            domainclass2: '"Application"',
-            idobj2: 31815733,
-            domainclass1: '"Applicationservicetime"',
-            idobj1: 28441950
-          }
-        ]
+  export default {
+    props: {
+      tableName: {
+        type: String,
+        required: true
       },
-      b: {
-        domainname: "AppServiceTime_to_app",
-        records: [
-          {
-            domainname: "AppServiceTime_to_app",
-            domainclass2: '"Application"',
-            idobj2: 31815634,
-            domainclass1: '"Applicationservicetime"',
-            idobj1: 28441950
-          }
-        ]
+      tableType: {
+        type: String,
+        required: true
+      },
+      collapsedSider: {
+        type: Function,
+        default: null
+      },
+      rotateIcon: {
+        type: Array,
+        default: null
+      },
+      Mode: {
+        type: String,
+        required: true
       }
-    };
-  },
-  created() {
-    this.getTabledata();
-  },
-  methods: {
-    // 点击分页切换分页
-    pageChange(page) {
-      this.pageNum = page;
-      this.loading = true;
-      this.getreferenceData();
     },
-    // 直接获取处理好的表格数据: 表头, 第一页内容, 总条数, 关系表名
-    getTabledata() {
-      let tableData = this.$store.state.editTable;
-      this.data = tableData.data;
-      this.columns = tableData.columns;
-      this.totalRecord = tableData.totalRecord;
-      this.relationTable = tableData.relationTable;
+    data() {
+      return {
+        //参数
+        isCollapsed: false,
+        recordId: "", //记录id
+        pageNum: 1, //当前页
+        pageSize: 20, //每页条数
+        totalBar: null, //总条数
+        totalPage: null, //总页数
+        configCondition: "", //查询条件
+        //数据
+        ConfigThead: [], //表头
+        ConfigTdata: [], //表格数据
+        // attributes: '',   //记录的字段 中英文
+        lookupInfo: "", //当前表中lookup信息
+        relationInfo: "", //关系表信息
+        //页面配置：
+        loading: true,
+        highlight: true,
+        clickRow: false,
+        contentBody: '',
+        contentbodyH: '',//内容区域高度
+        tableHeight: '',//表格高度
+        //模态框
+        configDeleModal: false, //删除modal
+        configViewModal: false, //查看modal
+        configAddModal: false,
+        deleLoading: false,
+        configViewData: "", //查看数据
+        isdisable: '',//禁用与否, ''就是false
+      };
     },
-    // 获取模态框中的reference数据
-    getreferenceData() {
-      let data = "?table=" + this.relationTable + "&pageNum=" + this.pageNum;
-      this.$http.get("/cardController/getCardList" + data).then(info => {
-        if (info.status == 200) {
-          this.dataProcess(info);
-        }
+    created() {
+      this.heightAdaptive();
+      this.isgetTablename();
+      this.$watch("tableName", function(newValue, oldValue) {
+        this.getTableAttribute();
+        this.getTableHead();
+        this.getTableData();
+        this.getlookup();
+        this.isDisabled();
       });
     },
-    //表格数据的处理
-    dataProcess(info) {
-      this.totalBar = info.data.totalRecord;
-      let dataArr = info.data.list; //要处理和渲染的表格数据
-      // 设置开头多选
-      let start = {
-        type: "selection",
-        width: 50,
-        align: "center"
-      };
+    methods: {
+      // 如果表名已经获取到, 可以调用以下函数
+      isgetTablename(){
+        if (this.tableName) {
+          this.isDisabled();
+          this.getTableAttribute();
+          this.getTableHead();
+          this.getTableData();
+          this.getlookup();
+        }
+      },
+      getTableAttribute() {//先从session中获取表头详细信息, 如果为空, 那么重新请求并存储在session中
+        let _this = this;
+        let thead = sessionStorage.getItem(
+          "config_" + _this.tableName + "_attribute"
+        );
+        if (!thead) {
+          _this.$http
+            .post("/cardController/getAttributeList", { table: _this.tableName })
+            .then(function(info) {
+              sessionStorage.setItem(
+                "config_" + _this.tableName + "_attribute",
+                JSON.stringify(info.data)
+              );
+            });
+        }
+      },
+      getTableHead(){
+        let thead = sessionStorage.getItem('config_' + this.tableName + '_head');
+        if(!thead){
+          let _this = this;
+          _this.$http.get('/cardController/getCardList?table=' +
+              _this.tableName + '&pageNum=' +
+              _this.pageNum +'&pageSize=' +
+              _this.pageSize)
+            .then(function(info2){
+              //获取表头数据：
+              let arrA = Object.keys(info2.data.list[0]);//获取对象内所有属性
+              let arrObj = [];
+              arrA.forEach(function(v, i){
+                let oTemp = {};
+                let markName = _this.attributeCName(v);
+                let cname;
+                if(markName != null){
+                  cname = markName;
+                  oTemp.title = cname;
+                  oTemp.key = v;
+                  // oTemp.width = 170;在下面根据表头数量设置每格的宽度
+                  oTemp.ellipsis = true;
+                  arrObj.push(oTemp);
+                }
+              });
+              let len = arrObj.length; //记录表头数量
+              let theadWidth = document.querySelector(".contentBody .ivu-table-header").offsetWidth - 17;
+              let width = theadWidth / len > 200 ? theadWidth / len : 200;
+              arrObj.forEach((v, i) => {
+                v.width = width;
+            })
+              sessionStorage.setItem('config_' + _this.tableName + '_head',JSON.stringify(arrObj));
+              let newArr = arrObj;
+              _this.ConfigThead = newArr;
+            });
 
-      // 设置每个td的宽度(写在此处)
-      let width = 200;
-      //判断返回的表格数据是否有Id
-      // let flag = this.hasId(dataArr[0]);
-
-      let newtitleArr = this.columns;
-      let newcontentArr = []; //存储最终要赋给表格的数据
-      dataArr.forEach(function(v, i) {
-        //v表示待过滤数据中的每个对象, 一共6个对象
-        let newObj = {};
-        for (var key in v) {
-          //key表示每个待过滤对象的键
-          if (key == "Id") {
-            newObj.Id = v[key];
-          } else {
-            newtitleArr.forEach(function(val, index) {
-              //val表示表头每个字段对象
-              if (key == val.attribute) {
-                if (v[key] != null && typeof v[key] == "object") {
-                  //如果是对象, 那么值为123
-                  newObj[val.key] = v[key].Description;
-                } else if (v[key] == null) {
-                  newObj[val.key] = v[key];
-                } else {
-                  newObj[val.key] = v[key];
+        }else {
+          this.ConfigThead = JSON.parse(thead);
+        }
+      },
+      getTableData() {
+        //表格数据获取
+        let _this = this;
+        _this.loading = true; //加载中
+        let result = _this.$http
+          .get(
+            "/cardController/getCardList?table=" +
+            _this.tableName +
+            "&pageNum=" +
+            _this.pageNum +
+            "&pageSize=" +
+            _this.pageSize
+          )
+          .then(function(info) {
+            _this.totalPage = info.data.totalPage;
+            _this.totalBar = info.data.totalRecord;
+            let ConfigTdata = info.data.list;
+            ConfigTdata.forEach(function(v, i) {
+              for (let a in v) {
+                if (v[a] != null && typeof v[a] == "object") {
+                  v[a] = v[a].Description;
                 }
               }
             });
-          }
-        }
-        newcontentArr.push(newObj);
-      });
-      this.data = newcontentArr;
-      this.loading = false;
-    },
-    // 判断返回的数据中是否包含Id
-    hasId(info) {
-      let flag = false;
-      for (var k in info) {
-        if (k == "Id") {
-          flag = true;
-        }
-      }
-      return flag;
-    },
-    // 搜索功能
-    search() {
-      this.loading = true;
-      let data = {
-        functionName: this.relationTable,
-        pageNum: this.pageNum,
-        condition: this.searchMsg
-      };
-      this.$http
-        .post("/viewController/fuzzyQuery", this.$qs.stringify(data))
-        .then(
-          info => {
-            if (info.status == 200) {
-              this.dataProcess(info);
-            }
-          },
-          info => {
-            console.log(info);
-          }
+            _this.ConfigTdata = ConfigTdata;
+            _this.loading = false; //加载完成时
+          });
+      },
+      getRecordInfo(res) {
+        // console.log(res);//本行具体信息
+        this.clickRow = true; //点击状态参数
+        this.recordId = res.Id; //获取记录id
+        let lookupdt = this.lookupInfo;
+        // console.log(lookupdt);//lookup数据
+        let relatedt = this.relationInfo;
+        let addData = {};
+        let attr = JSON.parse(//表头信息
+          sessionStorage.getItem("config_" + this.tableName + "_attribute")
         );
-    },
-    // 选择行: 把该行的信息获取到
-    selectRow(selection, index) {
-      // 两个参数分别代表已选择的项和选择项的index
-      this.rowMsg = selection;
-    },
-    // 确认按钮
-    confirm() {
-      //获取到该行的信息, 取出description与id
-      let rowData = this.rowMsg;
-      let title = this.columns;
-      let chooseMsg = {
-        description: "",
-        Id: ""
-      };
-      this.chooseMsg = chooseMsg;
-      // 取出description
-      title.forEach(function(v, i) {
-        if (v.attribute == "Description") {
-          for (let k in rowData) {
-            chooseMsg.description = rowData[v.key];
-            if ((k = "Id")) {
-              //取出Id
-              chooseMsg.Id = rowData[k];
+        // console.log(attr);
+        attr.forEach(function(v, i){
+          for(let k in res){
+            if (v.attribute == k) {
+              v.content = res[k];
             }
           }
+        })
+        attr.forEach(function(v, i) {
+          let a = v.attribute;
+          if (v.type == "lookup") {
+            v.lookupMsg = lookupdt[v.attribute];
+          } else if (v.type == "reference") {
+            for (let ri = 0; ri < relatedt.length; ri++) {
+              if (v.lr == relatedt[ri].domainname) {
+                if (relatedt[ri].domainclass1 == _this.tableName) {
+                  v.relationTable = relatedt[ri].domainclass2;
+                } else {
+                  v.relationTable = relatedt[ri].domainclass1;
+                }
+              }
+            }
+          }
+        });
+        addData.tableName = this.tableName;
+        addData.titleMsg = attr;
+        addData.Id = this.recordId;
+        // console.log(addData);
+        this.$store.commit("getaddMsg", addData);
+      },
+      attributeCName(eName) {
+        let _this = this;
+        let cNameObj = JSON.parse(
+          sessionStorage.getItem("config_" + _this.tableName + "_attribute")
+        );
+        let c = cNameObj.filter(function(v, i) {
+          return eName == v.attribute;
+        });
+        if (c.length != 0) {
+          return c[0].cname;
+        }
+      },
+      pageChange(page) {
+        this.pageNum = page;
+        this.getTableData(this.tableName);
+      },
+      pageFirst() {
+        this.pageNum = 1;
+        this.getTableData(this.tableName);
+      },
+      pageLast() {
+        this.pageNum = this.totalPage;
+        this.getTableData(this.tableName);
+      },
+      getlookup() {
+        //获取相关数据
+        //lookup
+        let _this = this;
+        _this.$http
+          .post(
+            "/relationController/getLookuplistByTable?table=" + _this.tableName
+          )
+          .then(function(info) {
+            _this.lookupInfo = info.data;
+          });
+        //relationTable
+        _this.$http
+          .get("/relationController/getDomainList?table=" + _this.tableName)
+          .then(function(res) {
+            _this.relationInfo = res.data;
+          });
+      },
+      fuzzy() {
+        // 模糊查询
+        let _this = this;
+        _this.loading = true; //加载中
+        let result = _this.$http
+          .post(
+            "cardController/fuzzyQuery?tableName=" +
+            _this.tableName +
+            "&condition=" +
+            _this.configCondition +
+            "&pageNum=" +
+            _this.pageNum +
+            "&pageSize=" +
+            _this.pageSize
+          )
+          .then(function(info) {
+            _this.totalBar = info.data.totalRecord;
+            let ConfigTdata = info.data.list;
+            ConfigTdata.forEach(function(v, i) {
+              for (let i in v) {
+                if (v[i] != null && typeof v[i] == "object") {
+                  v[i] = v[i].value;
+                }
+              }
+            });
+            _this.ConfigTdata = ConfigTdata;
+            _this.loading = false; //加载完成时
+          });
+      },
+      ctrlView() {
+        let _this = this;
+        if (_this.clickRow == true) {
+          //选中行
+          _this.$http
+            .get(
+              "/cardController/card?table=" +
+              _this.tableName +
+              "&Id=" +
+              _this.recordId
+            )
+            .then(function(info) {
+              let newObj = {};
+              Object.keys(info.data).forEach(function(v, i) {
+                if (_this.attributeCName(v)) {
+                  let attr = _this.attributeCName(v);
+                  if (typeof info.data[v] == "object" && info.data[v] != null) {
+                    newObj[attr] = info.data[v].Description;
+                  } else {
+                    newObj[attr] = info.data[v];
+                  }
+                }
+              });
+              _this.configViewData = newObj;
+            })
+            .catch(function(error) {
+              //  console.log(error);
+            });
+          _this.configViewModal = true;
+        } else {
+          //未选中行
+          _this.$Message.error("您未选中行！");
+        }
+      },
+      ctrlDele() {
+        if (this.clickRow == true) {
+          this.configDeleModal = true;
+        } else {
+          this.$Message.error("您未选中行！");
+        }
+      },
+      ctrlEdit() {
+        if (this.clickRow == true) {
+          //将已选中行进行编辑
+          console.log("将已选中行进行编辑");
+          this.$router.push({ path: "/config/cedit" }); //跳转至新增页面
+        } else {
+          this.$Message.error("您未选中行！");
+        }
+      },
+      ctrlHistory() {
+        if (this.clickRow == true) {
+          //将跳转到历史记录
+          this.$emit("transferRecord", this.recordId);
+          //跳转到添加页
+          this.$router.push({ path: "/config/historyRecord" });
+          //console.log("将跳转到历史记录");
+        } else {
+          this.$Message.error("您未选中行！");
+        }
+      },
+      ctrlRelete() {
+        if (this.clickRow == true) {
+          //将跳转到关系页面  表名 记录id 已获取
+          //console.log("将跳转到关系页面");
+          let data = { table: this.tableName, Id: this.recordId }; //获取详细信息
+          this.$http
+            .post("/relationController/getRelationList", data)
+            .then(info => {
+            if (info.status == 200 && Object.keys(info.data).length != 0) {
+            //请求成功且有数据
+            // console.log(info.data);
+            //将数据存储到公共仓库, 页面跳转...
+            let data = {
+              tableName: this.tableName,
+              Id: this.recordId,
+              relationMsg: info.data
+            };
+            this.$store.commit("getrelationMsg", data);
+            this.$router.push({ path: "/config/relation" });
+          } else if (
+            info.status == 200 &&
+            Object.keys(info.data).length == 0
+          ) {
+            this.$Message.error({
+              content: "该记录尚未与其他记录关联, 查询关系不存在"
+            });
+          }
+        });
+        } else {
+          this.$Message.error("您未选中行！");
+        }
+      },
+      configDele() {
+        let _this = this;
+        _this.deleLoading = true;
+        _this.$http
+          .delete(
+            "/cardController/card?table=" +
+            _this.tableName +
+            "&&Id=" +
+            _this.recordId
+          )
+          .then(function() {
+            _this.deleLoading = false;
+            _this.configDeleModal = false;
+            _this.getTableData();
+            _this.$Message.success("删除成功");
+          })
+          .catch(function(error) {
+            _this.deleLoading = false;
+            _this.configDeleModal = false;
+            _this.getTableData();
+            _this.$Message.error("删除失败");
+          });
+      },
+      configAdd() {
+        let _this = this;
+        let lookupdt = _this.lookupInfo;
+        let relatedt = _this.relationInfo;
+        let addData = {};
+        let attr = JSON.parse(
+          sessionStorage.getItem("config_" + _this.tableName + "_attribute")
+        );
+        attr.forEach(function(v, i) {
+          let a = v.attribute;
+          if (v.type == "lookup") {
+            v.lookupMsg = lookupdt[v.attribute];
+          } else if (v.type == "reference") {
+            for (let ri = 0; ri < relatedt.length; ri++) {
+              if (v.lr == relatedt[ri].domainname) {
+                if (relatedt[ri].domainclass1 == _this.tableName) {
+                  v.relationTable = relatedt[ri].domainclass2;
+                } else {
+                  v.relationTable = relatedt[ri].domainclass1;
+                }
+              }
+            }
+          }
+        });
+        addData.tableName = _this.tableName;
+        addData.titleMsg = attr;
+        // console.log(addData);
+        _this.$store.commit("getaddMsg", addData);
+        //跳转到添加页
+        this.$router.push({ path: "/config/cadd" });
+      },
+      configDownload() {
+        //下载中文字段数据
+        window.open(
+          "/cardController/downLoadExcel?table=" + this.tableName,
+          "_self"
+        );
+      },
+      // 在跳转页面之前先获取到关系表的详细信息, 如果关系不为空, 再进行页面跳转
+      getrelationMsg() {
+        let data = { table: this.tableName, Id: this.recordId }; //获取详细信息
+        this.$http
+          .post("/relationController/getRelationList", data)
+          .then(info => {
+          if (info.status == 200 && Object.keys(info.data).length != 0) {
+          //请求成功且有数据
+          // console.log(info.data);
+          //将数据存储到公共仓库, 页面跳转...
+          let data = {
+            tableName: this.tableName,
+            Id: this.recordId,
+            relationMsg: info.data
+          };
+          this.$store.commit("getrelationMsg", data);
+          this.$router.push({ path: "/config/relation" });
+        } else if (info.status == 200 && Object.keys(info.data).length == 0) {
+          this.$Message.error({
+            content: "该记录尚未与其他记录关联, 查询关系不存在"
+          });
         }
       });
-      this.$store.commit("getchooseMsg", chooseMsg); //将获取到的数据返回出去
-      this.$router.push({ path: "/edit" });
+      },
+      // 禁用于否
+      isDisabled(){
+        this.isdisable = this.Mode=='w' ? false : true;
+      },
+      // 高度自适应
+      heightAdaptive(){
+        let clientH = document.documentElement.clientHeight;
+        this.contentbodyH = (clientH - 64) + 'px';
+        this.tableHeight = clientH - 64 - 133;//133包括按钮区域, margin-top, 分页所在区域
+      },
     },
-    // 取消按钮
-    cancel() {
-      this.$store.commit("getchooseMsg", "");
-      this.$router.push({ path: "/edit" });
-    }
-  }
-};
+    computed: {}
+  };
 </script>
 
-<style lang="scss">
-#editTableContainer {
-  header {
-    height: 30px;
-    font-size: 20px;
-    text-align: left;
-    margin: 10px 30px;
-    h3 {
-      float: left;
-    }
-    .btnContainer {
-      float: right;
-    }
+<style lang="scss" scoped>
+  .menuCtrl {
+    margin: 4px 20px;
+    line-height: 2;
   }
-  .content {
-    .ivu-table-header {
-      .ivu-table-column-center {
-        .ivu-checkbox-wrapper {
-          margin-right: 0px;
-        }
-      }
-    }
-    .ivu-table-tbody {
-      .ivu-table-column-center {
-        .ivu-table-cell {
-          .ivu-checkbox-wrapper {
-            margin-right: 0px;
-          }
-        }
-      }
-    }
-    .ivu-table {
-      th,
-      td {
-        text-align: center;
-      }
-    }
-  }
-  .footer {
-    overflow: hidden;
-    .search {
-      float: left;
-      margin-left: 50px;
-      margin-top: 15px;
-    }
-    .page {
-      float: right;
-      margin-right: 30px;
-      margin-top: 15px;
-    }
-  }
-}
 </style>
-// =================================bu   neng   xiu   gai=================================
