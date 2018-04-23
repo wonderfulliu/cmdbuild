@@ -151,7 +151,7 @@ export default {
         this.Authority = this.$store.state.Mode;
       } else {
         this.Authority = JSON.parse(sessionStorage.getItem('Mode'));
-      }
+      } 
     }, 
     WorR(authority, eName) {
       let Mode;

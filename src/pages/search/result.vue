@@ -31,18 +31,15 @@
                   </Row>
                 </Header>
                 <Content>
-<<<<<<< HEAD
-                    <Table stripe :height="tableHeight" :loading='loading' border :columns="columns" :data="data" ref="table"></Table>
-=======
                     <Table border
                            stripe
                            ref="table"
                            size="small"
-                           height="440"
+                           :height="tableHeight"
                            :loading='loading'
                            :columns="columns"
-                           :data="data"></Table>
->>>>>>> 3c35f79a911c600a8ff05f7d97edae845d046eb7
+                           :data="data">
+                    </Table>
                     <div style="margin-top: 10px;margin-right: 30px;float:right;">
                         <Page :total="totalBar" :current="pageNum" @on-change="pageChange" :page-size=20 show-elevator show-total></Page>
                     </div>
