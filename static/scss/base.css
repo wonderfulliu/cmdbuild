@@ -4,31 +4,26 @@
   background-color: #5bc0de;
   border-color: #46b8da; }
   .ivu-btn-info:hover {
-    background-color: #5fcbea;
-    border-color: #4ac2e6; }
+    background-color: #5fcbea; }
 
 .ivu-btn-success {
   background: #26B99A;
   border: 1px solid #169F85; }
   .ivu-btn-success:hover {
-    background: #22a78b;
-    border: 1px solid #148e77; }
+    background: #22a78b; }
 
 .ivu-btn-warning {
   color: #fff;
-  background-color: #f0ad4e;
-  border-color: #eea236; }
+  background-color: #f0ad4e; }
   .ivu-btn-warning:hover {
-    background-color: #dea048;
-    border-color: #d38f2f; }
+    background-color: #dea048; }
 
 .ivu-btn-error {
   color: #fff;
   background-color: #d9534f;
   border-color: #d43f3a; }
   .ivu-btn-error:hover {
-    background-color: #c94d49;
-    border-color: #b73632; }
+    background-color: #c94d49; }
 
 .ivu-btn-primary {
   color: #fff;
@@ -117,6 +112,9 @@
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); }
         #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-header .ivu-icon {
           float: left; }
+        #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-header .ivu-btn-group .btn.active {
+          background: #1ba0c7;
+          border-color: #199dc3; }
         #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-header .ivu-input-group {
           padding: 16px 0; }
           #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-header .ivu-input-group .ivu-input {
@@ -145,6 +143,15 @@
           margin: 0 auto; }
           #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .formContainer .ivu-select {
             text-align: left; }
+
+.ivu-modal .ivu-modal-body .modalListUl ul {
+  list-style: none; }
+  .ivu-modal .ivu-modal-body .modalListUl ul li {
+    background-color: #f5f5f5;
+    padding: 3px;
+    margin-bottom: 3px; }
+    .ivu-modal .ivu-modal-body .modalListUl ul li:hover {
+      background-color: #f0f0f0; }
 
 .ivu-menu-dark {
   background: #2a3f54; }

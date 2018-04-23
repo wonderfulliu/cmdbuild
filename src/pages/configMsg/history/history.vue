@@ -8,8 +8,8 @@
         </Col>
         <Col span="5" offset="15">
         <ButtonGroup>
-          <Button type="info" @click="gethistoryInfo">信息</Button>
-          <Button type="info" @click="gethistoryRelate">关系</Button>
+          <Button type="info" @click="gethistoryInfo" :class="{'active': ctrlBtnA}">信息</Button>
+          <Button type="info" @click="gethistoryRelate" :class="{'active': ctrlBtnB}">关系</Button>
         </ButtonGroup>
         </Col>
       </Row>
@@ -61,13 +61,17 @@
     },
     data () {
       return {
-        isCollapsed: false,
         columnData: [], //表头
         tableData: [],  //表数据
+        HistoryViewData: {},
+        historyId: '',
+        //设置
+        ctrlBtnA: true,
+        ctrlBtnB: false,
+        isCollapsed: false,
         loading: true,
         //modal
         HistoryViewModal: false,
-        HistoryViewData: {},
         hisLoading: true
       }
     },
@@ -79,6 +83,8 @@
       gethistoryInfo(){
         let _this = this;
         _this.loading = true;
+        _this.ctrlBtnA = true;
+        _this.ctrlBtnB = false;
         let data = {
           table: _this.tableName,
           Id: _this.recordId
@@ -108,6 +114,8 @@
       gethistoryRelate(){
         let _this = this;
         _this.loading = true;
+        _this.ctrlBtnA = false;
+        _this.ctrlBtnB = true;
         let data = {
           table: _this.tableName,
           Id: _this.recordId
@@ -166,6 +174,8 @@
                 },
                 on: {
                   click: function(){
+                    console.log(params.row.Id);
+                    _this.historyId = params.row.Id;
                     _this.historyView();
                     _this.HistoryViewModal = true;
                   }
@@ -179,13 +189,14 @@
       historyView(){
         let _this = this;
         _this.hisLoading = true;
-        let data = {
-          table: _this.tableName,
-          Id: _this.recordId
-        };
-        _this.$http.post('/cardController/historyCard',data)
+        console.log(_this.tableName);
+        console.log(_this.recordId);
+        console.log(_this.historyId);
+        _this.$http.get('/cardController/historyCard?table=' +
+                        _this.tableName + '&Sid=' +
+                        _this.recordId + '&Id=' +
+                        _this.historyId)
           .then(function(info){
-            console.log(info);
             if(JSON.stringify(info.data) == '{}'){
               console.log(null)
             }else {

@@ -5,7 +5,6 @@
   border-color: #46b8da;
   &:hover{
     background-color: #5fcbea;
-    border-color: #4ac2e6;
   }
 }
 .ivu-btn-success {
@@ -13,16 +12,13 @@
   border: 1px solid #169F85;
   &:hover{
     background: #22a78b;
-    border: 1px solid #148e77;
   }
 }
 .ivu-btn-warning {
   color: #fff;
   background-color: #f0ad4e;
-  border-color: #eea236;
   &:hover{
     background-color: #dea048;
-    border-color: #d38f2f;
   }
 }
 .ivu-btn-error {
@@ -31,7 +27,6 @@
   border-color: #d43f3a;
   &:hover{
     background-color: #c94d49;
-    border-color: #b73632;
   }
 }
 .ivu-btn-primary {
@@ -165,6 +160,14 @@
             .ivu-icon{
               float: left;
             }
+            .ivu-btn-group{
+              .btn{
+                &.active{
+                  background: #1ba0c7;
+                  border-color: #199dc3;
+                }
+              }
+            }
             .ivu-input-group{
               padding: 16px 0;
               .ivu-input{
@@ -211,6 +214,26 @@
     }
   }
 }
+
+.ivu-modal{
+  .ivu-modal-body{
+    .modalListUl{
+      ul{
+        list-style: none;
+        li{
+          background-color: #f5f5f5;
+          padding: 3px;
+          margin-bottom: 3px;
+          &:hover{
+            background-color: #f0f0f0;
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 .ivu-menu-dark {
   background: #2a3f54;
