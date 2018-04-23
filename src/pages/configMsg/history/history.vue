@@ -104,7 +104,6 @@
             _this.loading = false;
           });
       },
-
       //历史关系记录
       gethistoryRelate(){
         let _this = this;
@@ -184,7 +183,7 @@
           table: _this.tableName,
           Id: _this.recordId
         };
-        _this.$http.post('/relationController/getRelationList',data)
+        _this.$http.post('/cardController/historyCard',data)
           .then(function(info){
             console.log(info);
             if(JSON.stringify(info.data) == '{}'){
