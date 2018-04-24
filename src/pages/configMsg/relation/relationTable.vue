@@ -3,12 +3,15 @@
     <div id="relationTableContainer">
       <Header class="layout-header-bar" style="padding: 0">
         <Row>
-          <Col span="6" offset="1">
+          <Col :xs="{span: 8, offset: 1}" :sm="{span: 5, offset: 1}" :md="{span: 5, offset: 1}" :lg="{span: 5, offset: 1}">
             <h3 style="text-align: left">请选择关系: </h3>
           </Col>
-          <Col span="10">
-            <Input v-model="searchMsg" @on-click="search" @on-enter="search" clearable icon="search" placeholder="Enter something..."></Input></Col>
-          <Col span="4" offset="3">
+          <Col :xs="12" :sm="12" :md="10" :lg="11">
+            <Input v-model="searchMsg" @on-enter="search" placeholder="Enter something...">
+              <Button slot="append" type="info" icon="ios-search" @click="search">搜索</Button>
+            </Input>
+          </Col>
+          <Col :xs="14" :sm="12" :md="8" :lg="7">
             <div class="btnContainer">
               <Button type="primary" @click="cancel">取消</Button>
               <Button type="success" @click="confirm">确认</Button>

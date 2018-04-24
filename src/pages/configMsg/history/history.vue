@@ -25,8 +25,8 @@
       <p slot="header">
         <span>查看历史记录</span>
       </p>
-      <div>
-        <ul class="modalListUl">
+      <div class="modalListUl">
+        <ul>
           <li v-for="(val, key ,index) in HistoryViewData" :key="index">{{ key }} : {{ val }}</li>
         </ul>
       </div>
@@ -158,6 +158,18 @@
         second = second < 10 ? ('0' + second) : second;
         return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
       },
+      attributeCName(eName) {
+        let _this = this;
+        let cNameObj = JSON.parse(
+          sessionStorage.getItem("config_" + _this.tableName + "_attribute")
+        );
+        let c = cNameObj.filter(function(v, i) {
+          return eName == v.attribute;
+        });
+        if (c.length != 0) {
+          return c[0].cname;
+        }
+      },
       operationBtn(arr){
         let _this = this;
         arr.push({
@@ -174,7 +186,6 @@
                 },
                 on: {
                   click: function(){
-                    console.log(params.row.Id);
                     _this.historyId = params.row.Id;
                     _this.historyView();
                     _this.HistoryViewModal = true;
@@ -189,33 +200,31 @@
       historyView(){
         let _this = this;
         _this.hisLoading = true;
-        console.log(_this.tableName);
-        console.log(_this.recordId);
-        console.log(_this.historyId);
         _this.$http.get('/cardController/historyCard?table=' +
                         _this.tableName + '&Sid=' +
                         _this.recordId + '&Id=' +
                         _this.historyId)
           .then(function(info){
-            if(JSON.stringify(info.data) == '{}'){
-              console.log(null)
-            }else {
-              let arrb = info.data.Map_Vender_Cotains_Contact[0];
-              for(let k in arrb){
-                if(typeof arrb[k] == 'object' && arrb[k] != ''){
-                  for(let kr in arrb[k]){
-                    if(kr == 'value'){
-                      arrb[k] = arrb[k].value;
-                    }else if(kr == 'Description'){
-                      arrb[k] = arrb[k].Description;
-                    }
-                  }
-                }
+            let arrb = info.data;
+            for(let k in arrb){
+              if(typeof arrb[k] == 'object' && arrb[k] != null){
+                arrb[k] = _this.objectDataChange(arrb[k]);
               }
-              _this.HistoryViewData = arrb;
             }
-
+            _this.HistoryViewData = arrb;
           });
+      },
+      objectDataChange(obj){
+          if('Description' in obj){
+            obj = obj.Description;
+          }else if('value' in obj){
+            if(typeof obj.value == 'object' && obj.value != null){
+              obj = this.objectDataChange(obj.value);
+            }else {
+              obj = obj.value;
+            }
+          }
+          return obj;
       },
       backBtn(){
         this.$router.go(-1);

@@ -9,9 +9,9 @@
         </div>
         </Col>
         <Col :xs="12" :sm="12" :md="10" :lg="11">
-        <Input v-model="configCondition" placeholder="Enter something...">
-        <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
-        </Input>
+          <Input v-model="configCondition" placeholder="Enter something...">
+            <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
+          </Input>
         </Col>
         <Col :xs="14" :sm="12" :md="9" :lg="8">
         <ButtonGroup>
@@ -282,7 +282,7 @@
               v.content = res[k];
             }
           }
-        })
+        });
         attr.forEach(function(v, i) {
           let a = v.attribute;
           if (v.type == "lookup") {
@@ -290,7 +290,7 @@
           } else if (v.type == "reference") {
             for (let ri = 0; ri < relatedt.length; ri++) {
               if (v.lr == relatedt[ri].domainname) {
-                if (relatedt[ri].domainclass1 == _this.tableName) {
+                if (relatedt[ri].domainclass1 == this.tableName) {
                   v.relationTable = relatedt[ri].domainclass2;
                 } else {
                   v.relationTable = relatedt[ri].domainclass1;
@@ -379,6 +379,7 @@
       ctrlView() {
         let _this = this;
         if (_this.clickRow == true) {
+          console.log(_this.clickRow)
           //选中行
           _this.$http
             .get(
