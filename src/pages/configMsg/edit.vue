@@ -183,7 +183,7 @@ export default {
     },
     // 获取高度
     getHeight(){
-      this.height = document.querySelector('#addContainer').offsetHeight - 74 + 'px';
+      this.height = document.querySelector('#editContainer').offsetHeight - 74 + 'px';
     },
   }
 };

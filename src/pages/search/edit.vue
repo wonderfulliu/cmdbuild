@@ -15,15 +15,15 @@
             </Col>
           </Row>
         </Header>
-        <Content class="contentForm">
+        <Content class="contentForm" :style="{height: height}">
           <Form :label-width="150" class="formContainer">
             <FormItem :label="item.title" v-for="(item, index) in editMsg" :key="index" v-if="item.title != 'Id'">
               <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
-              <Select v-if="item.type == 'lookup'" :v-model="item.content">
+              <Select v-if="item.type == 'lookup'" v-model="item.content">
                 <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>
               </Select>
               <Row v-if="item.type == 'date'">
-                <Col span="11">
+                <Col span="11"> 
                 <DatePicker type="date" placeholder="请选择日期" v-model="item.content"></DatePicker>
                 </Col>
               </Row>
@@ -55,6 +55,7 @@ export default {
       reftableMsg: '',//传到下一页的表格数据
       reftitleMsg: '',//传到下一页的表头中文名数据
       chooseMsg: '',//存储editTable页面传来的数据
+      height: '',
     };
   },
   created() {
@@ -115,14 +116,10 @@ export default {
         }
       });
     },
-
     // 当从editTable页面跳回时传来的数据
     getchooseMsg(){
       this.chooseMsg = this.$store.state.chooseMsg;
     },
-
-
-
     // 模态框控制函数
     submit() {
       let data = {};
@@ -183,7 +180,8 @@ export default {
     },
     // 获取高度
     getHeight(){
-      this.height = document.querySelector('#addContainer').offsetHeight - 74 + 'px';
+      console.log();
+      this.height = document.querySelector('#editContainer').offsetHeight - 74 + 'px';
     },
   }
 };

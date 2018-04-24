@@ -452,27 +452,22 @@ export default {
     },
     ctrlRelete() {
       if (this.clickRow == true) {
-        //将跳转到关系页面  表名 记录id 已获取
-        //console.log("将跳转到关系页面");
-        let data = { table: this.tableName, Id: this.recordId }; //获取详细信息
+        //将跳转到关系页面  表名 记录id 已获取, 获取和选中记录有关系表的表和表中有关系的记录
+        let data = { table: this.tableName, Id: this.recordId };
         this.$http
           .post("/relationController/getRelationList", data)
           .then(info => {
+            console.log(info);
             if (info.status == 200 && Object.keys(info.data).length != 0) {
-              //请求成功且有数据
-              // console.log(info.data);
-              //将数据存储到公共仓库, 页面跳转...
               let data = {
-                tableName: this.tableName,
-                Id: this.recordId,
-                relationMsg: info.data
+                tableName: this.tableName,//表名
+                Id: this.recordId,//记录Id
+                relationMsg: info.data//与该记录有关系的表与表中的记录
               };
               this.$store.commit("getrelationMsg", data);
               this.$router.push({ path: "/config/relation" });
             } else if (
-              info.status == 200 &&
-              Object.keys(info.data).length == 0
-            ) {
+              info.status == 200 && Object.keys(info.data).length == 0 ) {
               this.$Message.error({
                 content: "该记录尚未与其他记录关联, 查询关系不存在"
               });

@@ -207,14 +207,13 @@ export default {
     },
     // 查看下拉框变化时触发
     selectN(value){
-      console.log(value);
+      // console.log(value);
       this.getTabledata(value);
     },
     // 添加数据下拉框变化的时候
     selectF(value){
-      let relationTable = value.value.split('_')[0];
-      let NorOne = value.value.split('_')[1];
-      // console.log(this.domainListMsg);
+      let relationTable = value.value.substring(0, value.value.length - 2);
+      let NorOne = value.value.substring(value.value.length - 1, value.value.length);
       this.domainListMsg.forEach((v, i) => {
         if (relationTable == v.relationTable) {
           this.domainname = v.domainname;
@@ -268,15 +267,11 @@ export default {
 
     // 删除
     del(value, index){
-      // console.log(value);
-      let thisId;//关系Id
+      let thisId;//要删除的关系的Id
       let Description = value.row.Description;
       let data = this.relationMsg;
       let tableName = data.tableName;//表名
-      console.log(this.zhongjianbiao);
-      console.log(data);
-      // console.log(this.domainnamen);
-      // console.log(this.domainListMsg);
+      // 找出要删除的关系的Id
       for(var k in data.relationMsg){
         if (this.domainnamen == k.split('Map_')[1]) {
           data.relationMsg[k].forEach((v, i) => {
@@ -297,11 +292,21 @@ export default {
           }
         }
       })
-      // console.log(JSON.stringify(delData));
-      console.log(delData);
       this.$http.delete('/relationController/relation', {data: delData}).then(info => {
         if (info.status == 200) {
           if (info.data == 'ok') {
+            // 如果删除成功, 还要修改双向绑定的数据
+            for (let k in this.relationMsg.relationMsg) {
+              if (k.split('Map_')[1] == delData.domainname) {
+                this.relationMsg.relationMsg[k].forEach((v, i) => {
+                  if (v.Id == thisId) {
+                    this.relationMsg.relationMsg[k].splice(i, 1);
+                    this.getTabledata(tableName);
+                    this.clearSingleSelect();
+                  }
+                });
+              }
+            }
             this.$Message.success({
               content: '删除成功'
             })
@@ -312,6 +317,10 @@ export default {
           }
         }
       })
+    },
+    // 清空选中的内容
+    clearSingleSelect(a){
+      console.log(a);
     },
     // 拼接中英文名字
     EtoC(CEtable, ename, domainname) {

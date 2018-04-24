@@ -455,6 +455,11 @@ export default {
           for (let k in this.lookupMsg) {
             if (k == v.attribute) {
               v.lookupMsg = this.lookupMsg[k];
+              v.lookupMsg.forEach((val, index) => {
+                if (val.Description && val.Description == v.content) {
+                  v.content = val.Id;
+                }
+              });
             }
           }
         }
@@ -497,6 +502,11 @@ export default {
           for(let k in this.lookupMsg){
             if (k == v.attribute) {
               v.lookupMsg = this.lookupMsg[k];
+              v.lookupMsg.forEach((val, index) => {
+                if (val.Description && val.Description == v.content) {
+                  v.content = val.Id;
+                }
+              });
             }
           }
         }
