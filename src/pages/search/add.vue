@@ -15,7 +15,7 @@
           </Col>
         </Row>
       </Header>
-      <Content class="contentForm">
+      <Content class="contentForm" :style="{height: height}">
         <Form :label-width="100" class="formContainer">
           <FormItem :label="item.title" v-for="(item, index) in addMsg" :key="index" v-if="item.title != 'Id'">
             <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
@@ -56,11 +56,15 @@ export default {
       reftableMsg: '',//传到下一页的表格数据
       reftitleMsg: '',//传到下一页的表头中文名数据
       chooseMsg: '',//存储editTable页面传来的数据
+      height: '',
     }
   },
   created() {
     this.getchooseMsg();
     this.getaddMsg();
+  },
+  mounted () {
+    this.getHeight();
   },
   methods: {
     // 获取公共仓库的要渲染的数据
@@ -165,13 +169,17 @@ export default {
       let date = time.getDate();
       let totalTime = year + '-' + month + '-' + date;
       return totalTime;
-    }
+    },
+    // 获取高度
+    getHeight(){
+      this.height = document.querySelector('#addContainer').offsetHeight - 74 + 'px';
+    },
   }
 };
 </script>
 
 <style lang="scss" scoped>
 #addContainer {
-
+  height: 100%;
 }
 </style>

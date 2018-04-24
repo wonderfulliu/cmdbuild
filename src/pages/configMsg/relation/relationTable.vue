@@ -299,7 +299,7 @@ export default {
         }
       })
       this.addData = data;
-      console.log(data);
+      // console.log(data);
     },
     // 多选
     selectN(selection, index){
@@ -340,7 +340,6 @@ export default {
     },
     // 确认按钮
     confirm() {
-      // console.log(JSON.stringify(this.addData));
       this.$http.post('/relationController/relation', this.addData).then(info => {
         if (info.status == 200) {
           if (info.data == 'ok') {
@@ -368,7 +367,6 @@ export default {
 
 <style lang="scss">
 #relationTableContainer {
-
 
 }
 </style>

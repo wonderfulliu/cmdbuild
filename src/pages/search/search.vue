@@ -67,6 +67,7 @@ export default {
               }
               this.searchasideMsg = arrsearchMsg;
               this.$store.commit('getsearchMsg', this.searchasideMsg);
+              sessionStorage.setItem('searchMsg', JSON.stringify(this.searchasideMsg));
               this.$router.push({path: '/result'});
             }
           }

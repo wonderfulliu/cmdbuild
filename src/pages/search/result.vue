@@ -197,7 +197,7 @@
         let width = theadWidth / len > 200 ? theadWidth / len : 200;
         this.cnameTitle.forEach((v, i) => {
           v.width = width;
-      })
+        })
         //判断返回的表格数据是否有Id
         // let flag = this.hasId(dataArr[0]);
         //获取表头
@@ -226,6 +226,7 @@
         // console.log(newtitleArr);
         this.columns = newtitleArr; //将获取到的表头字段赋值给table的columns
 
+
         // 渲染表格数据
         let newcontentArr = []; //存储最终要赋给表格的数据
         dataArr.forEach(function(v, i) {
@@ -251,18 +252,18 @@
               });
             }
           }
-          newcontentArr.push(newObj);
-        });
-        this.data = newcontentArr;
-        this.loading = false;
-      },
-      // 获取侧边栏数据
-      getasideMsg() {
-        //给侧边栏赋search页面传来的侧边栏数据
-        this.asideMsg[0].children = this.$store.state.searchMsg?this.$store.state.searchMsg:JSON.parse(sessionStorage.getItem('searchMsg'));
-        // 应该是进入该表后遍历所有侧边栏数据, 显示selected的那一项
-        this.asideMsg[0].children.forEach((v, i) => {
-          if (v.selected == true) {
+        newcontentArr.push(newObj);
+      });
+      this.data = newcontentArr;
+      this.loading = false;
+    },
+    // 获取侧边栏数据
+    getasideMsg() {
+      //给侧边栏赋search页面传来的侧边栏数据
+      this.asideMsg[0].children = this.$store.state.searchMsg?this.$store.state.searchMsg:JSON.parse(sessionStorage.getItem('searchMsg'));
+      // 应该是进入该表后遍历所有侧边栏数据, 显示selected的那一项
+      this.asideMsg[0].children.forEach((v, i) => {
+        if (v.selected == true) {
           for(let k in v) {
             if (k != 'nodeKey' && k != 'selected' && k != 'title') {
               this.tableName = k.replace(/\"/g, "");
@@ -335,17 +336,16 @@
         // console.log(this.Mode);
         // 判断是否禁用
         this.isdisable = this.Mode == 'r' ? true : false;
-
-        this.getcnameTitle();
-        this.gettableMsg();
-        this.getSelect();
-        this.getrelationTable();
-      },
-      // 获取不同表格的表头字段所对应的中文名结合(需要筛选)
-      getcnameTitle() {
-        let data = { table: this.tableName };
-        this.$http.post("/cardController/getAttributeList", data).then(info => {
-          if (info.status == 200) {
+      this.getcnameTitle();
+      this.gettableMsg();
+      this.getSelect();
+      this.getrelationTable();
+    },
+    // 获取不同表格的表头字段所对应的中文名结合(需要筛选)
+    getcnameTitle() {
+      let data = { table: this.tableName };
+      this.$http.post("/cardController/getAttributeList", data).then(info => {
+        if (info.status == 200) {
           // console.log(info.data);
           this.cnameTitle = info.data;
         }
@@ -464,9 +464,9 @@
               v.lookupMsg = this.lookupMsg[k];
               v.lookupMsg.forEach((val, index) => {
                 if (val.Description && val.Description == v.content) {
-                v.content = val.Id;
-              }
-            });
+                  v.content = val.Id;
+                }
+              });
             }
           }
         }
@@ -483,7 +483,7 @@
           tableName: this.tableName,
           titleMsg: titleMsg,
           thisjiluId: thisjiluId
-        }
+        };
         this.$store.commit('getaddMsg', data);//将整合好的数据推至公共仓库
         this.$router.push({ path: "/edit" });//跳转至新增页面
       },
@@ -511,9 +511,9 @@
               v.lookupMsg = this.lookupMsg[k];
               v.lookupMsg.forEach((val, index) => {
                 if (val.Description && val.Description == v.content) {
-                v.content = val.Id;
-              }
-            });
+                  v.content = val.Id;
+                }
+              });
             }
           }
         }
@@ -535,19 +535,20 @@
           this.relationTable = info.data;
         }
       });
-      },
-      // 获取权限
-      getAuthority() {
-        this.Authority = this.$store.state.Mode?this.$store.state.Mode:JSON.parse(sessionStorage.getItem('Mode'));
-      },
-      // 高度自适应
-      heightAdaptive(){
-        let clientH = document.documentElement.clientHeight;
-        this.contentbodyH = (clientH - 64) + 'px';
-        this.tableHeight = clientH - 64 - 145;//133包括按钮区域, margin-top, 分页所在区域
-      },
-    }
-  };
+
+    },
+    // 获取权限
+    getAuthority() {
+      this.Authority = this.$store.state.Mode?this.$store.state.Mode:JSON.parse(sessionStorage.getItem('Mode'));
+    },
+    // 高度自适应
+    heightAdaptive(){
+      let clientH = document.documentElement.clientHeight;
+      this.contentbodyH = (clientH - 64) + 'px';
+      this.tableHeight = clientH - 64 - 145;//133包括按钮区域, margin-top, 分页所在区域
+    },
+  }
+};
 
 </script>
 

@@ -1,5 +1,6 @@
 <template>
   <div id="loginContainer">
+    <header>统一配置管理系统</header>
     <i-form ref="formInline" :model="formInline" :rules="ruleInline">
         <Form-item prop="user">
             <i-input type="text" v-model="formInline.user" placeholder="Username" @input="inpChange()">
@@ -138,6 +139,16 @@
       .ivu-input {
         height: 36px;
       }
+    }
+    header {
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: 28px;
+      margin-top: 15px;
+      margin-left: 20px;
+      text-shadow: 7px 4px 4px #6b5959;
+      cursor: pointer;
     }
   }
   #loginContainer:hover{
