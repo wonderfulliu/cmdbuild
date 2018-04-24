@@ -38,7 +38,8 @@
                            :height="tableHeight"
                            :loading='loading'
                            :columns="columns"
-                           :data="data"></Table>
+                           :data="data">
+                    </Table>
                     <div style="margin-top: 10px;margin-right: 30px;float:right;">
                         <Page :total="totalBar" :current="pageNum" @on-change="pageChange" :page-size=20 show-elevator show-total></Page>
                     </div>

@@ -144,7 +144,7 @@ export default {
     // 权限, 点击侧边栏的时候表格变化
     getTreeNodes(select) {
       let _this = this;
-      if (!select.children) {
+      if (select.length != 0 && !select[0].children) {
         let eName = select[0].idElementClass.split('"').join(""); //获取英文名
         _this.tableName = eName; //获取表名
         _this.$router.push({ path: "/config/tableList" });
