@@ -89,7 +89,7 @@ export default {
       _this.$http
         .post("/authorityController/getMenu?groupName=" + _this.groupName)
         .then(function(info) {
-          console.log(info);
+          // console.log(info);
           let oData = info.data.children;
           let treeMenu = sessionStorage.getItem(_this.groupName + "_menu");
           if (treeMenu) {
@@ -100,7 +100,7 @@ export default {
             );
           }
           let objTree = objFunc(oData);//将得到的数据转换成需要的格式
-          console.log(objTree);
+          // console.log(objTree);
           _this.ConfigTreeData = newTreeFunc(objTree); //打开侧栏第一个选项
 
           function newTreeFunc(obj) {//这里第一次获取表名

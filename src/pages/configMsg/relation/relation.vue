@@ -40,7 +40,7 @@ export default {
       CEtableMsg: "", //中英文对照表
       relationMsg: "", //待渲染的关系数据
       domainListMsg: "", //待渲染的中间表数据
-      tableId: "",//表的Id
+      tableId: "",//表的Id, 注意这个不是关系表的Id, 而是原表的Id
       // 下拉框数据
       selectNow: "",
       selectFuture: "",
@@ -110,32 +110,28 @@ export default {
     this.getDomainList();
   },
   methods: {
-    // 获取到公共仓库的数据并且处理
+    // 获取到公共仓库的数据: 表Id 表名 关系表表名与内容
     getMsg() {
       this.CEtableMsg = this.$store.state.tableMsg; //获取中英文对照表名
       this.relationMsg = this.$store.state.relationMsg; //获取到待渲染的关系数据
-      // console.log(this.relationMsg);
-      this.tableId = this.relationMsg.Id;
-      // 获取到数据后就是渲染数据等操作
-      this.getTabledata();
+      this.tableId = this.relationMsg.Id;//表的Id
     },
-    // 一进入页面, 就请求关系中间表的表数据
+    // 一进入页面, 就请求表的关系表的数据
     getDomainList() {
       let data = "?table=" + this.relationMsg.tableName;
       this.$http.get("/relationController/getDomainList" + data).then(info => {
         if (info.status == 200 && Object.keys(info.data).length != 0) {
           // 找到关系表名, 找到n:1关系, 找到中文名, 并且拼在英文表名后面
-          this.zhongjianbiao = info.data;
+          this.zhongjianbiao = info.data;//其实并不是中间表, 只是与该条记录有关的表的集合
           let relationArr = [];
-          // console.log(info.data);
           info.data.forEach((v, i) => {
             let obj = {};
             let NandOne = v.domaincardinality.split(":");
             if (this.relationMsg.tableName == v.domainclass2) {
-              obj.relationTable = v.domainclass1;
-              obj.crelationTable = this.EtoC(this.CEtableMsg, v.domainclass1, v.domainname);
-              obj.domainname = v.domainname;
-              obj.NorOne = NandOne[0];
+              obj.relationTable = v.domainclass1;//关系表名
+              obj.crelationTable = this.EtoC(this.CEtableMsg, v.domainclass1, v.domainname);//关系表中文名, 用于渲染
+              obj.domainname = v.domainname;//中间表名
+              obj.NorOne = NandOne[0];//关系表与该表对应的关系
             } else {
               obj.relationTable = v.domainclass2;
               obj.crelationTable = this.EtoC(this.CEtableMsg, v.domainclass2, v.domainname);
@@ -144,8 +140,7 @@ export default {
             }
             relationArr.push(obj);
           });
-          // console.log(relationArr);
-          this.domainListMsg = relationArr;
+          this.domainListMsg = relationArr;//于表的记录有关系的表的详情的集合
           this.$store.commit('getdomainlistMsg', info.data);
           this.getfutureSelectdata();//没有放在getMsg里面时因为获取不到this.domainListMsg的数据
           this.getnowSelectdata();
@@ -156,11 +151,21 @@ export default {
         }
       });
     },
+    // 获取future select数据
+    getfutureSelectdata(){
+      let data = this.domainListMsg;
+      let future = [];
+      data.forEach((v, i) => {
+        let obj = {};
+        obj.value = v.relationTable + '_' + v.NorOne;
+        obj.label = v.crelationTable;
+        future.push(obj);
+      })
+      this.future = future;
+    },
     // 获取now select框数据
     getnowSelectdata(){
       let data = this.relationMsg
-      // console.log(data);
-      // console.log(this.domainListMsg);
       let now = [];
       for (let k in data.relationMsg) {
         let obj = {};
@@ -174,23 +179,10 @@ export default {
       }
       this.now = now;
     },
-    // 获取future select数据
-    getfutureSelectdata(){
-      let data = this.domainListMsg;
-      // console.log(data);
-      let future = [];
-      data.forEach((v, i) => {
-        let obj = {};
-        obj.value = v.relationTable + '_' + v.NorOne;
-        obj.label = v.crelationTable;
-        future.push(obj);
-      })
-      this.future = future;
-    },
     // 获取查看表格数据
     getTabledata(tableName) {
+      // 根据传入的关系表的表名, 查找对应的信息
       let data = this.relationMsg; //有关系的表
-      // console.log(data);
       let arr = [];
       for (let k in data.relationMsg) {
         if (k.split('Map_')[1] == tableName) {
@@ -207,7 +199,6 @@ export default {
     },
     // 查看下拉框变化时触发
     selectN(value){
-      // console.log(value);
       this.getTabledata(value);
     },
     // 添加数据下拉框变化的时候
@@ -216,7 +207,7 @@ export default {
       let NorOne = value.value.substring(value.value.length - 1, value.value.length);
       this.domainListMsg.forEach((v, i) => {
         if (relationTable == v.relationTable) {
-          this.domainname = v.domainname;
+          this.domainname = v.domainname;//关系表名, 下面请求表格详细数据的时候要用
         }
       })
       this.getrefctMsg(relationTable, NorOne);
@@ -302,7 +293,6 @@ export default {
                   if (v.Id == thisId) {
                     this.relationMsg.relationMsg[k].splice(i, 1);
                     this.getTabledata(tableName);
-                    this.clearSingleSelect();
                   }
                 });
               }
@@ -317,10 +307,6 @@ export default {
           }
         }
       })
-    },
-    // 清空选中的内容
-    clearSingleSelect(a){
-      console.log(a);
     },
     // 拼接中英文名字
     EtoC(CEtable, ename, domainname) {

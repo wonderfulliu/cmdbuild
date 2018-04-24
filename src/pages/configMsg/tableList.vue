@@ -457,7 +457,7 @@ export default {
         this.$http
           .post("/relationController/getRelationList", data)
           .then(info => {
-            console.log(info);
+            // console.log(info);
             if (info.status == 200 && Object.keys(info.data).length != 0) {
               let data = {
                 tableName: this.tableName,//表名
