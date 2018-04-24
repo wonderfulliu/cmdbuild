@@ -1,7 +1,17 @@
 <template>
     <div id="searchContainer">
       <div class="btnContainerAll">
-          <Input v-model="searchMsg" size="large" placeholder="Search for..." style="width: 400px; height: 46px" icon="arrow-right-c" @on-click='getsearchMsg'></Input>
+          <Row>
+            <Col span="10" offset="7">
+              <Input v-model="searchMsg"
+                 size="large"
+                 placeholder="Search for..."
+                 style=" height: 46px"
+                 icon="arrow-right-c"
+                 @on-click='getsearchMsg'
+                 @on-enter="getsearchMsg"></Input>
+            </Col>
+          </Row>
       </div>
     </div>
 </template>
@@ -56,8 +66,9 @@ export default {
                 arrsearchMsg.push(obj);
               }
               this.searchasideMsg = arrsearchMsg;
-              // console.log(this.searchasideMsg);
               this.$store.commit('getsearchMsg', this.searchasideMsg);
+              sessionStorage.setItem('searchMsg', JSON.stringify(this.searchasideMsg));
+              this.$router.push({path: '/result'});
             }
           }
         },
@@ -66,7 +77,7 @@ export default {
         }
       );
     },
-    // 获取所有表名
+    // 获取所有表的中文名
     gettableName() {
       this.$http.get("/cardController/getTableList").then(info => {
         if (info.status == 200) {
@@ -79,8 +90,6 @@ export default {
     alertMsg() {
       this.$Message.warning({
         content: "您搜索的内容为空"
-        // top: 550,
-        // duration: 2 不写有默认值
       });
     }
   }
@@ -89,9 +98,11 @@ export default {
 
 <style lang="scss">
 #searchContainer {
+  background: url('../../img/search3.jpg') no-repeat;
+  background-size: cover;
   height: 100%;
   .btnContainerAll {
-    margin-top: 100px;
+    margin-top: 150px;
     .ivu-input-wrapper {
       .ivu-input-large {
         font-size: 18px;

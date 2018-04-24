@@ -1,34 +1,71 @@
 <template>
-    <div id="viewContainer">
-      <div class="layout">
-        <Layout>
-            <!-- 侧边栏 -->
-            <Sider ref="side1" hide-trigger collapsible :collapsed-width="0" v-model="isCollapsed">
-                <Tree :data="asideMsg" @on-select-change='getSelectedNodes' ref='tree'></Tree>
-            </Sider>
-            <!-- 内容区域 -->
-            <Layout>
-                <Header :style="{padding: 0}" class="layout-header-bar">
-                    <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
-                    <div class="btnContainer">
-                        <Button type="primary" size="large" icon="ios-search" @click="search">Search</Button>
-                        <Input v-model="searchMsg" size="large" placeholder="Enter something..." clearable style="width: 280px"></Input>
-                    </div>
-                </Header>
-                <Content :style="{margin: '15px'}">
-                    <Table stripe height="410" :loading='loading' border :columns="columns" :data="data" ref="table"></Table>
-                    <div style="margin-top: 10px;margin-right: 30px;float:right;">
-                        <Page :total="totalBar" @on-change="pageChange" :page-size=20 show-elevator show-total></Page>
-                    </div>
-                    <br>
-                    <div class="btn">
-                      <Button type="primary" size="small" @click="exportData"><Icon type="ios-download-outline"></Icon> 下载</Button>
-                    </div>
-                </Content>
-            </Layout>
-        </Layout>
-      </div>
-    </div>
+  <div id="viewContainer">
+    <Layout>
+      <!-- 侧边栏 -->
+      <Sider ref="side1" hide-trigger collapsible :collapsed-width="0" v-model="isCollapsed">
+        <Menu active-name="1-2"
+              theme="dark"
+              width="auto"
+              :open-names="['1']"
+              :class="menuitemClasses" accordion>
+          <Submenu name="1">
+            <template slot="title">
+              视图信息列表
+            </template>
+            <div class="treeContent">
+              <!--树状菜单-->
+              <Tree :data="asideMsg" @on-select-change='getSelectedNodes' ref='tree'></Tree>
+            </div>
+          </Submenu>
+        </Menu>
+      </Sider>
+      <!-- 内容区域 -->
+      <Layout class="miniWindow" :style="{height:contentbodyH}">
+        <Header class="layout-header-bar">
+          <Row>
+            <Col span="5">
+            <div class="">
+              <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
+            </div>
+            </Col>
+            <Col span="14">
+              <Input v-model="searchMsg" placeholder="Enter something...">
+                <Button slot="append" type="info" icon="ios-search" @click="search">搜索</Button>
+              </Input>
+            </Col>
+            <Col span="5">
+            <ButtonGroup>
+              <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
+            </ButtonGroup>
+            </Col>
+          </Row>
+        </Header>
+
+        <Content>
+          <Table
+            stripe
+            border
+            size="small"
+            :height="tableHeight"
+            :loading='loading'
+            :columns="columns"
+            :data="data"
+            ref="table"></Table>
+          <div class="pageContainer clearfix floatRight">
+            <Button type="ghost" class="floatLeft" @click="pageFirst">首页</Button>
+            <Page class="floatLeft"
+                  show-elevator
+                  show-total
+                  :page-size=20
+                  :current="pageNum"
+                  :total="totalBar"
+                  @on-change="pageChange"></Page>
+            <Button type="ghost" class="floatLeft" @click="pageLast">尾页</Button>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
+  </div>
 </template>
 <script>
 export default {
@@ -52,11 +89,15 @@ export default {
       total:'',//表格数据总条数
       pageNum: 1,
       totalBar: 0,
+      totalPage: null,  //总页数
       searched: false,
+      contentbodyH: '',//内容区域高度
+      tableHeight: '', //表格高度区域
     };
   },
   created() {
     this.getasideMsg();
+    this.heightAdaptive();
   },
   computed: {
     rotateIcon() {
@@ -103,6 +144,7 @@ export default {
     //表格数据的处理
     dataProcess(info) {
       this.totalBar = info.data.totalRecord;
+      this.totalPage = info.data.totalPage;
       let dataArr = info.data.list;
       let end = {
         title: "Action",
@@ -147,6 +189,7 @@ export default {
         newObj.title = k;
         newObj.key = ++i;
         newObj.width = width;
+        newObj.ellipsis = true;
         newtitleArr.push(newObj);
       }
       newtitleArr.push(end);
@@ -175,6 +218,7 @@ export default {
           info => {
             // 成功的回调
             if (info.status == 200) {
+              // console.log(info.data);
               this.dataProcess(info);
             }
           },
@@ -205,6 +249,14 @@ export default {
         this.gettableMsg();
       }
     },
+    pageFirst(){
+      this.pageNum = 1;
+      this.gettableMsg();
+    },
+    pageLast(){
+      this.pageNum = this.totalPage;
+      this.gettableMsg();
+    },
     // 搜索
     search() {
       // if (this.searchMsg == '') {
@@ -214,7 +266,7 @@ export default {
       this.loading = true;
       let data = { functionName: this.tableName, pageNum: this.pageNum, condition: this.searchMsg };
       this.$http
-        .post("/viewController/fuzzyQuery", this.$qs.stringify(data)) 
+        .post("/viewController/fuzzyQuery", this.$qs.stringify(data))
         .then(
           (info) => {
             // console.log(info);
@@ -237,6 +289,7 @@ export default {
       for (let i = 0; i < this.columns.length - 1; i++) {
         content += this.columns[i].title + `: ${this.data[index][i + 1]}<br>`;
       }
+      content = content.split('null').join('');//详情为null的改为空
       this.$Modal.info({
         title: "详细信息",
         content: content
@@ -266,7 +319,13 @@ export default {
       //   filename: "Sorting and filtering data",
       //   original: false
       // });
-    }
+    },
+    // 高度自适应
+    heightAdaptive(){
+      let clientH = document.documentElement.clientHeight;
+      this.contentbodyH = (clientH - 64) + 'px';
+      this.tableHeight = clientH - 64 - 145;//133包括按钮区域, margin-top, 分页所在区域
+    },
   }
 };
 </script>
@@ -281,10 +340,6 @@ export default {
       .ivu-table-body tbody td {
         text-align: center;
       }
-    }
-    .ivu-layout-sider {
-      background-color: #f5f7f9;
-      overflow: scroll;
     }
     .ivu-table-fixed-right {
       .ivu-btn-primary {
@@ -364,7 +419,7 @@ export default {
 .menu-item span {
   display: inline-block;
   overflow: hidden;
-  width: 69px;
+  /*width: 69px;*/
   text-overflow: ellipsis;
   white-space: nowrap;
   vertical-align: bottom;

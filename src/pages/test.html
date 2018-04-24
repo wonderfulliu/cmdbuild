@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  var arr = [
+    {position: '2'},
+    {position: '6'},
+    {position: '3'},
+    // {f: '5'},
+    {position: '8'},
+    {position: '1'},
+  ];
+  // var arr = arr.filter(function (x) {
+  //   return x.position;
+  // })
+  // console.log(arr);
+  arr.sort(function (a, b) {
+    return Number(a.position) - Number(b.position);
+  })
+  console.log(arr);
+</script>
+</html>
