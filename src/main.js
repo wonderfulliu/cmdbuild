@@ -1,19 +1,19 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
-import App from './App'
-import router from './router'
-import iView from 'iview'
+import Vue from 'vue'//导入vue
+import App from './App'//导入app.vue组件
+import router from './router'//导入路由
+import iView from 'iview'//导入框架
 import 'iview/dist/styles/iview.css'
-import axios from 'axios'
-import querystring from 'querystring'
-import Vuex from 'vuex'
+import axios from 'axios'//导入axios
+import querystring from 'querystring'//导入字符串
+import Vuex from 'vuex'//导入vuex
 
 Vue.config.productionTip = false
-Vue.use(iView)
-Vue.use(Vuex)
-Vue.prototype.$http = axios
-Vue.prototype.$qs = querystring;
+Vue.use(iView)//使用iview
+Vue.use(Vuex)//使用vuex
+Vue.prototype.$http = axios//使用axios
+Vue.prototype.$qs = querystring;//使用字符串
 
 //公共仓库存储数据
 const store = new Vuex.Store({
