@@ -145,9 +145,10 @@
       left: 0;
       top: 0;
       font-size: 28px;
+      color: #4e6f7b;
       margin-top: 15px;
       margin-left: 20px;
-      text-shadow: 7px 4px 4px #6b5959;
+      // text-shadow: 7px 4px 4px #fff;
       cursor: pointer;
     }
   }
