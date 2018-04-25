@@ -188,6 +188,16 @@
 .layout-user .logoutIcon:hover {
   color: #e5ecf4; }
 
+.ivu-table-row-highlight td,
+.ivu-table-stripe .ivu-table-body tr.ivu-table-row-highlight:nth-child(2n) td,
+.ivu-table-stripe .ivu-table-fixed-body tr.ivu-table-row-highlight:nth-child(2n) td,
+tr.ivu-table-row-highlight.ivu-table-row-hover td {
+  background-color: #94e6d6; }
+
+.ivu-table-stripe .ivu-table-body tr.ivu-table-row-hover td,
+.ivu-table-stripe .ivu-table-fixed-body tr.ivu-table-row-hover td {
+  background-color: #94e6d6; }
+
 .layout-user {
   float: right;
   padding-right: 20px; }

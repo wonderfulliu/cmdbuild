@@ -18,9 +18,10 @@
         <Form :label-width="100" class="formContainer">
           <FormItem :label="item.cname" v-for="(item, index) in editMsg" :key="index" v-if="item.title != 'Id'">
             <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
-            <Select v-if="item.type == 'lookup'" v-model="item.content">
+            <!--<Select v-if="item.type == 'lookup'" v-model="item.content">
               <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>
-            </Select>
+            </Select>-->
+            <Cascader v-if="item.type == 'lookup'" :data="lookupLeven2" v-model="item.content"></Cascader>
             <Row v-if="item.type == 'date'">
               <Col span="11">
               <DatePicker type="date" placeholder="请选择日期" v-model="item.content"></DatePicker>
@@ -35,10 +36,6 @@
             <Checkbox v-if="item.type == 'bool'" v-model="item.content"></Checkbox>
             <InputNumber v-if="item.type == 'int4'" :min="0" v-model="item.content"></InputNumber>
           </FormItem>
-          <!--<FormItem>
-            <Button type="primary" style="margin-left: 8px" @click="cancel">取消</Button>
-            <Button type="success" @click="submit">提交</Button>
-          </FormItem>-->
         </Form>
       </Content>
     </div>
@@ -54,6 +51,7 @@ export default {
       reftitleMsg: '',//传到下一页的表头中文名数据
       chooseMsg: '',//存储editTable页面传来的数据
       jiluId: '',//记录id
+      lookupLeven2: '',//lookup2级目录
     };
   },
   created() {
@@ -143,7 +141,7 @@ export default {
           data[v.title] = v.content;
         }
       })
-      
+
       // console.log(data);
       // return false;
       // console.log(JSON.stringify(data));
@@ -193,6 +191,6 @@ export default {
 #editContainer {
   overflow-y: auto;
   height: 100%;
-  
+
 }
 </style>
