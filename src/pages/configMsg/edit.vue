@@ -18,10 +18,10 @@
         <Form :label-width="100" class="formContainer">
           <FormItem :label="item.cname" v-for="(item, index) in editMsg" :key="index" v-if="item.title != 'Id'">
             <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
-            <!--<Select v-if="item.type == 'lookup'" v-model="item.content">
+            <Select v-if="item.type == 'lookup'" v-model="item.content">
               <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>
-            </Select>-->
-            <Cascader v-if="item.type == 'lookup'" :data="lookupLeven2" v-model="item.content"></Cascader>
+            </Select>
+            <!--<Cascader v-if="item.type == 'lookup'" :data="lookupLeven2" v-model="item.content"></Cascader>-->
             <Row v-if="item.type == 'date'">
               <Col span="11">
               <DatePicker type="date" placeholder="请选择日期" v-model="item.content"></DatePicker>
@@ -51,7 +51,7 @@ export default {
       reftitleMsg: '',//传到下一页的表头中文名数据
       chooseMsg: '',//存储editTable页面传来的数据
       jiluId: '',//记录id
-      lookupLeven2: '',//lookup2级目录
+//      lookupLeven2: '',//lookup2级目录
     };
   },
   created() {
