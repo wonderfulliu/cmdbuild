@@ -5,7 +5,7 @@
         <Col :xs="9" :sm="6" :md="5" :lg="5">
         <div class="">
           <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
-          <Button type="ghost">searchFilter</Button>
+          <!-- <Button type="ghost">searchFilter</Button> -->
         </div>
         </Col>
         <Col :xs="12" :sm="12" :md="10" :lg="11">
@@ -20,7 +20,7 @@
           <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'></Button>
           <Button type="ghost" title="查看" icon="ios-eye" @click="ctrlView"></Button>
           <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
-          <Button type="ghost" title="链接" icon="ios-infinite" @click="ctrlRelete"></Button>
+          <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete"></Button>
           <Button type="ghost" title="删除" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'></Button>
         </ButtonGroup>
         </Col>
@@ -279,7 +279,7 @@ export default {
       let addData = {};
       let attr = JSON.parse(
         //表头信息
-        sessionStorage.getItem("config_" + this.tableName + "_attribute"),
+        sessionStorage.getItem("config_" + this.tableName + "_attribute")
       );
       // console.log(attr);
       // return false;
@@ -291,15 +291,15 @@ export default {
         }
       });
 
-      attr.forEach(function(v, i) {
+      attr.forEach((v, i) => {
         let a = v.attribute;
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
           v.lookupMsg.forEach((val, index) => {
             if (val.Description && val.Description == v.content) {
-            v.content = val.Id;
-          }
-        });
+              v.content = val.Id;
+            }
+          });
         } else if (v.type == "reference") {
           for (let ri = 0; ri < relatedt.length; ri++) {
             if (v.lr == relatedt[ri].domainname) {
@@ -378,48 +378,49 @@ export default {
         .then(function(info) {
           _this.totalBar = info.data.totalRecord;
           let ConfigTdata = info.data.list;
-          ConfigTdata.forEach(function (v, i) {
+          ConfigTdata.forEach(function(v, i) {
             for (let i in v) {
               if (v[i] != null && typeof v[i] == "object") {
                 v[i] = v[i].value;
               }
             }
           });
-        })
-      },
+        });
+    },
     ctrlView() {
       let _this = this;
       if (_this.clickRow == true) {
         console.log(_this.clickRow);
         //选中行
         _this.$http
-        .get(
-          "/cardController/card?table=" +
-          _this.tableName +
-          "&Id=" +
-          _this.recordId)
-        .then(function(info) {
-          let newObj = {};
-          Object.keys(info.data).forEach(function(v, i) {
-            if (_this.attributeCName(v)) {
-              let attr = _this.attributeCName(v);
-              if (typeof info.data[v] == "object" && info.data[v] != null) {
-                newObj[attr] = info.data[v].Description;
-              } else {
-                newObj[attr] = info.data[v];
+          .get(
+            "/cardController/card?table=" +
+              _this.tableName +
+              "&Id=" +
+              _this.recordId
+          )
+          .then(function(info) {
+            let newObj = {};
+            Object.keys(info.data).forEach(function(v, i) {
+              if (_this.attributeCName(v)) {
+                let attr = _this.attributeCName(v);
+                if (typeof info.data[v] == "object" && info.data[v] != null) {
+                  newObj[attr] = info.data[v].Description;
+                } else {
+                  newObj[attr] = info.data[v];
+                }
               }
-            }
+            });
+            _this.configViewData = newObj;
+          })
+          .catch(function(error) {
+            //  console.log(error);
           });
-          _this.configViewData = newObj;
-        })
-        .catch(function(error) {
-          //  console.log(error);
-        });
-      _this.configViewModal = true;
-    } else {
-      //未选中行
-      _this.$Message.error("您未选中行！");
-    }
+        _this.configViewModal = true;
+      } else {
+        //未选中行
+        _this.$Message.error("您未选中行！");
+      }
     },
     ctrlDele() {
       if (this.clickRow == true) {
@@ -458,14 +459,17 @@ export default {
             // console.log(info);
             if (info.status == 200 && Object.keys(info.data).length != 0) {
               let data = {
-                tableName: this.tableName,//表名
-                Id: this.recordId,//记录Id
-                relationMsg: info.data//与该记录有关系的表与表中的记录
+                tableName: this.tableName, //表名
+                Id: this.recordId, //记录Id
+                relationMsg: info.data, //与该记录有关系的表与表中的记录
+                disabled: this.isdisable,//权限也要传递过去
               };
               this.$store.commit("getrelationMsg", data);
               this.$router.push({ path: "/config/relation" });
             } else if (
-              info.status == 200 && Object.keys(info.data).length == 0 ) {
+              info.status == 200 &&
+              Object.keys(info.data).length == 0
+            ) {
               this.$Message.error({
                 content: "该记录尚未与其他记录关联, 查询关系不存在"
               });
