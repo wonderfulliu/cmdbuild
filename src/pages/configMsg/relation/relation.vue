@@ -326,8 +326,8 @@ export default {
     },
     // 关系记录跳转到对应表的所在的位置
     relationJump(value, index){
-      console.log(value);
-      console.log(index);
+      // console.log(value);
+      // console.log(index);
     },
   }
 };
