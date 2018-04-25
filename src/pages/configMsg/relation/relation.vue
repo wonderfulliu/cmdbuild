@@ -49,6 +49,7 @@ export default {
       zhongjianbiao: '',//纯中间表
       now: [],
       future: [],
+      isdisable: '', //权限
       // 表格数据
       columns: [
         {
@@ -64,30 +65,13 @@ export default {
           key: "operating",
           render: (h, params) => {
             return h("div", [
-              // h(
-              //   "Button",
-              //   {
-              //     props: {
-              //       type: "text",
-              //       size: "small"
-              //     },
-              //     style: {
-
-              //     },
-              //     on: {
-              //       click: () => {
-              //           this.show(params.index)
-              //       }
-              //     }
-              //   },
-              //   "详情"
-              // ),
               h(
                 "Button",
                 {
                   props: {
-                    type: "text",
-                    size: "small"
+                    type: "error",
+                    size: "small",
+                    disabled: this.isdisable
                   },
                   style: {},
                   on: {
@@ -97,7 +81,25 @@ export default {
                   }
                 },
                 "删除"
-              )
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginLeft: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      this.relationJump(params, params.index);
+                    }
+                  }
+                },
+                "位置"
+              ),
             ]);
           }
         }
@@ -115,6 +117,7 @@ export default {
       this.CEtableMsg = this.$store.state.tableMsg; //获取中英文对照表名
       this.relationMsg = this.$store.state.relationMsg; //获取到待渲染的关系数据
       this.tableId = this.relationMsg.Id;//表的Id
+      this.isdisable = this.relationMsg.disabled;
     },
     // 一进入页面, 就请求表的关系表的数据
     getDomainList() {
@@ -320,7 +323,12 @@ export default {
     // 返回按钮
     back() {
       this.$router.go(-1);
-    }
+    },
+    // 关系记录跳转到对应表的所在的位置
+    relationJump(value, index){
+      console.log(value);
+      console.log(index);
+    },
   }
 };
 </script>
