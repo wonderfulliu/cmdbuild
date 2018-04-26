@@ -36,10 +36,6 @@
               <Checkbox v-if="item.type == 'bool'" v-model="item.content"></Checkbox>
               <InputNumber v-if="item.type == 'int4'" :min="0" v-model="item.content"></InputNumber>
             </FormItem>
-            <!--<FormItem>
-                <Button type="ghost" style="margin-left: 8px" @click="cancel">取消</Button>
-                <Button type="primary" @click="submit">提交</Button>
-            </FormItem>-->
           </Form>
         </Content>
       </div>
@@ -69,7 +65,7 @@ export default {
     // 获取公共仓库的要渲染的数据
     getaddMsg(){
       this.editMsg = this.$store.state.addMsg.titleMsg;//待渲染的数据
-      console.log(this.editMsg);
+      // console.log(this.editMsg);
       this.tableName = this.$store.state.addMsg.tableName;//表名
       if (this.chooseMsg) {//如果有editTable中被选中的数据, 将变化的数据更新至双向绑定的数据
         this.editMsg.forEach((v, i) => {
