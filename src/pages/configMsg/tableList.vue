@@ -239,12 +239,50 @@ export default {
       _this.ConfigTdata = ConfigTdata;
       _this.loading = false; //加载完成时
     },
+    //view类型表头数据
+    getViewTableHead(info){
+      let _this = this;
+      let ConfigTdata = info.data.list[0];
+      let arra = [];
+      for(let k in ConfigTdata){
+        let obja = {};
+        obja.title = k;
+        obja.key = k;
+        obja.ellipsis = true;
+        arra.push(obja);
+      }
+      let len = arra.length; //记录表头数量
+      let theadWidth =
+        document.querySelector(".contentBody .ivu-table-header").offsetWidth -
+        17;
+      let width = theadWidth / len > 200 ? theadWidth / len : 200;
+      arra.forEach((v, i) => {
+        v.width = width;
+      });
+      _this.ConfigThead = arra;
+    },
+    //view类型表数据处理
+    viewDataProce(info){
+      let _this = this;
+      _this.totalPage = info.data.totalPage;
+      _this.totalBar = info.data.totalRecord;
+      let ConfigTdata = info.data.list;
+      console.log(ConfigTdata);
+      ConfigTdata.forEach(function(v, i) {
+        for (let a in v) {
+          if (v[a] != null && typeof v[a] == "object") {
+            v[a] = v[a].Description;
+          }
+        }
+      });
+      _this.ConfigTdata = ConfigTdata;
+      _this.loading = false; //加载完成时
+    },
     getTableData() {
       //表格数据获取
       let _this = this;
       _this.loading = true; //加载中
       if (_this.tableType == "view") {
-        console.log(_this.funcionName);
         _this.$http
           .post(
             "/viewController/getViewCardList?funcionName=" +
@@ -255,8 +293,8 @@ export default {
               _this.pageSize
           )
           .then(function(info) {
-            _this.getTableHead(info);
-            _this.tableDataProce(info);
+            _this.getViewTableHead(info);
+            _this.viewDataProce(info);
           });
       } else {
         _this.$http

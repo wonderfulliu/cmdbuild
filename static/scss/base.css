@@ -151,7 +151,8 @@
     .ivu-modal .ivu-modal-body .modalListUl ul li:hover {
       background-color: #f0f0f0; }
   .ivu-modal .ivu-modal-body .modalListUl ul li.active {
-    background-color: #ceffc9; }
+    background-color: #e7ffe5;
+    color: #465845; }
 
 .ivu-menu-dark {
   background: #2a3f54; }

@@ -172,11 +172,9 @@
             if(eName == cNameObj[i].attribute){
               let cName = cNameObj[i].cname;
               arra[cName] = obj[eName];
-              console.log(cName);
             }
           }
         }
-        console.log(arra);
         return arra;
       },
       operationBtn(arr){
