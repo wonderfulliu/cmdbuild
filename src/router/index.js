@@ -13,6 +13,7 @@ import historyRecord from '@/pages/configMsg/history/history'
   // 添加, 编辑
 import cadd from '@/pages/configMsg/add'
 import cedit from '@/pages/configMsg/edit'
+import configEdit from '@/pages/configMsg/configEdit'
   //应用组件
 import importXLS from '@/pages/configMsg/apply/importXLS'
 import exportXLS from '@/pages/configMsg/apply/exportXLS'
@@ -106,6 +107,11 @@ export default new Router({
               path: 'cedit',
               name: 'cedit',
               component: cedit
+            }, 
+            {
+              path: 'configEdit',
+              name: 'configEdit',
+              component: configEdit
             }
           ]
         },

@@ -15,6 +15,15 @@
         </Col>
         <Col :xs="24" :sm="{span:20,offset:2}" :md="{span:20,offset:2}" :lg="{span: 12,offset:1}">
         <ButtonGroup>
+<<<<<<< HEAD
+          <Button type="ghost" title="查看" icon="ios-eye" @click="ctrlView"></Button>
+          <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'></Button>
+          <Button type="ghost" title="新增" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'></Button>
+          <Button type="ghost" title="删除" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'></Button>
+          <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
+          <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete"></Button>
+          <Button type="ghost" title="下载" icon="ios-download-outline" @click="configDownload"></Button>
+=======
           <Button type="info" title="下载" icon="ios-download-outline" @click="configDownload">下载</Button>
           <Button type="info" title="新增" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'>新增</Button>
           <Button type="info" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'>编辑</Button>
@@ -22,6 +31,7 @@
           <Button type="info" title="历史" icon="ios-paper-outline" @click="ctrlHistory">历史</Button>
           <Button type="info" title="关系" icon="ios-infinite" @click="ctrlRelete">关系</Button>
           <Button type="info" title="删除" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'>删除</Button>
+>>>>>>> 2b48a2d74ab38ad7e8ebb5db31cee2a3b2c39bc0
         </ButtonGroup>
         </Col>
       </Row>
@@ -171,7 +181,6 @@ export default {
         _this.$http
           .post("/cardController/getAttributeList", { table: _this.tableName })
           .then(function(info) {
-            // console.log(info);
             sessionStorage.setItem(
               "config_" + _this.tableName + "_attribute",
               JSON.stringify(info.data)
@@ -184,7 +193,6 @@ export default {
       let thead = sessionStorage.getItem("config_" + this.tableName + "_head");
       if (!thead) {
         let _this = this;
-
         //获取表头数据：
         let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
         let arrObj = [];
@@ -193,10 +201,10 @@ export default {
           let markName = _this.attributeCName(v);
           let cname;
           if (markName != null) {
-            cname = markName;
+            cname = markName.cname
             oTemp.title = cname;
             oTemp.key = v;
-            // oTemp.width = 170;在下面根据表头数量设置每格的宽度
+            oTemp.position = markName.position;
             oTemp.ellipsis = true;
             arrObj.push(oTemp);
           }
@@ -209,10 +217,17 @@ export default {
         arrObj.forEach((v, i) => {
           v.width = width;
         });
+
+        // 表头字段排序
+        arrObj.sort(function(a, b) {
+          return Number(a.position) - Number(b.position);
+        });
+
         sessionStorage.setItem(
           "config_" + _this.tableName + "_head",
           JSON.stringify(arrObj)
         );
+        
         let newArr = arrObj;
         _this.ConfigThead = newArr;
       } else {
@@ -365,7 +380,10 @@ export default {
         return eName == v.attribute;
       });
       if (c.length != 0) {
-        return c[0].cname;
+        return {
+          cname: c[0].cname,
+          position: c[0].position
+        }
       }
     },
     pageChange(page) {
@@ -441,7 +459,7 @@ export default {
             let newObj = {};
             Object.keys(info.data).forEach(function(v, i) {
               if (_this.attributeCName(v)) {
-                let attr = _this.attributeCName(v);
+                let attr = _this.attributeCName(v).cname;
                 if (typeof info.data[v] == "object" && info.data[v] != null) {
                   newObj[attr] = info.data[v].Description;
                 } else {
@@ -527,11 +545,15 @@ export default {
             "&&Id=" +
             _this.recordId
         )
-        .then(function() {
-          _this.deleLoading = false;
-          _this.configDeleModal = false;
-          _this.getTableData();
-          _this.$Message.success("删除成功");
+        .then(function(info) {
+          if (info.data == 'ok') {
+            _this.deleLoading = false;
+            _this.configDeleModal = false;
+            _this.getTableData();
+            _this.$Message.success("删除成功");
+          } else if (info.data == 'failed') {
+            this.$Message.error('删除失败');
+          }
         })
         .catch(function(error) {
           _this.deleLoading = false;
