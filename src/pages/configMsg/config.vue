@@ -149,10 +149,13 @@ export default {
         let eName = select[0].idElementClass.split('"').join(""); //获取英文名
         _this.tableName = eName; //获取表名
         _this.$router.push({ path: "/config/tableList" });
-        this.Mode = select[0].Mode;
+
         this.tableType = select[0].type;//获取表类别
         if(select[0].type == "view"){
           this.funcionName = select[0].funcionName; //viewfuncionName
+          this.Mode = 'r';
+        }else {
+          this.Mode = select[0].Mode;
         }
         console.log(this.Mode);//点击的表
       }
