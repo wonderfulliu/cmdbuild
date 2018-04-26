@@ -2,19 +2,20 @@
   <Layout class="miniWindow" ref="contentBody" :style="{height:contentbodyH}">
     <Header ref="conBhead" :style="{padding: 0}" class="layout-header-bar">
       <Row>
-        <Col :xs="9" :sm="6" :md="5" :lg="5">
+        <Col span="1">
         <div class="">
           <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
           <!-- <Button type="ghost">searchFilter</Button> -->
         </div>
         </Col>
-        <Col :xs="12" :sm="12" :md="10" :lg="11">
+        <Col :xs="{span: 20,offset: 1}" :sm="{span: 18,offset: 2}" :md="{span: 16,offset:3}" :lg="{span: 9,offset:1}">
           <Input v-model="configCondition" placeholder="Enter something...">
             <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
           </Input>
         </Col>
-        <Col :xs="14" :sm="12" :md="9" :lg="8">
+        <Col :xs="24" :sm="{span:20,offset:2}" :md="{span:20,offset:2}" :lg="{span: 12,offset:1}">
         <ButtonGroup>
+<<<<<<< HEAD
           <Button type="ghost" title="查看" icon="ios-eye" @click="ctrlView"></Button>
           <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'></Button>
           <Button type="ghost" title="新增" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'></Button>
@@ -22,6 +23,15 @@
           <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
           <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete"></Button>
           <Button type="ghost" title="下载" icon="ios-download-outline" @click="configDownload"></Button>
+=======
+          <Button type="info" title="下载" icon="ios-download-outline" @click="configDownload">下载</Button>
+          <Button type="info" title="新增" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'>新增</Button>
+          <Button type="info" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'>编辑</Button>
+          <Button type="info" title="查看" icon="ios-eye" @click="ctrlView">查看</Button>
+          <Button type="info" title="历史" icon="ios-paper-outline" @click="ctrlHistory">历史</Button>
+          <Button type="info" title="关系" icon="ios-infinite" @click="ctrlRelete">关系</Button>
+          <Button type="info" title="删除" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'>删除</Button>
+>>>>>>> 2b48a2d74ab38ad7e8ebb5db31cee2a3b2c39bc0
         </ButtonGroup>
         </Col>
       </Row>
