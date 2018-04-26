@@ -257,8 +257,8 @@
       this.data = newcontentArr;
       this.loading = false;
     },
-    // 获取侧边栏数据
-    getasideMsg() {
+      // 获取侧边栏数据
+      getasideMsg() {
       //给侧边栏赋search页面传来的侧边栏数据
       this.asideMsg[0].children = this.$store.state.searchMsg?this.$store.state.searchMsg:JSON.parse(sessionStorage.getItem('searchMsg'));
       // 应该是进入该表后遍历所有侧边栏数据, 显示selected的那一项
@@ -341,8 +341,8 @@
       this.getSelect();
       this.getrelationTable();
     },
-    // 获取不同表格的表头字段所对应的中文名结合(需要筛选)
-    getcnameTitle() {
+      // 获取不同表格的表头字段所对应的中文名结合(需要筛选)
+      getcnameTitle() {
       let data = { table: this.tableName };
       this.$http.post("/cardController/getAttributeList", data).then(info => {
         if (info.status == 200) {
@@ -537,12 +537,12 @@
       });
 
     },
-    // 获取权限
-    getAuthority() {
+      // 获取权限
+      getAuthority() {
       this.Authority = this.$store.state.Mode?this.$store.state.Mode:JSON.parse(sessionStorage.getItem('Mode'));
     },
-    // 高度自适应
-    heightAdaptive(){
+      // 高度自适应
+      heightAdaptive(){
       let clientH = document.documentElement.clientHeight;
       this.contentbodyH = (clientH - 64) + 'px';
       this.tableHeight = clientH - 64 - 145;//133包括按钮区域, margin-top, 分页所在区域

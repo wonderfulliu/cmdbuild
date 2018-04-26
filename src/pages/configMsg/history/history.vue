@@ -27,7 +27,9 @@
       </p>
       <div class="modalListUl">
         <ul>
-          <li v-for="(val, key ,index) in HistoryViewData" :key="index">{{ key }} : {{ val }}</li>
+          <li v-for="(val, key ,index) in HistoryViewData" :class="{'active': val.flag}" :key="index">
+            {{ key }} : {{ val.value }}
+          </li>
         </ul>
       </div>
       <div slot="footer">
@@ -158,17 +160,24 @@
         second = second < 10 ? ('0' + second) : second;
         return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
       },
-      attributeCName(eName) {
+      //将英文字段转换中文并排序(过滤没有中文名的字段)PS:传入对象
+      attributeCName(obj) {
         let _this = this;
         let cNameObj = JSON.parse(
           sessionStorage.getItem("config_" + _this.tableName + "_attribute")
         );
-        let c = cNameObj.filter(function(v, i) {
-          return eName == v.attribute;
-        });
-        if (c.length != 0) {
-          return c[0].cname;
+        let arra = {};
+        for(let i = 0; i<cNameObj.length-1; i++){
+          for(let eName in obj){
+            if(eName == cNameObj[i].attribute){
+              let cName = cNameObj[i].cname;
+              arra[cName] = obj[eName];
+              console.log(cName);
+            }
+          }
         }
+        console.log(arra);
+        return arra;
       },
       operationBtn(arr){
         let _this = this;
@@ -207,11 +216,13 @@
           .then(function(info){
             let arrb = info.data;
             for(let k in arrb){
-              if(typeof arrb[k] == 'object' && arrb[k] != null){
-                arrb[k] = _this.objectDataChange(arrb[k]);
+              let val = arrb[k];
+              if(typeof val.value == 'object' && val.value != null){
+                val.value = _this.objectDataChange(val.value);
               }
             }
-            _this.HistoryViewData = arrb;
+            let arra = _this.attributeCName(arrb);
+            _this.HistoryViewData = arra;
           });
       },
       objectDataChange(obj){
