@@ -90,7 +90,7 @@ export default {
               relationTable: relationTable
             }
             this.$store.commit('getrefMsg', refMsg);//不论哪个函数先执行, 都会只执行一次
-            this.$router.push({path: 'editTable'});//两个数据都拿到之后再推送
+            this.$router.push({path: '/config/configEdit'});//两个数据都拿到之后再推送
           }
         }
       });
@@ -108,7 +108,7 @@ export default {
               relationTable: relationTable
             }
             this.$store.commit('getrefMsg', refMsg);//不论哪个函数先执行, 都只会执行一次
-            this.$router.push({path: 'editTable'});//两个数据都拿到之后再推送
+            this.$router.push({path: '/config/configEdit'});//两个数据都拿到之后再推送
           }
         }
       });

@@ -158,7 +158,7 @@
             background-color: #fff;
             box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
             .ivu-icon{
-              float: left;
+              //float: left;
             }
             .ivu-btn-group{
               .btn{
@@ -228,6 +228,10 @@
             background-color: #f0f0f0;
           }
         }
+        li.active{
+          background-color: #e7ffe5;
+          color: #465845;
+        }
       }
     }
   }
@@ -287,13 +291,13 @@
 .ivu-table-stripe .ivu-table-fixed-body tr.ivu-table-row-highlight:nth-child(2n),
 tr.ivu-table-row-highlight.ivu-table-row-hover{
   td{
-    background-color: #94e6d6;
+    background-color: #dcf4ef;
   }
 }
 .ivu-table-stripe .ivu-table-body tr.ivu-table-row-hover,
 .ivu-table-stripe .ivu-table-fixed-body tr.ivu-table-row-hover{
   td{
-    background-color: #94e6d6;
+    background-color: #dcf4ef;
   }
 }
 

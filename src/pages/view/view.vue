@@ -113,9 +113,11 @@ export default {
     }
   },
   methods: {
-    // 获取侧边栏数据
+    // 获取侧边栏数据 
     getasideMsg() {
-      this.$http.get("/viewController/getViewList").then(
+      let groupName = JSON.parse(sessionStorage.getItem('groupInfo')).Description;
+      let data = '?groupName=' + groupName;
+      this.$http.get("/viewController/getViewList" + data).then(
         info => {
           if (info.status == 200) {
             // 遍历数组, 将description替换为title
