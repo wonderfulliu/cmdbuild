@@ -23,20 +23,15 @@
       <Layout class="miniWindow" :style="{height:contentbodyH}">
         <Header class="layout-header-bar">
           <Row>
-            <Col span="5">
-            <div class="">
+            <Col span="1">
+            <div>
               <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
             </div>
             </Col>
-            <Col span="14">
+            <Col span="12" offset="5">
               <Input v-model="searchMsg" placeholder="Enter something...">
                 <Button slot="append" type="info" icon="ios-search" @click="search">搜索</Button>
               </Input>
-            </Col>
-            <Col span="5">
-            <ButtonGroup>
-              <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
-            </ButtonGroup>
             </Col>
           </Row>
         </Header>
@@ -51,7 +46,37 @@
             :columns="columns"
             :data="data"
             ref="table"></Table>
-          <div class="pageContainer clearfix floatRight">
+          <div style="line-height: 64px;height:auto;">
+            <Row>
+              <Col span="15" offset="1" style="text-align: left">
+                <ButtonGroup>
+                  <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
+                </ButtonGroup>
+              </Col>
+              <Col span="8" style="width: 310px;text-align: right">
+                <Row>
+                  <Col span="4" style="width: 60px">
+                    共 {{ totalBar }} 条
+                  </Col>
+                  <Col span="4" style="width: 37px">
+                    <Button type="text" icon="chevron-left" @click="pageFirst"></Button>
+                  </Col>
+                  <Col span="14" style="width: 170px">
+                    <Page simple
+                          show-total
+                          :page-size="20"
+                          :current="pageNum"
+                          :total="totalBar"
+                          @on-change="pageChange"></Page>
+                  </Col>
+                  <Col span="4"style="width: 37px">
+                    <Button type="text" icon="chevron-right" @click="pageLast"></Button>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          </div>
+          <!--<div class="pageContainer clearfix floatRight">
             <Button type="ghost" class="floatLeft" @click="pageFirst">首页</Button>
             <Page class="floatLeft"
                   show-elevator
@@ -61,7 +86,7 @@
                   :total="totalBar"
                   @on-change="pageChange"></Page>
             <Button type="ghost" class="floatLeft" @click="pageLast">尾页</Button>
-          </div>
+          </div>-->
         </Content>
       </Layout>
     </Layout>
@@ -99,6 +124,12 @@ export default {
     this.getasideMsg();
     this.heightAdaptive();
   },
+  mounted () {
+    let _this = this;
+    window.onresize = () => {
+      _this.heightAdaptive();
+    }
+  },
   computed: {
     rotateIcon() {
       return ["menu-icon", this.isCollapsed ? "rotate-icon" : ""];
@@ -115,7 +146,9 @@ export default {
   methods: {
     // 获取侧边栏数据
     getasideMsg() {
-      this.$http.get("/viewController/getViewList").then(
+      let groupName = JSON.parse(sessionStorage.getItem('groupInfo')).Description;
+      let data = '?groupName=' + groupName;
+      this.$http.get("/viewController/getViewList" + data).then(
         info => {
           if (info.status == 200) {
             // 遍历数组, 将description替换为title
@@ -324,7 +357,7 @@ export default {
     heightAdaptive(){
       let clientH = document.documentElement.clientHeight;
       this.contentbodyH = (clientH - 64) + 'px';
-      this.tableHeight = clientH - 64 - 145;//133包括按钮区域, margin-top, 分页所在区域
+      this.tableHeight = clientH - 64 - 160;//133包括按钮区域, margin-top, 分页所在区域
     },
   }
 };

@@ -1,6 +1,6 @@
 <template>
   <Layout class="miniWindow">
-    <div id="relationTableContainer">
+    <div id="relationTableContainer" :style="{height:contentbodyH}">
       <Header class="layout-header-bar" style="padding: 0">
         <Row>
           <Col :xs="{span: 8, offset: 1}" :sm="{span: 5, offset: 1}" :md="{span: 5, offset: 1}" :lg="{span: 5, offset: 1}">
@@ -17,14 +17,14 @@
               <Button type="success" @click="confirm">确认</Button>
             </div>
           </Col>
-        </Row>
+        </Row> 
       </Header>
       <Content ref="conBbody" class="contentTable">
         <div class="contentBody">
           <Table border
                  highlight-row
                  stripe
-                 height="400"
+                 :height="tableHeight"
                  size="small"
                  v-if="isOne"
                  :loading="loading"
@@ -33,7 +33,7 @@
                  @on-current-change="selectOne"></Table>
           <Table border
                  stripe
-                 height="400"
+                 :height="tableHeight"
                  size="small"
                  v-if="isN"
                  :loading="loading"
@@ -74,9 +74,12 @@ export default {
       isOne: true, //单选
       isN: "", //多选
       addData: '',//要添加的数据
+      tableHeight: '',//表格的高度
+      contentbodyH: '', //内容区域的高度
     };
   },
   created() {
+    this.heightAdaptive();
     this.getrefMsg();
   },
   methods: {
@@ -360,6 +363,13 @@ export default {
     // 取消按钮
     cancel() {
       this.$router.go(-1);
+    },
+    // 高度自适应
+    heightAdaptive() {
+      let clientH = document.documentElement.clientHeight;
+      console.log(clientH);
+      this.contentbodyH = clientH - 64 + "px";
+      this.tableHeight = clientH - 64 - 128; //133包括按钮区域, margin-top, 分页所在区域
     }
   }
 };

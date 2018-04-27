@@ -13,17 +13,6 @@
             <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
           </Input>
         </Col>
-        <!--<Col :xs="24" :sm="{span:20,offset:2}" :md="{span:20,offset:2}" :lg="{span: 12,offset:1}">
-        <ButtonGroup>
-          <Button type="info" title="查看" icon="ios-eye" @click="ctrlView">查看</Button>
-          <Button type="info" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'>编辑</Button>
-          <Button type="info" title="新增" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'>新增</Button>
-          <Button type="info" title="删除" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'>删除</Button>
-          <Button type="info" title="历史" icon="ios-paper-outline" @click="ctrlHistory">历史</Button>
-          <Button type="info" title="关系" icon="ios-infinite" @click="ctrlRelete">关系</Button>
-          <Button type="info" title="下载" icon="ios-download-outline" @click="configDownload">下载</Button>
-        </ButtonGroup>
-        </Col>-->
       </Row>
     </Header>
     <Content ref="conBbody">
@@ -74,13 +63,8 @@
             </Row>
             </Col>
           </Row>
-
-
-          <!--<div ref="pageCont" class="pageContainer">
-
-          </div>-->
+          <!--<div ref="pageCont" class="pageContainer"></div>-->
         </div>
-
       </div>
     </Content>
     <!--模态框-->
