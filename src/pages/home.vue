@@ -5,7 +5,7 @@
         <Header>
           <Menu mode="horizontal" theme="dark" active-name="1">
             <div class="layout-logo">
-              <img src="../../static/logo.png" alt="LOGO">
+              <a id="logo" href="#/search"><img src="../../static/logo.png" alt="LOGO"></a>
             </div>
             <div class="layout-nav">
               <router-link to="/search" active-class>
@@ -26,7 +26,7 @@
                   视图
                 </MenuItem>
               </router-link>
-              <router-link to="/workFlow" active-class>
+              <!-- <router-link to="/workFlow" active-class>
                 <MenuItem name="4">
                   <Icon type="pin"></Icon>
                   工作流
@@ -37,7 +37,7 @@
                   <Icon type="stats-bars"></Icon>
                   Charts
                 </MenuItem>
-              </router-link>
+              </router-link> -->
             </div>
             <div class="layout-user">
               <MenuItem class="userInfo" name="5">
