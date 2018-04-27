@@ -151,13 +151,15 @@ export default {
         _this.$router.push({ path: "/config/tableList" });
 
         this.tableType = select[0].type;//获取表类别
+        console.log(select[0].type);
         if(select[0].type == "view"){
           this.funcionName = select[0].funcionName; //viewfuncionName
           this.Mode = 'r';
+        }else if(select[0].type == "dashboard"){
+          this.Mode = select[0].Mode;
         }else {
           this.Mode = select[0].Mode;
         }
-        console.log(this.Mode);//点击的表
       }
     },
     getRecordId(msg) {

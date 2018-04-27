@@ -3,37 +3,27 @@
     <Header ref="conBhead" :style="{padding: 0}" class="layout-header-bar">
       <Row>
         <Col span="1">
-        <div class="">
+        <div>
           <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
           <!-- <Button type="ghost">searchFilter</Button> -->
         </div>
         </Col>
-        <Col :xs="{span: 20,offset: 1}" :sm="{span: 18,offset: 2}" :md="{span: 16,offset:3}" :lg="{span: 9,offset:1}">
+        <Col span="12" offset="5">
           <Input v-model="configCondition" placeholder="Enter something...">
             <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
           </Input>
         </Col>
-        <Col :xs="24" :sm="{span:20,offset:2}" :md="{span:20,offset:2}" :lg="{span: 12,offset:1}">
+        <!--<Col :xs="24" :sm="{span:20,offset:2}" :md="{span:20,offset:2}" :lg="{span: 12,offset:1}">
         <ButtonGroup>
-<<<<<<< HEAD
-          <Button type="ghost" title="查看" icon="ios-eye" @click="ctrlView"></Button>
-          <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'></Button>
-          <Button type="ghost" title="新增" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'></Button>
-          <Button type="ghost" title="删除" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'></Button>
-          <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
-          <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete"></Button>
-          <Button type="ghost" title="下载" icon="ios-download-outline" @click="configDownload"></Button>
-=======
-          <Button type="info" title="下载" icon="ios-download-outline" @click="configDownload">下载</Button>
-          <Button type="info" title="新增" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'>新增</Button>
-          <Button type="info" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'>编辑</Button>
           <Button type="info" title="查看" icon="ios-eye" @click="ctrlView">查看</Button>
+          <Button type="info" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'>编辑</Button>
+          <Button type="info" title="新增" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'>新增</Button>
+          <Button type="info" title="删除" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'>删除</Button>
           <Button type="info" title="历史" icon="ios-paper-outline" @click="ctrlHistory">历史</Button>
           <Button type="info" title="关系" icon="ios-infinite" @click="ctrlRelete">关系</Button>
-          <Button type="info" title="删除" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'>删除</Button>
->>>>>>> 2b48a2d74ab38ad7e8ebb5db31cee2a3b2c39bc0
+          <Button type="info" title="下载" icon="ios-download-outline" @click="configDownload">下载</Button>
         </ButtonGroup>
-        </Col>
+        </Col>-->
       </Row>
     </Header>
     <Content ref="conBbody">
@@ -49,17 +39,48 @@
                :columns="ConfigThead"
                :data="ConfigTdata">
         </Table>
-        <div ref="pageCont" class="pageContainer clearfix floatRight">
-          <Button type="ghost" class="floatLeft" @click="pageFirst">首页</Button>
-          <Page class="floatLeft"
-                show-elevator
-                show-total
-                :page-size="20"
-                :current="pageNum"
-                :total="totalBar"
-                @on-change="pageChange"></Page>
-          <Button type="ghost" class="floatLeft" @click="pageLast">尾页</Button>
+        <div style="line-height: 64px;height:auto;">
+          <Row>
+            <Col span="15" offset="1" style="text-align: left">
+              <ButtonGroup>
+                <Button type="ghost" title="查看" icon="ios-eye" @click="ctrlView">查看</Button>
+                <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'>编辑</Button>
+                <Button type="ghost" title="新增" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'>新增</Button>
+                <Button type="ghost" title="删除" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'>删除</Button>
+                <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory">历史</Button>
+                <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete">关系</Button>
+                <Button type="ghost" title="下载" icon="ios-download-outline" @click="configDownload">下载</Button>
+              </ButtonGroup>
+            </Col>
+            <Col span="8" style="width: 310px;text-align: right">
+            <Row>
+              <Col span="4" style="width: 60px">
+              共 {{ totalBar }} 条
+              </Col>
+              <Col span="4" style="width: 37px">
+              <Button type="text" icon="chevron-left" @click="pageFirst"></Button>
+              </Col>
+              <Col span="14" style="width: 170px">
+              <Page simple
+                    show-total
+                    :page-size="20"
+                    :current="pageNum"
+                    :total="totalBar"
+                    @on-change="pageChange"></Page>
+              </Col>
+              <Col span="4"style="width: 37px">
+              <Button type="text" icon="chevron-right" @click="pageLast"></Button>
+              </Col>
+            </Row>
+            </Col>
+          </Row>
+
+
+          <!--<div ref="pageCont" class="pageContainer">
+
+          </div>-->
         </div>
+
       </div>
     </Content>
     <!--模态框-->
@@ -156,11 +177,24 @@ export default {
   created() {
     this.heightAdaptive();
     this.isgetTablename();
-    this.$watch("tableName", function(newValue, oldValue) {
+  },
+  mounted () {
+    let _this = this;
+    window.onresize = () => {
+      _this.heightAdaptive();
+    }
+  },
+  watch:{
+    'tableName': function(newValue, oldValue){
       this.getTableAttribute();
       this.getTableData();
       this.getlookup();
-    });
+    },
+    'funcionName': function(newValue, oldValue){
+      this.getTableAttribute();
+      this.getTableData();
+      this.getlookup();
+    }
   },
   methods: {
     // 如果表名已经获取到, 可以调用以下函数
@@ -227,7 +261,7 @@ export default {
           "config_" + _this.tableName + "_head",
           JSON.stringify(arrObj)
         );
-        
+
         let newArr = arrObj;
         _this.ConfigThead = newArr;
       } else {
@@ -277,7 +311,7 @@ export default {
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
       let ConfigTdata = info.data.list;
-      console.log(ConfigTdata);
+//      console.log(ConfigTdata);
       ConfigTdata.forEach(function(v, i) {
         for (let a in v) {
           if (v[a] != null && typeof v[a] == "object") {
@@ -632,7 +666,7 @@ export default {
     heightAdaptive() {
       let clientH = document.documentElement.clientHeight;
       this.contentbodyH = clientH - 64 + "px";
-      this.tableHeight = clientH - 64 - 133; //133包括按钮区域, margin-top, 分页所在区域
+      this.tableHeight = clientH - 64 - 140; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
     }
   },
   computed: {}
