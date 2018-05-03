@@ -3,10 +3,14 @@
     <div id="editContainer">
       <Header class="layout-header-bar">
         <Row>
-          <Col span="6" offset="1">
-            <h3 style="text-align: left">编辑信息 </h3>
+          <Col span="9" offset="1">
+            <Breadcrumb>
+              <BreadcrumbItem to="/config/tableList">配置信息</BreadcrumbItem>
+              <BreadcrumbItem to="/config/tableList">{{tableCname}}</BreadcrumbItem>
+              <BreadcrumbItem>编辑</BreadcrumbItem>
+            </Breadcrumb>
           </Col>
-          <Col span="12" offset="5">
+          <Col span="9" offset="5">
           <div class="floatRight">
             <Button type="primary" style="margin-right: 8px" @click="cancel">取消</Button>
             <Button type="success" @click="submit">提交</Button>
@@ -47,6 +51,7 @@ export default {
     return {
       editMsg: "",//用于渲染的数据
       tableName: '',//表名
+      tableCname: '',//表中文名
       reftableMsg: '',//传到下一页的表格数据
       reftitleMsg: '',//传到下一页的表头中文名数据
       chooseMsg: '',//存储editTable页面传来的数据
@@ -65,9 +70,10 @@ export default {
     // 获取公共仓库的要渲染的数据
     getaddMsg(){
       this.editMsg = this.$store.state.addMsg.titleMsg;//待渲染的数据
-      // console.log(this.$store.state.addMsg.titleMsg);
+      console.log(this.$store.state.addMsg);
       this.jiluId = this.$store.state.addMsg.Id;//获取记录id
       this.tableName = this.$store.state.addMsg.tableName;//表名
+      this.tableCname = this.$store.state.addMsg.tableCname;//表中文名
       if (this.chooseMsg) {//如果有editTable中被选中的数据, 将变化的数据更新至双向绑定的数据
         this.editMsg.forEach((v, i) => {
           if (v.type == "reference" && v.relationTable == this.chooseMsg.relationTable) {

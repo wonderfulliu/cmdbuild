@@ -105,6 +105,10 @@ export default {
       type: String,
       required: true
     },
+    tableCname: {
+      type: String,
+      required: true
+    },
     tableType: {
       type: String,
       required: true
@@ -127,7 +131,7 @@ export default {
     }
   },
   data() {
-    return {
+    return { 
       //参数
       isCollapsed: false,
       recordId: "", //记录id
@@ -384,6 +388,7 @@ export default {
         }
       });
       addData.tableName = this.tableName;
+      addData.tableCname = this.tableCname;
       addData.titleMsg = attr;
       addData.Id = this.recordId;
       // console.log(addData);
@@ -605,6 +610,7 @@ export default {
         }
       });
       addData.tableName = _this.tableName;
+      addData.tableCname = this.tableCname;
       addData.titleMsg = attr;
       // console.log(addData);
       _this.$store.commit("getaddMsg", addData);

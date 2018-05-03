@@ -5,7 +5,11 @@
       <Header class="layout-header-bar">
         <Row>
           <Col span="6" offset="1">
-          <h3 style="text-align: left">添加信息 </h3>
+            <Breadcrumb>
+              <BreadcrumbItem to="/search">全局搜索</BreadcrumbItem>
+              <BreadcrumbItem to="/result">{{tableCname}}</BreadcrumbItem>
+              <BreadcrumbItem>新增</BreadcrumbItem>
+            </Breadcrumb>
           </Col>
           <Col span="12" offset="5">
           <div class="floatRight">
@@ -53,6 +57,7 @@ export default {
     return {
       addMsg: '',//需要双向绑定的数据
       tableName: '',//表名
+      tableCname: '',
       reftableMsg: '',//传到下一页的表格数据
       reftitleMsg: '',//传到下一页的表头中文名数据
       chooseMsg: '',//存储editTable页面传来的数据
@@ -71,6 +76,7 @@ export default {
     getaddMsg(){
       this.addMsg = this.$store.state.addMsg.titleMsg;//待渲染的数据
       this.tableName = this.$store.state.addMsg.tableName;//表名
+      this.tableCname = this.$store.state.addMsg.tableCname; //中文表名
       if (this.chooseMsg) {//如果有editTable中被选中的数据, 将变化的数据更新至双向绑定的数据
         this.addMsg.forEach((v, i) => {
           if (v.type == "reference" && v.relationTable == this.chooseMsg.relationTable) {

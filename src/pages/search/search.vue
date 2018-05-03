@@ -98,7 +98,7 @@ export default {
 
 <style lang="scss">
 #searchContainer {
-  background: url('../../img/search3.jpg') no-repeat;
+  background: url('../../img/search.jpg') no-repeat;
   background-size: cover;
   height: 100%;
   .btnContainerAll {
