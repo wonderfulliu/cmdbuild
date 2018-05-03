@@ -3,11 +3,11 @@
     <Header ref="conBhead" :style="{padding: 0}" class="layout-header-bar">
       <Row>
         <Col span="1">
-        <div>
           <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
-          <!-- <Button type="ghost">searchFilter</Button> -->
-        </div>
         </Col>
+        <!--<Col span="1">
+           <Button type="ghost">searchFilter</Button>
+        </Col>-->
         <Col span="12" offset="5">
           <Input v-model="configCondition" placeholder="Enter something...">
             <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>

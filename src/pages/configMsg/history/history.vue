@@ -2,15 +2,17 @@
   <Layout>
     <Header :offset-top="64" :style="{padding: 0}" class="layout-header-bar">
       <Row>
-        <Col span="4">
+        <Col span="1">
           <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" :style="{margin: '4px 20px'}" type="navicon-round" size="24"></Icon>
-          <Button type="ghost" @click="backBtn">返回</Button>
         </Col>
-        <Col span="5" offset="15">
+        <Col span="23" style="text-align: right">
         <ButtonGroup>
           <Button type="info" @click="gethistoryInfo" :class="{'active': ctrlBtnA}">信息</Button>
           <Button type="info" @click="gethistoryRelate" :class="{'active': ctrlBtnB}">关系</Button>
         </ButtonGroup>
+
+        <Button type="ghost" @click="backBtn" style="margin-right: 20px;margin-left: 10px">返回</Button>
+
         </Col>
       </Row>
     </Header>

@@ -19,10 +19,9 @@
       <Layout :style="{height:contentbodyH}">
         <Header class="layout-header-bar">
           <Row>
-            <Col span="2">
-            <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
+            <Col span="1">
+              <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
             </Col>
-
           </Row>
         </Header>
         <Content>
@@ -46,7 +45,6 @@
                     <Button type="ghost" title="新增" icon="ios-plus-empty" @click="add" :disabled='isdisable'></Button>
                     <Button type="ghost" title="删除" icon="ios-trash-outline" @click="remove" :disabled='isdisable'></Button>
                     <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
-
                     <!-- <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
                     <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete"></Button> -->
                   </ButtonGroup>
