@@ -92,7 +92,7 @@ export default {
         .post("/authorityController/getMenu?groupName=" + _this.groupName)
         .then(function(info) {
           let oData = info.data.children;
-          console.log(oData);
+          // console.log(oData);
           let treeMenu = sessionStorage.getItem(_this.groupName + "_menu");
           if (treeMenu) {
           } else {
