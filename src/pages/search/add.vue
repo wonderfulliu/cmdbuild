@@ -4,7 +4,7 @@
     <div id="addContainer">
       <Header class="layout-header-bar">
         <Row>
-          <Col span="6" offset="1">
+          <Col span="6" offset="1" style="text-align: left">
             <Breadcrumb>
               <BreadcrumbItem to="/search">全局搜索</BreadcrumbItem>
               <BreadcrumbItem to="/result">{{tableCname}}</BreadcrumbItem>

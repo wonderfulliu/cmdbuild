@@ -9,7 +9,8 @@
             </template>
             <div class="treeContent">
               <!--树状菜单-->
-              <Tree :data="ConfigTreeData" @on-select-change="getTreeNodes"></Tree>
+              <Tree :data="ConfigTreeData"
+                    @on-select-change="getTreeNodes"></Tree>
             </div>
           </Submenu>
           <Submenu name="2">
@@ -162,6 +163,9 @@ export default {
           this.funcionName = select[0].funcionName; //viewfuncionName
         }
         this.Mode = select[0].Mode;
+      }else {
+        select[0].selected = false;
+        select[0].expand = !select[0].expand;
       }
     },
     getRecordId(msg) {

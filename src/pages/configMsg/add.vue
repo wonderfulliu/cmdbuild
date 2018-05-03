@@ -3,7 +3,7 @@
   <div id="addContainer">
     <Header class="layout-header-bar">
       <Row>
-        <Col span="9" offset="1">
+        <Col span="9" offset="1" style="text-align: left">
           <Breadcrumb>
             <BreadcrumbItem to="/config/tableList">配置信息</BreadcrumbItem>
             <BreadcrumbItem to="/config/tableList">{{tableCname}}</BreadcrumbItem>
@@ -18,7 +18,7 @@
         </Col>
       </Row>
     </Header>
-    <Content ref="conBbody"  class="contentForm">
+    <Content ref="conBbody"  class="contentForm" :style="{height:contHeight}">
       <Form :label-width="100" class="formContainer">
         <FormItem :label="item.cname" v-for="(item, index) in addMsg" :key="index" v-if="item.title != 'Id'">
           <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
@@ -62,14 +62,19 @@ export default {
       reftableMsg: '',//传到下一页的表格数据
       reftitleMsg: '',//传到下一页的表头中文名数据
       chooseMsg: '',//存储editTable页面传来的数据
+      contHeight: ''//content内容区
     }
   },
   created() {
     this.getchooseMsg();
     this.getaddMsg();
+    this.getHeight();
   },
   mounted () {
-    this.getHeight();
+    let _this = this;
+    window.onresize = () => {
+      _this.getHeight();
+    }
   },
   methods: {
     // 获取公共仓库的要渲染的数据
@@ -183,7 +188,9 @@ export default {
     },
     // 获取高度
     getHeight(){
-      this.height = document.querySelector('#addContainer').offsetHeight - 74 + 'px';
+      let clientH = document.documentElement.clientHeight;
+      this.contHeight = (clientH - 64 - 74) + 'px';
+//      this.height = document.querySelector('#addContainer').offsetHeight - 74 + 'px';
     },
   }
 };
