@@ -91,8 +91,8 @@ export default {
       _this.$http
         .post("/authorityController/getMenu?groupName=" + _this.groupName)
         .then(function(info) {
-          // console.log(info);
           let oData = info.data.children;
+          console.log(oData);
           let treeMenu = sessionStorage.getItem(_this.groupName + "_menu");
           if (treeMenu) {
           } else {
@@ -104,7 +104,6 @@ export default {
           let objTree = objFunc(oData);//将得到的数据转换成需要的格式
           // console.log(objTree);
           _this.ConfigTreeData = newTreeFunc(objTree); //打开侧栏第一个选项
-
           function newTreeFunc(obj) {//这里第一次获取表名
             if (obj.length > 0) {
               obj[0].expand = true;
@@ -128,7 +127,7 @@ export default {
               let oBranch = {};
               oBranch.title = v.description;
               oBranch.type = v.type;
-              if(v.type == 'view'){
+              if(v.type == 'view' || v.type == 'dashboard'){
                 oBranch.funcionName = v.functionName;
               }
               oBranch.expand = false; //菜单是否展开 true展开
@@ -136,7 +135,11 @@ export default {
                 oBranch.children = objFunc(v.children);
               } else {
                 oBranch.idElementClass = v.idElementClass; //表名英文
-                oBranch.Mode = _this.WorR(_this.Authority, v.idElementClass); //权限
+                if(v.type == 'view' || v.type == 'dashboard'){
+                  oBranch.Mode = 'r';
+                }else {
+                  oBranch.Mode = _this.WorR(_this.Authority, v.idElementClass); //权限
+                }
               }
               oTree.push(oBranch); //对象追加到数组末尾
             });
@@ -155,15 +158,10 @@ export default {
         _this.$router.push({ path: "/config/tableList" });
 
         this.tableType = select[0].type;//获取表类别
-        console.log(select[0].type);
-        if(select[0].type == "view"){
+        if(select[0].type == "view" || select[0].type == "dashboard"){
           this.funcionName = select[0].funcionName; //viewfuncionName
-          this.Mode = 'r';
-        }else if(select[0].type == "dashboard"){
-          this.Mode = select[0].Mode;
-        }else {
-          this.Mode = select[0].Mode;
         }
+        this.Mode = select[0].Mode;
       }
     },
     getRecordId(msg) {

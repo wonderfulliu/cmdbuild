@@ -52,9 +52,9 @@
               <Col span="14" style="width: 170px">
               <Page simple
                     show-total
-                    :page-size="20"
-                    :current="pageNum"
+                    :page-size=20
                     :total="totalBar"
+                    :current="pageNum"
                     @on-change="pageChange"></Page>
               </Col>
               <Col span="4"style="width: 37px">
@@ -137,7 +137,7 @@ export default {
       recordId: "", //记录id
       pageNum: 1, //当前页
       pageSize: 20, //每页条数
-      totalBar: null, //总条数
+      totalBar: 0, //总条数
       totalPage: null, //总页数
       configCondition: "", //查询条件
       //数据
@@ -314,7 +314,7 @@ export default {
       //表格数据获取
       let _this = this;
       _this.loading = true; //加载中
-      if (_this.tableType == "view") {
+      if (_this.tableType == "view" || _this.tableType == "dashboard") {
         _this.$http
           .post(
             "/viewController/getViewCardList?funcionName=" +
