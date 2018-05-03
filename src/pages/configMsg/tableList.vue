@@ -132,7 +132,7 @@ export default {
     }
   },
   data() {
-    return { 
+    return {
       //参数
       isCollapsed: false,
       sort: '', //排序顺序
@@ -342,10 +342,10 @@ export default {
               "&pageNum=" +
               _this.pageNum +
               "&pageSize=" +
-              _this.pageSize + 
-              "&sortAttribute=" + 
-              _this.sortAttribute + 
-              "&sort=" + 
+              _this.pageSize +
+              "&sortAttribute=" +
+              _this.sortAttribute +
+              "&sort=" +
               _this.sort
           )
           .then(function(info) {
@@ -481,6 +481,8 @@ export default {
               }
             }
           });
+          _this.ConfigTdata = ConfigTdata;
+          _this.loading = false; //加载完成时
         });
     },
     ctrlView() {
@@ -528,7 +530,6 @@ export default {
     ctrlEdit() {
       if (this.clickRow == true) {
         //将已选中行进行编辑
-        console.log("将已选中行进行编辑");
         this.$router.push({ path: "/config/cedit" }); //跳转至新增页面
       } else {
         this.$Message.error("您未选中行！");
