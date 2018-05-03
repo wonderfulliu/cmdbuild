@@ -354,7 +354,7 @@ export default {
           });
       }
     },
-    // 排序
+    // 字段排序
     sorting(s){
       this.sortAttribute = s.key;
       this.sort = s.order;
