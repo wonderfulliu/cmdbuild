@@ -22,18 +22,7 @@
             <Col span="2">
             <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
             </Col>
-            <Col :xs="14" :sm="12" :md="{span: 9, offset: 13}" :lg="{span: 7, offset: 15}">
-            <ButtonGroup>
-              <Button type="ghost" title="查看" icon="ios-eye" @click="show"></Button>
-              <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="edit" :disabled='isdisable'></Button>
-              <Button type="ghost" title="新增" icon="ios-plus-empty" @click="add" :disabled='isdisable'></Button>
-              <Button type="ghost" title="删除" icon="ios-trash-outline" @click="remove" :disabled='isdisable'></Button>
-              <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
-              
-              <!-- <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
-              <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete"></Button> -->
-            </ButtonGroup>
-            </Col>
+
           </Row>
         </Header>
         <Content>
@@ -48,14 +37,42 @@
                    :loading='loading'
                    :columns="columns"
                    :data="data"></Table>
-            <div class="pageContainer clearfix floatRight">
-              <Page class="floatLeft"
-                    show-total
-                    show-elevator
-                    :page-size=20
-                    :total="totalBar"
-                    :current="pageNum"
-                    @on-change="pageChange"></Page>
+            <div style="line-height: 64px;height:auto;">
+              <Row>
+                <Col :xs="{span:23,offset:1}" :sm="{span:12,offset:1}" :md="{span:13,offset:1}" :lg="{span:14,offset:1}" style="text-align: left">
+                  <ButtonGroup>
+                    <Button type="ghost" title="查看" icon="ios-eye" @click="show"></Button>
+                    <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="edit" :disabled='isdisable'></Button>
+                    <Button type="ghost" title="新增" icon="ios-plus-empty" @click="add" :disabled='isdisable'></Button>
+                    <Button type="ghost" title="删除" icon="ios-trash-outline" @click="remove" :disabled='isdisable'></Button>
+                    <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
+
+                    <!-- <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
+                    <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete"></Button> -->
+                  </ButtonGroup>
+                </Col>
+                <Col :xs="{span:23,offset:1}" :sm="{span:9}" :md="{span:9}" :lg="{span:7}" style="width: 310px;text-align: right">
+                  <Row>
+                    <Col span="4" style="width: 60px">
+                      共 {{ totalBar }} 条
+                    </Col>
+                    <Col span="4" style="width: 37px">
+                      <Button type="text" icon="chevron-left" @click="pageFirst"></Button>
+                    </Col>
+                    <Col span="14" style="width: 170px">
+                    <Page simple
+                          show-total
+                          :page-size=20
+                          :total="totalBar"
+                          :current="pageNum"
+                          @on-change="pageChange"></Page>
+                    </Col>
+                    <Col span="4"style="width: 37px">
+                      <Button type="text" icon="chevron-right" @click="pageLast"></Button>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
             </div>
           </div>
         </Content>
@@ -87,10 +104,12 @@ export default {
           children: []
         }
       ],
-      tableName: "",
-      ids: "",
-      pageNum: 1,
+      tableName: "",//表名
+      ids: "",      //所有记录的id
+      pageNum: 1,   //当前页码
       pageSize: 20, //每页显示的数量
+      totalPage: "", //总页数
+      totalBar: 0,//总条数
       searchMsg: "",
       isCollapsed: false,
       // 表格列
@@ -99,8 +118,6 @@ export default {
       data: [],
       lookupMsg: "",
       loading: true,
-      total: "", //表格数据总条数
-      totalBar: 0,
       cnameTitle: "", // 存储表头中英文对照信息
       modal: false,
       delData: {
@@ -123,6 +140,12 @@ export default {
     this.getasideMsg();
     this.heightAdaptive();
   },
+  mounted () {
+    let _this = this;
+    window.onresize = () => {
+      _this.heightAdaptive();
+    }
+  },
   computed: {
     rotateIcon() {
       return ["menu-icon", this.isCollapsed ? "rotate-icon" : ""];
@@ -135,6 +158,7 @@ export default {
     //表格数据的处理
     dataProcess(info) {
       this.totalBar = info.data.totalRecord;
+      this.totalPage = info.data.totalPage;
       let dataArr = info.data.list; //要处理和渲染的表格数据
       // 设置表格宽度
       let len = this.cnameTitle.length;
@@ -158,7 +182,7 @@ export default {
       newtitleArr.sort(function(a, b) {
         return Number(a.position) - Number(b.position);
       });
-      
+
       // console.log(newtitleArr);
       this.columns = newtitleArr; //将获取到的表头字段赋值给table的columns
 
@@ -303,6 +327,14 @@ export default {
       this.pageNum = page;
       this.gettableMsg();
     },
+    pageFirst() {
+      this.pageNum = 1;
+      this.gettableMsg();
+    },
+    pageLast() {
+      this.pageNum = this.totalPage;
+      this.gettableMsg();
+    },
     // 侧边栏收起功能
     collapsedSider() {
       this.$refs.side1.toggleCollapse();
@@ -344,7 +376,7 @@ export default {
           content: '您未选中行!'
         })
       }
-      
+
     },
     //实现删除
     del() {
@@ -503,16 +535,16 @@ export default {
         }
       });
     },
-      // 获取权限
-      getAuthority() {
-      this.Authority = this.$store.state.Mode?this.$store.state.Mode:JSON.parse(sessionStorage.getItem('Mode'));
-    },
-      // 高度自适应
-      heightAdaptive(){
-      let clientH = document.documentElement.clientHeight;
-      this.contentbodyH = clientH - 64 + "px";
-      this.tableHeight = clientH - 64 - 145; //133包括按钮区域, margin-top, 分页所在区域
-    }
+    // 获取权限
+    getAuthority() {
+    this.Authority = this.$store.state.Mode?this.$store.state.Mode:JSON.parse(sessionStorage.getItem('Mode'));
+  },
+    // 高度自适应
+    heightAdaptive(){
+    let clientH = document.documentElement.clientHeight;
+    this.contentbodyH = clientH - 64 + "px";
+    this.tableHeight = clientH - 64 - 145; //133包括按钮区域, margin-top, 分页所在区域
+  }
   }
 };
 </script>
