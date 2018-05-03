@@ -23,6 +23,7 @@
                size="small"
                :height="tableHeight"
                @on-row-click="getRecordInfo"
+               @on-sort-change="sorting"
                :highlight-row="highlight"
                :loading="loading"
                :columns="ConfigThead"
@@ -57,7 +58,7 @@
                     :current="pageNum"
                     @on-change="pageChange"></Page>
               </Col>
-              <Col span="4"style="width: 37px">
+              <Col span="4" style="width: 37px">
               <Button type="text" icon="chevron-right" @click="pageLast"></Button>
               </Col>
             </Row>
@@ -134,6 +135,8 @@ export default {
     return {
       //参数
       isCollapsed: false,
+      sort: '', //排序顺序
+      sortAttribute: '', //排序字段
       recordId: "", //记录id
       pageNum: 1, //当前页
       pageSize: 20, //每页条数
@@ -143,7 +146,6 @@ export default {
       //数据
       ConfigThead: [], //表头
       ConfigTdata: [], //表格数据
-      // attributes: '',   //记录的字段 中英文
       lookupInfo: "", //当前表中lookup信息
       relationInfo: "", //关系表信息
       //页面配置：
@@ -228,6 +230,11 @@ export default {
             oTemp.key = v;
             oTemp.position = markName.position;
             oTemp.ellipsis = true;
+            oTemp.sortable = true;
+            oTemp.filters = [{//这个是filter, 还不完全, 需要修改
+              label: 'Search',
+              value: 1
+            }]
             arrObj.push(oTemp);
           }
         });
@@ -244,7 +251,6 @@ export default {
         arrObj.sort(function(a, b) {
           return Number(a.position) - Number(b.position);
         });
-
         sessionStorage.setItem(
           "config_" + _this.tableName + "_head",
           JSON.stringify(arrObj)
@@ -299,7 +305,7 @@ export default {
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
       let ConfigTdata = info.data.list;
-//      console.log(ConfigTdata);
+      // console.log(ConfigTdata);
       ConfigTdata.forEach(function(v, i) {
         for (let a in v) {
           if (v[a] != null && typeof v[a] == "object") {
@@ -336,13 +342,23 @@ export default {
               "&pageNum=" +
               _this.pageNum +
               "&pageSize=" +
-              _this.pageSize
+              _this.pageSize +
+              "&sortAttribute=" +
+              _this.sortAttribute +
+              "&sort=" +
+              _this.sort
           )
           .then(function(info) {
             _this.getTableHead(info);
             _this.tableDataProce(info);
           });
       }
+    },
+    // 排序
+    sorting(s){
+      this.sortAttribute = s.key;
+      this.sort = s.order;
+      this.getTableData();
     },
     getRecordInfo(res) {
       // console.log(res);//本行具体信息
@@ -457,6 +473,7 @@ export default {
         .then(function(info) {
           _this.totalBar = info.data.totalRecord;
           let ConfigTdata = info.data.list;
+          console.log(ConfigTdata);
           ConfigTdata.forEach(function(v, i) {
             for (let i in v) {
               if (v[i] != null && typeof v[i] == "object") {
@@ -464,6 +481,8 @@ export default {
               }
             }
           });
+          _this.ConfigTdata = ConfigTdata;
+          _this.loading = false; //加载完成时
         });
     },
     ctrlView() {
