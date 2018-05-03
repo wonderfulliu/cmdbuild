@@ -10,7 +10,7 @@
               :class="menuitemClasses" accordion>
           <Submenu name="1">
             <template slot="title">
-              视图信息列表
+              查询配置信息列表
             </template>
             <div class="treeContent">
               <!--树状菜单-->
@@ -98,7 +98,7 @@ export default {
     return {
       asideMsg: [
         {
-          title: "视图信息列表",
+          title: "查询配置信息列表",
           expand: true,
           children: []
         }

@@ -4,7 +4,7 @@
       <div id="editContainer">
         <Header class="layout-header-bar">
           <Row>
-            <Col span="9" offset="1">
+            <Col span="9" offset="1" style="text-align: left">
               <Breadcrumb>
                 <BreadcrumbItem to="/search">全局搜索</BreadcrumbItem>
                 <BreadcrumbItem to="/result">{{tableCname}}</BreadcrumbItem>
@@ -27,7 +27,7 @@
                 <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>
               </Select>
               <Row v-if="item.type == 'date'">
-                <Col span="11"> 
+                <Col span="11">
                 <DatePicker type="date" placeholder="请选择日期" v-model="item.content"></DatePicker>
                 </Col>
               </Row>
