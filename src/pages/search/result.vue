@@ -88,6 +88,7 @@ export default {
         }
       ],
       tableName: "",
+      tableCname: '',
       ids: "",
       pageNum: 1,
       pageSize: 20, //每页显示的数量
@@ -193,7 +194,7 @@ export default {
       this.loading = false;
     },
       // 获取侧边栏数据
-      getasideMsg() {
+    getasideMsg() {
       //给侧边栏赋search页面传来的侧边栏数据
       this.asideMsg[0].children = this.$store.state.searchMsg
         ? this.$store.state.searchMsg
@@ -201,6 +202,7 @@ export default {
       // 应该是进入该表后遍历所有侧边栏数据, 显示selected的那一项
       this.asideMsg[0].children.forEach((v, i) => {
         if (v.selected == true) {
+          this.tableCname = v.title;
           for (let k in v) {
             if (k != "nodeKey" && k != "selected" && k != "title") {
               this.tableName = k.replace(/\"/g, "");
@@ -255,12 +257,15 @@ export default {
     },
     // 点击侧边栏每个表触发的事件
     getSelectedNodes(value) {
+      // console.log(value);
+      // 获取到点击的表的中文名
+      this.tableCname = value[0].title;
       // 单击侧边栏时, 分页改为1
       this.pageNum = 1;
       // 更新完表民后再获取权限
-      for (var k in this.$refs.tree.getSelectedNodes()[0]) {
+      for (var k in value[0]) {
         this.tableName = k.replace(/\"/g, "");
-        this.ids = this.$refs.tree.getSelectedNodes()[0][k];
+        this.ids = value[0][k];
         break; //只获取第一个键与值
       }
 
@@ -279,7 +284,7 @@ export default {
       this.getrelationTable();
     },
       // 获取不同表格的表头字段所对应的中文名结合(需要筛选)
-      getcnameTitle() {
+    getcnameTitle() {
       let data = { table: this.tableName };
       this.$http.post("/cardController/getAttributeList", data).then(info => {
         if (info.status == 200) {
@@ -440,6 +445,7 @@ export default {
 
         let data = {
           tableName: this.tableName,
+          tableCname: this.tableCname,
           titleMsg: titleMsg,
           thisjiluId: thisjiluId
         };
@@ -487,6 +493,7 @@ export default {
       });
       let data = {
         tableName: this.tableName,
+        tableCname: this.tableCname,
         titleMsg: titleMsg
       };
       console.log(data);

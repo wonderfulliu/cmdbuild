@@ -40,7 +40,8 @@
                      :recordId='recordId'
                      :Mode='Mode'
                      :tableType='tableType'
-                     :funcionName="funcionName">
+                     :funcionName="funcionName"
+                     :tableCname='tableCname'>
         </router-view>
       </transition>
 
@@ -58,6 +59,7 @@ export default {
       //页面配置：
       groupName: JSON.parse(sessionStorage.getItem("groupInfo")).Code, //组名
       tableName: "", //表名
+      tableCname:'', //表的中文名
       funcionName: "",
       tableType: "",  //表类别
       recordId: "",
@@ -82,7 +84,7 @@ export default {
     collapsedSider() {
       this.$refs.side1.toggleCollapse();
     },
-    // 权限
+    // 侧边栏信息
     getTreeData() {
       let _this = this;
       //侧栏树形菜单数据获取
@@ -111,7 +113,8 @@ export default {
               } else {
                 obj[0].selected = true;
                 let eName = obj[0].idElementClass.split('"').join("");
-                _this.tableName = eName; //获取表名
+                _this.tableName = eName; //获取表英文名
+                _this.tableCname = obj[0].title; //获取表中文名
                 _this.Mode = obj[0].Mode;
                 _this.$router.push({ path: "/config/tableList" });//刚进入config页面, 处理完侧边栏数据, 展开第一个选项后, 在这里跳到tableList页面
               }
@@ -144,10 +147,11 @@ export default {
     // 权限, 点击侧边栏的时候表格变化
     getTreeNodes(select) {
       let _this = this;
-
+      // console.log(select);
       if (select.length != 0 && !select[0].children) {
         let eName = select[0].idElementClass.split('"').join(""); //获取英文名
-        _this.tableName = eName; //获取表名
+        _this.tableName = eName; //获取表英文名
+        _this.tableCname = select[0].title;//获取表的中文名
         _this.$router.push({ path: "/config/tableList" });
 
         this.tableType = select[0].type;//获取表类别
