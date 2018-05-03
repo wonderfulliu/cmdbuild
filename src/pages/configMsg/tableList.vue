@@ -131,7 +131,7 @@ export default {
     }
   },
   data() {
-    return { 
+    return {
       //参数
       isCollapsed: false,
       recordId: "", //记录id
@@ -511,7 +511,6 @@ export default {
     ctrlEdit() {
       if (this.clickRow == true) {
         //将已选中行进行编辑
-        console.log("将已选中行进行编辑");
         this.$router.push({ path: "/config/cedit" }); //跳转至新增页面
       } else {
         this.$Message.error("您未选中行！");
