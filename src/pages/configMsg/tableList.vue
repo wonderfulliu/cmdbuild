@@ -43,25 +43,25 @@
               </ButtonGroup>
             </Col>
             <Col :xs="{span:24}" :sm="{span:24}" :md="{span:8}" :lg="{span:8}" style="text-align: right">
-            <Row>
-              <Col span="6">
-              共 {{ totalBar }} 条
-              </Col>
-              <Col span="2">
-              <Button type="text" icon="chevron-left" @click="pageFirst"></Button>
-              </Col>
-              <Col span="14" style="width: 160px;">
-              <Page simple
-                    show-total
-                    :page-size=20
-                    :total="totalBar"
-                    :current="pageNum"
-                    @on-change="pageChange"></Page>
-              </Col>
-              <Col span="2">
-              <Button type="text" icon="chevron-right" @click="pageLast"></Button>
-              </Col>
-            </Row>
+              <Row>
+                <Col span="6">
+                共 {{ totalBar }} 条
+                </Col>
+                <Col span="2">
+                <Button type="text" icon="chevron-left" @click="pageFirst"></Button>
+                </Col>
+                <Col span="14" style="width: 160px;">
+                <Page simple
+                      show-total
+                      :page-size=20
+                      :total="totalBar"
+                      :current="pageNum"
+                      @on-change="pageChange"></Page>
+                </Col>
+                <Col span="2">
+                <Button type="text" icon="chevron-right" @click="pageLast"></Button>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </div>
@@ -353,7 +353,7 @@ export default {
           });
       }
     },
-    // 排序
+    // 字段排序
     sorting(s){
       this.sortAttribute = s.key;
       this.sort = s.order;
