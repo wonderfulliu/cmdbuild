@@ -177,17 +177,24 @@ export default {
   },
   watch:{
     'tableName': function(newValue, oldValue){
+      this.clearSort();
       this.getTableAttribute();
       this.getTableData();
       this.getlookup();
     },
     'funcionName': function(newValue, oldValue){
+      this.clearSort();
       this.getTableAttribute();
       this.getTableData();
       this.getlookup();
     }
   },
   methods: {
+    // 切换表的时候清空排序的字段名和排序的规则
+    clearSort(){
+      this.sortAttribute = '';
+      this.sort = '';
+    },
     // 如果表名已经获取到, 可以调用以下函数
     isgetTablename() {
       if (this.tableName) {
@@ -317,8 +324,7 @@ export default {
       _this.ConfigTdata = ConfigTdata;
       _this.loading = false; //加载完成时
     },
-    getTableData() {
-      //表格数据获取
+    getTableData() {//表格数据获取
       let _this = this;
       _this.loading = true; //加载中
       if (_this.tableType == "view" || _this.tableType == "dashboard") {
@@ -329,7 +335,11 @@ export default {
               "&pageNum=" +
               _this.pageNum +
               "&pageSize=" +
-              _this.pageSize
+              _this.pageSize +
+              "&sortAttribute=" +
+              _this.sortAttribute +
+              "&sort=" +
+              _this.sort
           )
           .then(function(info) {
             _this.getViewTableHead(info);
@@ -350,6 +360,7 @@ export default {
               _this.sort
           )
           .then(function(info) {
+            // console.log(info);
             _this.getTableHead(info);
             _this.tableDataProce(info);
           });
@@ -361,6 +372,7 @@ export default {
       this.sort = s.order;
       this.getTableData();
     },
+    // 点击表格的行
     getRecordInfo(res) {
       // console.log(res);//本行具体信息
       this.clickRow = true; //点击状态参数
