@@ -9,7 +9,8 @@
             </template>
             <div class="treeContent">
               <!--树状菜单-->
-              <Tree :data="ConfigTreeData" @on-select-change="getTreeNodes"></Tree>
+              <Tree :data="ConfigTreeData"
+                    @on-select-change="getTreeNodes"></Tree>
             </div>
           </Submenu>
           <Submenu name="2">
@@ -40,7 +41,8 @@
                      :recordId='recordId'
                      :Mode='Mode'
                      :tableType='tableType'
-                     :funcionName="funcionName">
+                     :funcionName="funcionName"
+                     :tableCname='tableCname'>
         </router-view>
       </transition>
 
@@ -58,6 +60,7 @@ export default {
       //页面配置：
       groupName: JSON.parse(sessionStorage.getItem("groupInfo")).Code, //组名
       tableName: "", //表名
+      tableCname:'', //表的中文名
       funcionName: "",
       tableType: "",  //表类别
       recordId: "",
@@ -82,14 +85,13 @@ export default {
     collapsedSider() {
       this.$refs.side1.toggleCollapse();
     },
-    // 权限
+    // 侧边栏信息
     getTreeData() {
       let _this = this;
       //侧栏树形菜单数据获取
       _this.$http
         .post("/authorityController/getMenu?groupName=" + _this.groupName)
         .then(function(info) {
-          // console.log(info);
           let oData = info.data.children;
           let treeMenu = sessionStorage.getItem(_this.groupName + "_menu");
           if (treeMenu) {
@@ -102,7 +104,6 @@ export default {
           let objTree = objFunc(oData);//将得到的数据转换成需要的格式
           // console.log(objTree);
           _this.ConfigTreeData = newTreeFunc(objTree); //打开侧栏第一个选项
-
           function newTreeFunc(obj) {//这里第一次获取表名
             if (obj.length > 0) {
               obj[0].expand = true;
@@ -111,7 +112,8 @@ export default {
               } else {
                 obj[0].selected = true;
                 let eName = obj[0].idElementClass.split('"').join("");
-                _this.tableName = eName; //获取表名
+                _this.tableName = eName; //获取表英文名
+                _this.tableCname = obj[0].title; //获取表中文名
                 _this.Mode = obj[0].Mode;
                 _this.$router.push({ path: "/config/tableList" });//刚进入config页面, 处理完侧边栏数据, 展开第一个选项后, 在这里跳到tableList页面
               }
@@ -125,15 +127,23 @@ export default {
               let oBranch = {};
               oBranch.title = v.description;
               oBranch.type = v.type;
-              if(v.type == 'view'){
+
+              if(v.type == 'view' || v.type == 'dashboard'){
                 oBranch.funcionName = v.functionName;
-              }
-              oBranch.expand = false; //菜单是否展开 true展开
-              if (v.children.length != 0) {
-                oBranch.children = objFunc(v.children);
+              } else if (v.type == "folder") {
+                oBranch.expand = false; //菜单是否展开 true展开
+                if (v.children.length != 0) {
+                  oBranch.children = objFunc(v.children);
+                } else {
+                  oBranch.children = [{title: '暂无数据'}];
+                }
               } else {
                 oBranch.idElementClass = v.idElementClass; //表名英文
-                oBranch.Mode = _this.WorR(_this.Authority, v.idElementClass); //权限
+                if(v.type == 'view' || v.type == 'dashboard'){
+                  oBranch.Mode = 'r';
+                }else {
+                  oBranch.Mode = _this.WorR(_this.Authority, v.idElementClass); //权限
+                }
               }
               oTree.push(oBranch); //对象追加到数组末尾
             });
@@ -144,22 +154,25 @@ export default {
     // 权限, 点击侧边栏的时候表格变化
     getTreeNodes(select) {
       let _this = this;
+      // console.log(select);
+      if (select.length != 0) {//不是空数组
+        if (!select[0].children) {//最终表
+          let eName = select[0].idElementClass.split('"').join(""); //获取英文名
+          _this.tableName = eName; //获取表英文名
+          _this.tableCname = select[0].title;//获取表的中文名
+          _this.$router.push({ path: "/config/tableList" });
 
-      if (select.length != 0 && !select[0].children) {
-        let eName = select[0].idElementClass.split('"').join(""); //获取英文名
-        _this.tableName = eName; //获取表名
-        _this.$router.push({ path: "/config/tableList" });
-
-        this.tableType = select[0].type;//获取表类别
-        console.log(select[0].type);
-        if(select[0].type == "view"){
-          this.funcionName = select[0].funcionName; //viewfuncionName
-          this.Mode = 'r';
-        }else if(select[0].type == "dashboard"){
+          this.tableType = select[0].type;//获取表类别
+          if(select[0].type == "view" || select[0].type == "dashboard"){
+            this.funcionName = select[0].funcionName; //viewfuncionName
+          }
           this.Mode = select[0].Mode;
-        }else {
-          this.Mode = select[0].Mode;
+        } else {//不是最终表
+          select[0].selected = false;
+          select[0].expand = !select[0].expand;
         }
+      } else {//空数组
+        //暂时还不知道怎么处理
       }
     },
     getRecordId(msg) {
@@ -175,6 +188,8 @@ export default {
     },
     WorR(authority, eName) {
       let Mode;
+      // console.log(authority);
+      // console.log(eName);
       authority.forEach(function(v, i) {
         if (v.table_name == eName.replace(/\"/g, "")) {
           Mode = v.Mode;

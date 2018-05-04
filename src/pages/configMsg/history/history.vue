@@ -2,22 +2,36 @@
   <Layout>
     <Header :offset-top="64" :style="{padding: 0}" class="layout-header-bar">
       <Row>
-        <Col span="4">
-          <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" :style="{margin: '4px 20px'}" type="navicon-round" size="24"></Icon>
-          <Button type="ghost" @click="backBtn">返回</Button>
+        <Col span="9" offset="1" style="text-align: left">
+        <Breadcrumb>
+          <BreadcrumbItem to="/config/tableList">配置信息</BreadcrumbItem>
+          <BreadcrumbItem to="/config/tableList">{{tableCname}}</BreadcrumbItem>
+          <BreadcrumbItem>历史{{ titleName }}</BreadcrumbItem>
+        </Breadcrumb>
         </Col>
-        <Col span="5" offset="15">
+        <!--<Col span="1">
+          <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" :style="{margin: '4px 20px'}" type="navicon-round" size="24"></Icon>
+        </Col>-->
+        <Col span="14" style="text-align: right">
         <ButtonGroup>
           <Button type="info" @click="gethistoryInfo" :class="{'active': ctrlBtnA}">信息</Button>
           <Button type="info" @click="gethistoryRelate" :class="{'active': ctrlBtnB}">关系</Button>
         </ButtonGroup>
+
+        <Button type="ghost" @click="backBtn" style="margin-right: 20px;margin-left: 10px">返回</Button>
+
         </Col>
       </Row>
     </Header>
 
-    <Content :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
+    <Content>
       <div class="contentBody">
-        <Table border size="small" :loading="loading" height="440" :columns="columnData" :data="tableData"></Table>
+        <Table border
+               size="small"
+               :height="tableHeight"
+               :loading="loading"
+               :columns="columnData"
+               :data="tableData"></Table>
       </div>
     </Content>
 
@@ -46,6 +60,10 @@
         type: String,
         required: true
       },
+      tableCname: {
+        type: String,
+        required: true
+      },
       'collapsedSider': {
         type: Function,
         default: null
@@ -65,20 +83,30 @@
       return {
         columnData: [], //表头
         tableData: [],  //表数据
+        tableCname: '',//表中文名
         HistoryViewData: {},
         historyId: '',
         //设置
         ctrlBtnA: true,
         ctrlBtnB: false,
+        titleName: '信息',
         isCollapsed: false,
         loading: true,
         //modal
         HistoryViewModal: false,
-        hisLoading: true
+        hisLoading: true,
+        tableHeight: '',//content内容区
       }
     },
     created: function(){
       this.gethistoryInfo();
+      this.getHeight();
+    },
+    mounted () {
+      let _this = this;
+      window.onresize = () => {
+        _this.getHeight();
+      }
     },
     methods:{
       //历史信息记录
@@ -87,6 +115,7 @@
         _this.loading = true;
         _this.ctrlBtnA = true;
         _this.ctrlBtnB = false;
+        _this.titleName = '信息';
         let data = {
           table: _this.tableName,
           Id: _this.recordId
@@ -118,6 +147,7 @@
         _this.loading = true;
         _this.ctrlBtnA = false;
         _this.ctrlBtnB = true;
+        _this.titleName = '关系';
         let data = {
           table: _this.tableName,
           Id: _this.recordId
@@ -133,7 +163,7 @@
                 key: k
               });
             }
-            console.log(odata);
+//            console.log(odata);
             odata.forEach(function(v , i){
               if(typeof v.IdDomain == 'object'){
                 v.IdDomain = v.IdDomain.value;
@@ -237,7 +267,13 @@
       },
       backBtn(){
         this.$router.go(-1);
-      }
+      },
+      // 获取高度
+      getHeight(){
+        let clientH = document.documentElement.clientHeight;
+        this.tableHeight = (clientH - 192) + 'px';
+//      this.height = document.querySelector('#editContainer').offsetHeight - 74 + 'px';
+      },
     }
     }
 </script>

@@ -19,20 +19,8 @@
       <Layout :style="{height:contentbodyH}">
         <Header class="layout-header-bar">
           <Row>
-            <Col span="2">
-            <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
-            </Col>
-            <Col :xs="14" :sm="12" :md="{span: 9, offset: 13}" :lg="{span: 7, offset: 15}">
-            <ButtonGroup>
-              <Button type="ghost" title="查看" icon="ios-eye" @click="show"></Button>
-              <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="edit" :disabled='isdisable'></Button>
-              <Button type="ghost" title="新增" icon="ios-plus-empty" @click="add" :disabled='isdisable'></Button>
-              <Button type="ghost" title="删除" icon="ios-trash-outline" @click="remove" :disabled='isdisable'></Button>
-              <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
-              
-              <!-- <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
-              <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete"></Button> -->
-            </ButtonGroup>
+            <Col span="1">
+              <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
             </Col>
           </Row>
         </Header>
@@ -48,14 +36,41 @@
                    :loading='loading'
                    :columns="columns"
                    :data="data"></Table>
-            <div class="pageContainer clearfix floatRight">
-              <Page class="floatLeft"
-                    show-total
-                    show-elevator
-                    :page-size=20
-                    :total="totalBar"
-                    :current="pageNum"
-                    @on-change="pageChange"></Page>
+            <div style="line-height: 64px;height:auto;">
+              <Row>
+                <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:14,offset:1}" :lg="{span:14,offset:1}" style="text-align: left">
+                  <ButtonGroup>
+                    <Button type="ghost" title="查看" icon="ios-eye" @click="show">查看</Button>
+                    <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="edit" :disabled='isdisable'>编辑</Button>
+                    <Button type="ghost" title="新增" icon="ios-plus-empty" @click="add" :disabled='isdisable'>新增</Button>
+                    <Button type="ghost" title="删除" icon="ios-trash-outline" @click="remove" :disabled='isdisable'>删除</Button>
+                    <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData">下载</Button>
+                    <!-- <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
+                    <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete"></Button> -->
+                  </ButtonGroup>
+                </Col>
+                <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:8}" :lg="{span:8}" style="text-align: right">
+                  <Row>
+                    <Col span="6">
+                      共 {{ totalBar }} 条
+                    </Col>
+                    <Col span="2">
+                      <Button type="text" icon="chevron-left" @click="pageFirst" :disabled="firstCl" title="首页"></Button>
+                    </Col>
+                    <Col span="14" style="width: 190px;text-align: center">
+                    <Page simple
+                          show-total
+                          :page-size=20
+                          :total="totalBar"
+                          :current="pageNum"
+                          @on-change="pageChange"></Page>
+                    </Col>
+                    <Col span="2">
+                      <Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
             </div>
           </div>
         </Content>
@@ -88,9 +103,12 @@ export default {
         }
       ],
       tableName: "",
+      tableCname: '',
       ids: "",
       pageNum: 1,
       pageSize: 20, //每页显示的数量
+      totalPage: "", //总页数
+      totalBar: 0,//总条数
       searchMsg: "",
       isCollapsed: false,
       // 表格列
@@ -99,8 +117,6 @@ export default {
       data: [],
       lookupMsg: "",
       loading: true,
-      total: "", //表格数据总条数
-      totalBar: 0,
       cnameTitle: "", // 存储表头中英文对照信息
       modal: false,
       delData: {
@@ -115,13 +131,21 @@ export default {
       tableHeight: "", //表格高度
       isClick: false, //判断行是否被点击
       index: "" ,//存储被点击的行的序列(就是点击了哪一行)
-      highlight: true//选中行高亮
+      highlight: true,//选中行高亮
+      firstCl: true,//首页是否禁用
+      lastCl: false,//尾页是否禁用
     };
   },
   created() {
     this.getAuthority();
     this.getasideMsg();
     this.heightAdaptive();
+  },
+  mounted () {
+    let _this = this;
+    window.onresize = () => {
+      _this.heightAdaptive();
+    }
   },
   computed: {
     rotateIcon() {
@@ -135,6 +159,7 @@ export default {
     //表格数据的处理
     dataProcess(info) {
       this.totalBar = info.data.totalRecord;
+      this.totalPage = info.data.totalPage;
       let dataArr = info.data.list; //要处理和渲染的表格数据
       // 设置表格宽度
       let len = this.cnameTitle.length;
@@ -158,7 +183,7 @@ export default {
       newtitleArr.sort(function(a, b) {
         return Number(a.position) - Number(b.position);
       });
-      
+
       // console.log(newtitleArr);
       this.columns = newtitleArr; //将获取到的表头字段赋值给table的columns
 
@@ -193,7 +218,7 @@ export default {
       this.loading = false;
     },
       // 获取侧边栏数据
-      getasideMsg() {
+    getasideMsg() {
       //给侧边栏赋search页面传来的侧边栏数据
       this.asideMsg[0].children = this.$store.state.searchMsg
         ? this.$store.state.searchMsg
@@ -201,6 +226,7 @@ export default {
       // 应该是进入该表后遍历所有侧边栏数据, 显示selected的那一项
       this.asideMsg[0].children.forEach((v, i) => {
         if (v.selected == true) {
+          this.tableCname = v.title;
           for (let k in v) {
             if (k != "nodeKey" && k != "selected" && k != "title") {
               this.tableName = k.replace(/\"/g, "");
@@ -255,12 +281,15 @@ export default {
     },
     // 点击侧边栏每个表触发的事件
     getSelectedNodes(value) {
+      // console.log(value);
+      // 获取到点击的表的中文名
+      this.tableCname = value[0].title;
       // 单击侧边栏时, 分页改为1
       this.pageNum = 1;
       // 更新完表民后再获取权限
-      for (var k in this.$refs.tree.getSelectedNodes()[0]) {
+      for (var k in value[0]) {
         this.tableName = k.replace(/\"/g, "");
-        this.ids = this.$refs.tree.getSelectedNodes()[0][k];
+        this.ids = value[0][k];
         break; //只获取第一个键与值
       }
 
@@ -279,7 +308,7 @@ export default {
       this.getrelationTable();
     },
       // 获取不同表格的表头字段所对应的中文名结合(需要筛选)
-      getcnameTitle() {
+    getcnameTitle() {
       let data = { table: this.tableName };
       this.$http.post("/cardController/getAttributeList", data).then(info => {
         if (info.status == 200) {
@@ -301,6 +330,28 @@ export default {
     // 页面跳转
     pageChange(page) {
       this.pageNum = page;
+      this.gettableMsg();
+    },
+    pageDisabled(){
+      if(this.pageNum == 1){
+        this.firstCl = true;
+        this.lastCl = false;
+      }else if(this.pageNum == this.totalPage){
+        this.firstCl = false;
+        this.lastCl = true;
+      }else {
+        this.firstCl = false;
+        this.lastCl = false;
+      }
+    },
+    pageFirst() {
+      this.pageNum = 1;
+      this.pageDisabled();
+      this.gettableMsg();
+    },
+    pageLast() {
+      this.pageNum = this.totalPage;
+      this.pageDisabled();
       this.gettableMsg();
     },
     // 侧边栏收起功能
@@ -344,7 +395,7 @@ export default {
           content: '您未选中行!'
         })
       }
-      
+
     },
     //实现删除
     del() {
@@ -440,6 +491,7 @@ export default {
 
         let data = {
           tableName: this.tableName,
+          tableCname: this.tableCname,
           titleMsg: titleMsg,
           thisjiluId: thisjiluId
         };
@@ -487,6 +539,7 @@ export default {
       });
       let data = {
         tableName: this.tableName,
+        tableCname: this.tableCname,
         titleMsg: titleMsg
       };
       console.log(data);
@@ -503,16 +556,16 @@ export default {
         }
       });
     },
-      // 获取权限
-      getAuthority() {
-      this.Authority = this.$store.state.Mode?this.$store.state.Mode:JSON.parse(sessionStorage.getItem('Mode'));
-    },
-      // 高度自适应
-      heightAdaptive(){
-      let clientH = document.documentElement.clientHeight;
-      this.contentbodyH = clientH - 64 + "px";
-      this.tableHeight = clientH - 64 - 145; //133包括按钮区域, margin-top, 分页所在区域
-    }
+    // 获取权限
+    getAuthority() {
+    this.Authority = this.$store.state.Mode?this.$store.state.Mode:JSON.parse(sessionStorage.getItem('Mode'));
+  },
+    // 高度自适应
+    heightAdaptive(){
+    let clientH = document.documentElement.clientHeight;
+    this.contentbodyH = clientH - 64 + "px";
+    this.tableHeight = clientH - 64 - 145; //133包括按钮区域, margin-top, 分页所在区域
+  }
   }
 };
 </script>

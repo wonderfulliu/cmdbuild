@@ -3,13 +3,13 @@
     <Header ref="conBhead" :style="{padding: 0}" class="layout-header-bar">
       <Row>
         <Col span="1">
-        <div>
           <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
-          <!-- <Button type="ghost">searchFilter</Button> -->
-        </div>
         </Col>
+        <!--<Col span="1">
+           <Button type="ghost">searchFilter</Button>
+        </Col>-->
         <Col span="12" offset="5">
-          <Input v-model="configCondition" placeholder="Enter something...">
+          <Input v-model="configCondition" placeholder="Enter something..." @on-enter="fuzzy">
             <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
           </Input>
         </Col>
@@ -23,6 +23,7 @@
                size="small"
                :height="tableHeight"
                @on-row-click="getRecordInfo"
+               @on-sort-change="sorting"
                :highlight-row="highlight"
                :loading="loading"
                :columns="ConfigThead"
@@ -30,7 +31,7 @@
         </Table>
         <div style="line-height: 64px;height:auto;">
           <Row>
-            <Col span="15" offset="1" style="text-align: left">
+            <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:15,offset:1}" :lg="{span:15,offset:1}" style="text-align: left">
               <ButtonGroup>
                 <Button type="ghost" title="查看" icon="ios-eye" @click="ctrlView">查看</Button>
                 <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'>编辑</Button>
@@ -41,29 +42,28 @@
                 <Button type="ghost" title="下载" icon="ios-download-outline" @click="configDownload">下载</Button>
               </ButtonGroup>
             </Col>
-            <Col span="8" style="width: 310px;text-align: right">
-            <Row>
-              <Col span="4" style="width: 60px">
-              共 {{ totalBar }} 条
-              </Col>
-              <Col span="4" style="width: 37px">
-              <Button type="text" icon="chevron-left" @click="pageFirst"></Button>
-              </Col>
-              <Col span="14" style="width: 170px">
-              <Page simple
-                    show-total
-                    :page-size="20"
-                    :current="pageNum"
-                    :total="totalBar"
-                    @on-change="pageChange"></Page>
-              </Col>
-              <Col span="4"style="width: 37px">
-              <Button type="text" icon="chevron-right" @click="pageLast"></Button>
-              </Col>
-            </Row>
+            <Col :xs="{span:24}" :sm="{span:24}" :md="{span:8}" :lg="{span:8}" style="text-align: right">
+              <Row>
+                <Col span="6">
+                共 {{ totalBar }} 条
+                </Col>
+                <Col span="2">
+                <Button type="text" icon="chevron-left" @click="pageFirst" :disabled="firstCl" title="首页"></Button>
+                </Col>
+                <Col span="14" style="width: 190px;text-align: center">
+                <Page simple
+                      show-total
+                      :page-size=20
+                      :total="totalBar"
+                      :current="pageNum"
+                      @on-change="pageChange"></Page>
+                </Col>
+                <Col span="2">
+                <Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button>
+                </Col>
+              </Row>
             </Col>
           </Row>
-          <!--<div ref="pageCont" class="pageContainer"></div>-->
         </div>
       </div>
     </Content>
@@ -105,6 +105,10 @@ export default {
       type: String,
       required: true
     },
+    tableCname: {
+      type: String,
+      required: true
+    },
     tableType: {
       type: String,
       required: true
@@ -130,16 +134,17 @@ export default {
     return {
       //参数
       isCollapsed: false,
+      sort: '', //排序顺序
+      sortAttribute: '', //排序字段
       recordId: "", //记录id
       pageNum: 1, //当前页
       pageSize: 20, //每页条数
-      totalBar: null, //总条数
+      totalBar: 0, //总条数
       totalPage: null, //总页数
       configCondition: "", //查询条件
       //数据
       ConfigThead: [], //表头
       ConfigTdata: [], //表格数据
-      // attributes: '',   //记录的字段 中英文
       lookupInfo: "", //当前表中lookup信息
       relationInfo: "", //关系表信息
       //页面配置：
@@ -155,7 +160,9 @@ export default {
       configAddModal: false,
       deleLoading: false,
       configViewData: "", //查看数据
-      isdisable: "" //禁用与否, ''就是false
+      isdisable: "", //禁用与否, ''就是false
+      firstCl: true,//首页是否禁用
+      lastCl: false,//尾页是否禁用
     };
   },
   created() {
@@ -170,17 +177,24 @@ export default {
   },
   watch:{
     'tableName': function(newValue, oldValue){
+      this.clearSort();
       this.getTableAttribute();
       this.getTableData();
       this.getlookup();
     },
     'funcionName': function(newValue, oldValue){
+      this.clearSort();
       this.getTableAttribute();
       this.getTableData();
       this.getlookup();
     }
   },
   methods: {
+    // 切换表的时候清空排序的字段名和排序的规则
+    clearSort(){
+      this.sortAttribute = '';
+      this.sort = '';
+    },
     // 如果表名已经获取到, 可以调用以下函数
     isgetTablename() {
       if (this.tableName) {
@@ -224,6 +238,11 @@ export default {
             oTemp.key = v;
             oTemp.position = markName.position;
             oTemp.ellipsis = true;
+            oTemp.sortable = true;
+            oTemp.filters = [{//这个是filter, 还不完全, 需要修改
+              label: "search",
+              value: 1
+            }]
             arrObj.push(oTemp);
           }
         });
@@ -240,7 +259,6 @@ export default {
         arrObj.sort(function(a, b) {
           return Number(a.position) - Number(b.position);
         });
-
         sessionStorage.setItem(
           "config_" + _this.tableName + "_head",
           JSON.stringify(arrObj)
@@ -295,7 +313,7 @@ export default {
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
       let ConfigTdata = info.data.list;
-//      console.log(ConfigTdata);
+      // console.log(ConfigTdata);
       ConfigTdata.forEach(function(v, i) {
         for (let a in v) {
           if (v[a] != null && typeof v[a] == "object") {
@@ -306,11 +324,10 @@ export default {
       _this.ConfigTdata = ConfigTdata;
       _this.loading = false; //加载完成时
     },
-    getTableData() {
-      //表格数据获取
+    getTableData() {//表格数据获取
       let _this = this;
       _this.loading = true; //加载中
-      if (_this.tableType == "view") {
+      if (_this.tableType == "view" || _this.tableType == "dashboard") {
         _this.$http
           .post(
             "/viewController/getViewCardList?funcionName=" +
@@ -318,7 +335,11 @@ export default {
               "&pageNum=" +
               _this.pageNum +
               "&pageSize=" +
-              _this.pageSize
+              _this.pageSize +
+              "&sortAttribute=" +
+              _this.sortAttribute +
+              "&sort=" +
+              _this.sort
           )
           .then(function(info) {
             _this.getViewTableHead(info);
@@ -332,14 +353,26 @@ export default {
               "&pageNum=" +
               _this.pageNum +
               "&pageSize=" +
-              _this.pageSize
+              _this.pageSize +
+              "&sortAttribute=" +
+              _this.sortAttribute +
+              "&sort=" +
+              _this.sort
           )
           .then(function(info) {
+            // console.log(info);
             _this.getTableHead(info);
             _this.tableDataProce(info);
           });
       }
     },
+    // 字段排序
+    sorting(s){
+      this.sortAttribute = s.key;
+      this.sort = s.order;
+      this.getTableData();
+    },
+    // 点击表格的行
     getRecordInfo(res) {
       // console.log(res);//本行具体信息
       this.clickRow = true; //点击状态参数
@@ -384,6 +417,7 @@ export default {
         }
       });
       addData.tableName = this.tableName;
+      addData.tableCname = this.tableCname;
       addData.titleMsg = attr;
       addData.Id = this.recordId;
       // console.log(addData);
@@ -406,14 +440,29 @@ export default {
     },
     pageChange(page) {
       this.pageNum = page;
+      this.pageDisabled();
       this.getTableData(this.tableName);
+    },
+    pageDisabled(){
+      if(this.pageNum == 1){
+        this.firstCl = true;
+        this.lastCl = false;
+      }else if(this.pageNum == this.totalPage){
+        this.firstCl = false;
+        this.lastCl = true;
+      }else {
+        this.firstCl = false;
+        this.lastCl = false;
+      }
     },
     pageFirst() {
       this.pageNum = 1;
+      this.pageDisabled();
       this.getTableData(this.tableName);
     },
     pageLast() {
       this.pageNum = this.totalPage;
+      this.pageDisabled();
       this.getTableData(this.tableName);
     },
     getlookup() {
@@ -452,6 +501,7 @@ export default {
         .then(function(info) {
           _this.totalBar = info.data.totalRecord;
           let ConfigTdata = info.data.list;
+          console.log(ConfigTdata);
           ConfigTdata.forEach(function(v, i) {
             for (let i in v) {
               if (v[i] != null && typeof v[i] == "object") {
@@ -459,6 +509,8 @@ export default {
               }
             }
           });
+          _this.ConfigTdata = ConfigTdata;
+          _this.loading = false; //加载完成时
         });
     },
     ctrlView() {
@@ -506,7 +558,6 @@ export default {
     ctrlEdit() {
       if (this.clickRow == true) {
         //将已选中行进行编辑
-        console.log("将已选中行进行编辑");
         this.$router.push({ path: "/config/cedit" }); //跳转至新增页面
       } else {
         this.$Message.error("您未选中行！");
@@ -605,6 +656,7 @@ export default {
         }
       });
       addData.tableName = _this.tableName;
+      addData.tableCname = this.tableCname;
       addData.titleMsg = attr;
       // console.log(addData);
       _this.$store.commit("getaddMsg", addData);
