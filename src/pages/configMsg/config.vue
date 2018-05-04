@@ -127,6 +127,7 @@ export default {
               let oBranch = {};
               oBranch.title = v.description;
               oBranch.type = v.type;
+
               if(v.type == 'view' || v.type == 'dashboard'){
                 oBranch.funcionName = v.functionName;
               } else if (v.type == "folder") {
