@@ -31,7 +31,7 @@
         </Table>
         <div style="line-height: 64px;height:auto;">
           <Row>
-            <Col span="15" offset="1" style="text-align: left">
+            <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:15,offset:1}" :lg="{span:15,offset:1}" style="text-align: left">
               <ButtonGroup>
                 <Button type="ghost" title="查看" icon="ios-eye" @click="ctrlView">查看</Button>
                 <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'>编辑</Button>
@@ -42,15 +42,15 @@
                 <Button type="ghost" title="下载" icon="ios-download-outline" @click="configDownload">下载</Button>
               </ButtonGroup>
             </Col>
-            <Col span="8" style="width: 310px;text-align: right">
+            <Col :xs="{span:24}" :sm="{span:24}" :md="{span:8}" :lg="{span:8}" style="text-align: right">
             <Row>
-              <Col span="4" style="width: 60px">
+              <Col span="6">
               共 {{ totalBar }} 条
               </Col>
-              <Col span="4" style="width: 37px">
+              <Col span="2">
               <Button type="text" icon="chevron-left" @click="pageFirst"></Button>
               </Col>
-              <Col span="14" style="width: 170px">
+              <Col span="14" style="width: 160px;">
               <Page simple
                     show-total
                     :page-size=20
@@ -58,13 +58,12 @@
                     :current="pageNum"
                     @on-change="pageChange"></Page>
               </Col>
-              <Col span="4" style="width: 37px">
+              <Col span="2">
               <Button type="text" icon="chevron-right" @click="pageLast"></Button>
               </Col>
             </Row>
             </Col>
           </Row>
-          <!--<div ref="pageCont" class="pageContainer"></div>-->
         </div>
       </div>
     </Content>
