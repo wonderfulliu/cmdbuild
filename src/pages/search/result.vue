@@ -38,26 +38,26 @@
                    :data="data"></Table>
             <div style="line-height: 64px;height:auto;">
               <Row>
-                <Col :xs="{span:23,offset:1}" :sm="{span:12,offset:1}" :md="{span:13,offset:1}" :lg="{span:14,offset:1}" style="text-align: left">
+                <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:14,offset:1}" :lg="{span:14,offset:1}" style="text-align: left">
                   <ButtonGroup>
-                    <Button type="ghost" title="查看" icon="ios-eye" @click="show"></Button>
-                    <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="edit" :disabled='isdisable'></Button>
-                    <Button type="ghost" title="新增" icon="ios-plus-empty" @click="add" :disabled='isdisable'></Button>
-                    <Button type="ghost" title="删除" icon="ios-trash-outline" @click="remove" :disabled='isdisable'></Button>
-                    <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
+                    <Button type="ghost" title="查看" icon="ios-eye" @click="show">查看</Button>
+                    <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="edit" :disabled='isdisable'>编辑</Button>
+                    <Button type="ghost" title="新增" icon="ios-plus-empty" @click="add" :disabled='isdisable'>新增</Button>
+                    <Button type="ghost" title="删除" icon="ios-trash-outline" @click="remove" :disabled='isdisable'>删除</Button>
+                    <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData">下载</Button>
                     <!-- <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
                     <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete"></Button> -->
                   </ButtonGroup>
                 </Col>
-                <Col :xs="{span:23,offset:1}" :sm="{span:9}" :md="{span:9}" :lg="{span:7}" style="width: 310px;text-align: right">
+                <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:8}" :lg="{span:8}" style="text-align: right">
                   <Row>
-                    <Col span="4" style="width: 60px">
+                    <Col span="6">
                       共 {{ totalBar }} 条
                     </Col>
-                    <Col span="4" style="width: 37px">
-                      <Button type="text" icon="chevron-left" @click="pageFirst"></Button>
+                    <Col span="2">
+                      <Button type="text" icon="chevron-left" @click="pageFirst" :disabled="firstCl" title="首页"></Button>
                     </Col>
-                    <Col span="14" style="width: 170px">
+                    <Col span="14" style="width: 190px;text-align: center">
                     <Page simple
                           show-total
                           :page-size=20
@@ -65,8 +65,8 @@
                           :current="pageNum"
                           @on-change="pageChange"></Page>
                     </Col>
-                    <Col span="4"style="width: 37px">
-                      <Button type="text" icon="chevron-right" @click="pageLast"></Button>
+                    <Col span="2">
+                      <Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button>
                     </Col>
                   </Row>
                 </Col>
@@ -131,7 +131,9 @@ export default {
       tableHeight: "", //表格高度
       isClick: false, //判断行是否被点击
       index: "" ,//存储被点击的行的序列(就是点击了哪一行)
-      highlight: true//选中行高亮
+      highlight: true,//选中行高亮
+      firstCl: true,//首页是否禁用
+      lastCl: false,//尾页是否禁用
     };
   },
   created() {
@@ -330,12 +332,26 @@ export default {
       this.pageNum = page;
       this.gettableMsg();
     },
+    pageDisabled(){
+      if(this.pageNum == 1){
+        this.firstCl = true;
+        this.lastCl = false;
+      }else if(this.pageNum == this.totalPage){
+        this.firstCl = false;
+        this.lastCl = true;
+      }else {
+        this.firstCl = false;
+        this.lastCl = false;
+      }
+    },
     pageFirst() {
       this.pageNum = 1;
+      this.pageDisabled();
       this.gettableMsg();
     },
     pageLast() {
       this.pageNum = this.totalPage;
+      this.pageDisabled();
       this.gettableMsg();
     },
     // 侧边栏收起功能
