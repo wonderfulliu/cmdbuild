@@ -34,7 +34,7 @@
             </Table>
             <div style="line-height: 64px;height:auto;">
               <Row>
-                <Col :xs="{span:24}" :sm="{span:24}" :md="{span:8, offset:16}" :lg="{span:8, offset:16}" style="text-align: right">
+                <Col :xs="{span:24}" :sm="{span:24}" :md="{span:9, offset:15}" :lg="{span:9, offset:15}" style="text-align: right">
                 <Row>
                   <Col span="6">
                   共 {{ totalBar }} 条
