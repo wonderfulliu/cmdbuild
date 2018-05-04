@@ -238,7 +238,7 @@ export default {
             oTemp.ellipsis = true;
             oTemp.sortable = true;
             oTemp.filters = [{//这个是filter, 还不完全, 需要修改
-              label: 'Search',
+              label: '<input></input>',
               value: 1
             }]
             arrObj.push(oTemp);
