@@ -31,7 +31,7 @@
         </Table>
         <div style="line-height: 64px;height:auto;">
           <Row>
-            <Col span="15" offset="1" style="text-align: left">
+            <Col span="14" offset="1" style="text-align: left">
               <ButtonGroup>
                 <Button type="ghost" title="查看" icon="ios-eye" @click="ctrlView">查看</Button>
                 <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'>编辑</Button>
@@ -42,15 +42,15 @@
                 <Button type="ghost" title="下载" icon="ios-download-outline" @click="configDownload">下载</Button>
               </ButtonGroup>
             </Col>
-            <Col span="8" style="width: 310px;text-align: right">
+            <Col span="9" style="width: 360px;text-align: right">
             <Row>
-              <Col span="4" style="width: 60px">
+              <Col span="4" style="width: 70px">
               共 {{ totalBar }} 条
               </Col>
               <Col span="4" style="width: 37px">
               <Button type="text" icon="chevron-left" @click="pageFirst"></Button>
               </Col>
-              <Col span="14" style="width: 170px">
+              <Col span="14" style="width: 200px">
               <Page simple
                     show-total
                     :page-size=20

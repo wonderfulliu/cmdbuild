@@ -63,7 +63,7 @@ export default {
           sessionStorage.setItem("groupInfo", JSON.stringify(arra)); //分组信息存入session
         }
       });
-      //跳转页面
+      //跳转页面 
       _this.$router.push({ path: "/search" });
     },
     getGroup: function() {

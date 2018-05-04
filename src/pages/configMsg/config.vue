@@ -129,10 +129,13 @@ export default {
               oBranch.type = v.type;
               if(v.type == 'view' || v.type == 'dashboard'){
                 oBranch.funcionName = v.functionName;
-              }
-              oBranch.expand = false; //菜单是否展开 true展开
-              if (v.children.length != 0) {
-                oBranch.children = objFunc(v.children);
+              } else if (v.type == "folder") {
+                oBranch.expand = false; //菜单是否展开 true展开
+                if (v.children.length != 0) {
+                  oBranch.children = objFunc(v.children);
+                } else {
+                  oBranch.children = [{title: '暂无数据'}];
+                }
               } else {
                 oBranch.idElementClass = v.idElementClass; //表名英文
                 if(v.type == 'view' || v.type == 'dashboard'){
@@ -151,20 +154,24 @@ export default {
     getTreeNodes(select) {
       let _this = this;
       // console.log(select);
-      if (select.length != 0 && !select[0].children) {
-        let eName = select[0].idElementClass.split('"').join(""); //获取英文名
-        _this.tableName = eName; //获取表英文名
-        _this.tableCname = select[0].title;//获取表的中文名
-        _this.$router.push({ path: "/config/tableList" });
+      if (select.length != 0) {//不是空数组
+        if (!select[0].children) {//最终表
+          let eName = select[0].idElementClass.split('"').join(""); //获取英文名
+          _this.tableName = eName; //获取表英文名
+          _this.tableCname = select[0].title;//获取表的中文名
+          _this.$router.push({ path: "/config/tableList" });
 
-        this.tableType = select[0].type;//获取表类别
-        if(select[0].type == "view" || select[0].type == "dashboard"){
-          this.funcionName = select[0].funcionName; //viewfuncionName
+          this.tableType = select[0].type;//获取表类别
+          if(select[0].type == "view" || select[0].type == "dashboard"){
+            this.funcionName = select[0].funcionName; //viewfuncionName
+          }
+          this.Mode = select[0].Mode;
+        } else {//不是最终表
+          select[0].selected = false;
+          select[0].expand = !select[0].expand;
         }
-        this.Mode = select[0].Mode;
-      }else {
-        select[0].selected = false;
-        select[0].expand = !select[0].expand;
+      } else {//空数组
+        //暂时还不知道怎么处理
       }
     },
     getRecordId(msg) {
@@ -180,6 +187,8 @@ export default {
     },
     WorR(authority, eName) {
       let Mode;
+      // console.log(authority);
+      // console.log(eName);
       authority.forEach(function(v, i) {
         if (v.table_name == eName.replace(/\"/g, "")) {
           Mode = v.Mode;
