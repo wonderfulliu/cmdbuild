@@ -53,15 +53,15 @@
                   <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
                 </ButtonGroup>
               </Col>
-              <Col span="8" style="width: 310px;text-align: right">
+              <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:8}" :lg="{span:8}" style="text-align: right">
                 <Row>
-                  <Col span="4" style="width: 60px">
+                  <Col span="6">
                     共 {{ totalBar }} 条
                   </Col>
-                  <Col span="4" style="width: 37px">
-                    <Button type="text" icon="chevron-left" @click="pageFirst"></Button>
+                  <Col span="2">
+                    <Button type="text" icon="chevron-left" @click="pageFirst" :disabled="firstCl" title="首页"></Button>
                   </Col>
-                  <Col span="14" style="width: 170px">
+                  <Col span="14" style="width: 190px;text-align: center">
                     <Page simple
                           show-total
                           :page-size="20"
@@ -69,8 +69,8 @@
                           :total="totalBar"
                           @on-change="pageChange"></Page>
                   </Col>
-                  <Col span="4"style="width: 37px">
-                    <Button type="text" icon="chevron-right" @click="pageLast"></Button>
+                  <Col span="2">
+                    <Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button>
                   </Col>
                 </Row>
               </Col>
@@ -118,6 +118,8 @@ export default {
       searched: false,
       contentbodyH: '',//内容区域高度
       tableHeight: '', //表格高度区域
+      firstCl: true,//首页是否禁用
+      lastCl: false,//尾页是否禁用
     };
   },
   created() {
@@ -276,18 +278,33 @@ export default {
     // 页面跳转
     pageChange(page) {
       this.pageNum = page;
+      this.pageDisabled();
       if (this.searchMsg != '') {
         this.search();
       } else {
         this.gettableMsg();
       }
     },
+    pageDisabled(){
+      if(this.pageNum == 1){
+        this.firstCl = true;
+        this.lastCl = false;
+      }else if(this.pageNum == this.totalPage){
+        this.firstCl = false;
+        this.lastCl = true;
+      }else {
+        this.firstCl = false;
+        this.lastCl = false;
+      }
+    },
     pageFirst(){
       this.pageNum = 1;
+      this.pageDisabled();
       this.gettableMsg();
     },
     pageLast(){
       this.pageNum = this.totalPage;
+      this.pageDisabled();
       this.gettableMsg();
     },
     // 搜索

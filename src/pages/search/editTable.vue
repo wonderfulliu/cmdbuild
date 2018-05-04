@@ -22,23 +22,38 @@
           <div class="contentBody">
             <Table stripe
                    border
+                   size="small"
                    highlight-row
-                   height="450"
+                   :height="tableHeight"
                    :data="data"
                    :loading='loading'
                    :columns="columns"
                    @on-row-click="selectRow">
             </Table>
-            <div class="pageContainer clearfix floatRight">
-              <Button type="ghost" class="floatLeft" @click="pageFirst">首页</Button>
-              <Page class="floatLeft"
-                    show-elevator
-                    show-total
-                    :page-size='20'
-                    :current="pageNum"
-                    :total="totalRecord"
-                    @on-change="pageChange"></Page>
-              <Button type="ghost" class="floatLeft" @click="pageLast">尾页</Button>
+            <div style="line-height: 64px;height:auto;">
+              <Row>
+                <Col :xs="{span:24}" :sm="{span:24}" :md="{span:8, offset:16}" :lg="{span:8, offset:16}" style="text-align: right">
+                <Row>
+                  <Col span="6">
+                  共 {{ totalBar }} 条
+                  </Col>
+                  <Col span="2">
+                  <Button type="text" icon="chevron-left" @click="pageFirst" :disabled="firstCl" title="首页"></Button>
+                  </Col>
+                  <Col span="14" style="width: 190px;text-align: center">
+                  <Page simple
+                        show-total
+                        :page-size=20
+                        :total="totalBar"
+                        :current="pageNum"
+                        @on-change="pageChange"></Page>
+                  </Col>
+                  <Col span="2">
+                  <Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button>
+                  </Col>
+                </Row>
+                </Col>
+              </Row>
             </div>
           </div>
         </Content>
@@ -51,24 +66,35 @@
 export default {
   data() {
     return {
+      //参数
       columns: [],//表格数据渲染
       data: [],
-      totalRecord: 0,//分页
+      totalBar: 0,
       pageNum: 1,
       totalPage: null,
+      //数据
       relationTable: "",//上一页传来的信息
       reftitleMsg: '',
       reftableMsg: '',
-      loading: false,//表格loading
       searchMsg: "",// 搜索
       rowMsg: '',//存储该行的信息
+      //设置
+      loading: false,//表格loading
+      firstCl: true,//首页是否禁用
+      lastCl: false,//尾页是否禁用
+      tableHeight: "", //表格高度
     };
   },
   created() {
     this.getrefMsg();
+    this.heightAdaptive();
   },
   mounted () {
+    let _this = this;
     this.dataProcess(this.reftitleMsg, this.reftableMsg);
+    window.onresize = () => {
+      _this.heightAdaptive();
+    }
   },
   methods: {
     // 获取中文表头和表格详细数据
@@ -80,13 +106,13 @@ export default {
     },
     //刚进入该页面时表格数据的处理
     dataProcess(titleMsg, tableMsg) {
-      this.totalRecord = tableMsg.totalRecord;
       this.totalPage = tableMsg.totalPage;
+      this.totalBar = tableMsg.totalRecord;
       // 表头字段排序
       titleMsg.sort(function(a, b) {
         return Number(a.position) - Number(b.position);
       });
-      
+
       let dataArr = tableMsg.list; //要处理和渲染的表格数据
       // 设置开头多选
       let start = {
@@ -108,6 +134,7 @@ export default {
         v.title = v.cname;
         v.key = ++j;
         v.width = width;
+        v.ellipsis = true;
         newtitleArr.push(v);
       });
       if (flag) {
@@ -165,16 +192,31 @@ export default {
     pageChange(page) {
       this.pageNum = page;
       this.loading = true;
+      this.pageDisabled();
       this.getreferenceData();
+    },
+    pageDisabled(){
+      if(this.pageNum == 1){
+        this.firstCl = true;
+        this.lastCl = false;
+      }else if(this.pageNum == this.totalPage){
+        this.firstCl = false;
+        this.lastCl = true;
+      }else {
+        this.firstCl = false;
+        this.lastCl = false;
+      }
     },
     pageFirst() {
       this.pageNum = 1;
       this.loading = true;
+      this.pageDisabled();
       this.getreferenceData();
     },
     pageLast() {
       this.pageNum = this.totalPage;
       this.loading = true;
+      this.pageDisabled();
       this.getreferenceData();
     },
     // 获取模态框中的reference数据
@@ -221,7 +263,7 @@ export default {
         width: 50,
         align: "center"
       };
-      
+
 
       let newtitleArr = this.columns;
       let newcontentArr = []; //存储最终要赋给表格的数据
@@ -288,6 +330,12 @@ export default {
       // this.$store.commit('getchooseMsg', '');
       this.$router.go(-1);
     },
+    // 高度自适应
+    heightAdaptive() {
+      let clientH = document.documentElement.clientHeight;
+//      this.contentbodyH = clientH - 64 + "px";
+      this.tableHeight = clientH - 202; //导航、按钮区、分页区：64；margin：10
+    }
 
   }
 };

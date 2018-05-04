@@ -9,7 +9,7 @@
            <Button type="ghost">searchFilter</Button>
         </Col>-->
         <Col span="12" offset="5">
-          <Input v-model="configCondition" placeholder="Enter something...">
+          <Input v-model="configCondition" placeholder="Enter something..." @on-enter="fuzzy">
             <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
           </Input>
         </Col>
@@ -48,9 +48,9 @@
                 共 {{ totalBar }} 条
                 </Col>
                 <Col span="2">
-                <Button type="text" icon="chevron-left" @click="pageFirst"></Button>
+                <Button type="text" icon="chevron-left" @click="pageFirst" :disabled="firstCl" title="首页"></Button>
                 </Col>
-                <Col span="14" style="width: 160px;">
+                <Col span="14" style="width: 190px;text-align: center">
                 <Page simple
                       show-total
                       :page-size=20
@@ -59,7 +59,7 @@
                       @on-change="pageChange"></Page>
                 </Col>
                 <Col span="2">
-                <Button type="text" icon="chevron-right" @click="pageLast"></Button>
+                <Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button>
                 </Col>
               </Row>
             </Col>
@@ -160,7 +160,9 @@ export default {
       configAddModal: false,
       deleLoading: false,
       configViewData: "", //查看数据
-      isdisable: "" //禁用与否, ''就是false
+      isdisable: "", //禁用与否, ''就是false
+      firstCl: true,//首页是否禁用
+      lastCl: false,//尾页是否禁用
     };
   },
   created() {
@@ -426,14 +428,29 @@ export default {
     },
     pageChange(page) {
       this.pageNum = page;
+      this.pageDisabled();
       this.getTableData(this.tableName);
+    },
+    pageDisabled(){
+      if(this.pageNum == 1){
+        this.firstCl = true;
+        this.lastCl = false;
+      }else if(this.pageNum == this.totalPage){
+        this.firstCl = false;
+        this.lastCl = true;
+      }else {
+        this.firstCl = false;
+        this.lastCl = false;
+      }
     },
     pageFirst() {
       this.pageNum = 1;
+      this.pageDisabled();
       this.getTableData(this.tableName);
     },
     pageLast() {
       this.pageNum = this.totalPage;
+      this.pageDisabled();
       this.getTableData(this.tableName);
     },
     getlookup() {
