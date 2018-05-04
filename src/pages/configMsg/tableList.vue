@@ -128,7 +128,11 @@ export default {
     rotateIcon: {
       type: Array,
       default: null
-    }
+    },
+    contH: {
+      type: Number,
+      required: true
+    },
   },
   data() {
     return {
@@ -171,6 +175,7 @@ export default {
   },
   mounted () {
     let _this = this;
+    _this.heightAdaptive();
     window.onresize = () => {
       _this.heightAdaptive();
     }
@@ -701,7 +706,6 @@ export default {
     // 高度自适应
     heightAdaptive() {
       let clientH = document.documentElement.clientHeight;
-      this.contentbodyH = clientH - 64 + "px";
       this.tableHeight = clientH - 64 - 140; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
     }
   },

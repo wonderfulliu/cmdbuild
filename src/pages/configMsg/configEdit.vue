@@ -84,15 +84,16 @@ export default {
       loading: false,//表格loading
       firstCl: true,//首页是否禁用
       lastCl: false,//尾页是否禁用
-      tableHeight: "", //表格高度
+      tableHeight: '', //表格高度
     };
   },
   created() {
+//    this.heightAdaptive();
     this.getrefMsg();
-    this.heightAdaptive();
   },
   mounted () {
     let _this = this;
+    _this.heightAdaptive();
     this.dataProcess(this.reftitleMsg, this.reftableMsg);
     window.onresize = () => {
       _this.heightAdaptive();
