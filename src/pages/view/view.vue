@@ -3,19 +3,20 @@
     <Layout>
       <!-- 侧边栏 -->
       <Sider ref="side1" hide-trigger collapsible :collapsed-width="0" v-model="isCollapsed">
-        <Menu active-name="1-2"
-              theme="dark"
+        <Menu theme="dark"
               width="auto"
               :open-names="['1']"
               :class="menuitemClasses" accordion>
-          <Submenu name="1">
+          <Submenu name="1" ref="submenu1">
             <template slot="title">
               查询配置信息列表
             </template>
-            <div class="treeContent">
-              <!--树状菜单-->
-              <Tree :data="asideMsg" @on-select-change='getSelectedNodes' ref='tree'></Tree>
-            </div>
+            <MenuItem :name="['1-']+[index+1]"
+                      style="padding-left: 25px"
+                      v-for="(item, index) in sideMenuData"
+                      @click.native="menuSelected(item)">
+              {{item.Description}}
+            </MenuItem>
           </Submenu>
         </Menu>
       </Sider>
@@ -35,7 +36,6 @@
             </Col>
           </Row>
         </Header>
-
         <Content>
           <Table
             stripe
@@ -76,17 +76,6 @@
               </Col>
             </Row>
           </div>
-          <!--<div class="pageContainer clearfix floatRight">
-            <Button type="ghost" class="floatLeft" @click="pageFirst">首页</Button>
-            <Page class="floatLeft"
-                  show-elevator
-                  show-total
-                  :page-size=20
-                  :current="pageNum"
-                  :total="totalBar"
-                  @on-change="pageChange"></Page>
-            <Button type="ghost" class="floatLeft" @click="pageLast">尾页</Button>
-          </div>-->
         </Content>
       </Layout>
     </Layout>
@@ -103,21 +92,24 @@ export default {
           children: []
         }
       ],
-      tableName: "",
+      //数据
+      tableName: "",  //表名
       searchMsg: "",
-      isCollapsed: false,
-      // 表格列
-      columns: [],
-      // 表格详细数据
+      sideMenuData: [],//侧栏菜单全部数据
+      //表格配置
       data: [],
+      columns: [],
       loading: true,
-      total:'',//表格数据总条数
-      pageNum: 1,
-      totalBar: 0,
+      total:'',       //表格数据总条数
+      pageNum: 1,     //当前页
+      totalBar: 0,    //条数
       totalPage: null,  //总页数
-      searched: false,
+      //样式
       contentbodyH: '',//内容区域高度
       tableHeight: '', //表格高度区域
+      //设置
+      isCollapsed: false,
+      searched: false,
       firstCl: true,//首页是否禁用
       lastCl: false,//尾页是否禁用
     };
@@ -138,7 +130,7 @@ export default {
     },
     menuitemClasses() {
       return ["menu-item", this.isCollapsed ? "collapsed-menu" : ""];
-    }
+    },
   },
   watch: {
     searchMsg: function (val) {//对input中的数据进行监听, 有变化会触发
@@ -153,21 +145,14 @@ export default {
       this.$http.get("/viewController/getViewList" + data).then(
         info => {
           if (info.status == 200) {
-            // 遍历数组, 将description替换为title
-            info.data.forEach(function(v, i) {
-              v.title = v.Description;
-              // 设置节点为选中状态
-              if (i == 0) {
-                v.selected = true;
-              }
-            });
-            // console.log(info.data);
-            // 给侧边栏赋值
-            this.asideMsg[0].children = info.data;
+//            console.log(info.data);
+            this.sideMenuData = info.data;//侧栏全部数据并赋值
+
             //给this.tableName赋值
             if (this.tableName == "") {
-              this.tableName = this.asideMsg[0].children[0].SourceFunction;
+              this.tableName = this.sideMenuData[0].SourceFunction;
             }
+            console.log(this.$refs.submenu1);
             this.gettableMsg();
           }
         },
@@ -175,6 +160,14 @@ export default {
           alert(info);
         }
       );
+    },
+    //点击侧栏获取表信息
+    menuSelected(msg){
+      //console.log(msg.Description);//获取中文表名
+      //console.log(msg.SourceFunction);//获取英文表名
+      this.searchMsg = '';
+      this.tableName = msg.SourceFunction;
+      this.gettableMsg();
     },
     //表格数据的处理
     dataProcess(info) {
@@ -264,16 +257,6 @@ export default {
         .catch(error => {
           console.log(error);
         });
-    },
-    // 点击侧边栏每个表触发的事件
-    getSelectedNodes() {
-      // console.log(this.$refs.tree.getSelectedNodes());
-      // 清空搜索框内容
-      this.searchMsg = '';
-      if (this.$refs.tree.getSelectedNodes().length != 0) {
-        this.tableName = this.$refs.tree.getSelectedNodes()[0].SourceFunction;
-        this.gettableMsg();
-      }
     },
     // 页面跳转
     pageChange(page) {
