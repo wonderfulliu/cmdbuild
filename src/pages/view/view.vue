@@ -48,7 +48,7 @@
             ref="table"></Table>
           <div style="line-height: 64px;height:auto;">
             <Row>
-              <Col span="15" offset="1" style="text-align: left">
+              <Col span="14" offset="1" style="text-align: left">
                 <ButtonGroup>
                   <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
                 </ButtonGroup>

@@ -65,7 +65,7 @@ export default {
       tableType: "",  //表类别
       recordId: "",
       Authority: "", //存储权限
-      Mode: ""
+      Mode: "",
     };
   },
   created: function() {

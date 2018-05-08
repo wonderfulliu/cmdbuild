@@ -31,7 +31,7 @@
         </Table>
         <div style="line-height: 64px;height:auto;">
           <Row>
-            <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:15,offset:1}" :lg="{span:15,offset:1}" style="text-align: left">
+            <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:14,offset:1}" :lg="{span:15,offset:1}" style="text-align: left">
               <ButtonGroup>
                 <Button type="ghost" title="查看" icon="ios-eye" @click="ctrlView">查看</Button>
                 <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'>编辑</Button>
@@ -42,7 +42,7 @@
                 <Button type="ghost" title="下载" icon="ios-download-outline" @click="configDownload">下载</Button>
               </ButtonGroup>
             </Col>
-            <Col :xs="{span:24}" :sm="{span:24}" :md="{span:8}" :lg="{span:8}" style="text-align: right">
+            <Col :xs="{span:24}" :sm="{span:24}" :md="{span:9}" :lg="{span:8}" style="text-align: right">
               <Row>
                 <Col span="6">
                 共 {{ totalBar }} 条
@@ -128,7 +128,7 @@ export default {
     rotateIcon: {
       type: Array,
       default: null
-    }
+    },
   },
   data() {
     return {
@@ -171,6 +171,7 @@ export default {
   },
   mounted () {
     let _this = this;
+    _this.heightAdaptive();
     window.onresize = () => {
       _this.heightAdaptive();
     }
@@ -701,7 +702,6 @@ export default {
     // 高度自适应
     heightAdaptive() {
       let clientH = document.documentElement.clientHeight;
-      this.contentbodyH = clientH - 64 + "px";
       this.tableHeight = clientH - 64 - 140; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
     }
   },

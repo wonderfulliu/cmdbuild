@@ -38,7 +38,7 @@
                    :data="data"></Table>
             <div style="line-height: 64px;height:auto;">
               <Row>
-                <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:14,offset:1}" :lg="{span:14,offset:1}" style="text-align: left">
+                <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:12,offset:1}" :lg="{span:14,offset:1}" style="text-align: left">
                   <ButtonGroup>
                     <Button type="ghost" title="查看" icon="ios-eye" @click="show">查看</Button>
                     <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="edit" :disabled='isdisable'>编辑</Button>
@@ -49,7 +49,7 @@
                     <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete"></Button> -->
                   </ButtonGroup>
                 </Col>
-                <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:8}" :lg="{span:8}" style="text-align: right">
+                <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:10}" :lg="{span:8}" style="text-align: right">
                   <Row>
                     <Col span="6">
                       共 {{ totalBar }} 条

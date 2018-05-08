@@ -34,7 +34,7 @@
             </Table>
             <div style="line-height: 64px;height:auto;">
               <Row>
-                <Col :xs="{span:24}" :sm="{span:24}" :md="{span:8, offset:16}" :lg="{span:8, offset:16}" style="text-align: right">
+                <Col :xs="{span:24}" :sm="{span:24}" :md="{span:9, offset:15}" :lg="{span:9, offset:15}" style="text-align: right">
                 <Row>
                   <Col span="6">
                   共 {{ totalBar }} 条
@@ -84,15 +84,16 @@ export default {
       loading: false,//表格loading
       firstCl: true,//首页是否禁用
       lastCl: false,//尾页是否禁用
-      tableHeight: "", //表格高度
+      tableHeight: '', //表格高度
     };
   },
   created() {
+//    this.heightAdaptive();
     this.getrefMsg();
-    this.heightAdaptive();
   },
   mounted () {
     let _this = this;
+    _this.heightAdaptive();
     this.dataProcess(this.reftitleMsg, this.reftableMsg);
     window.onresize = () => {
       _this.heightAdaptive();
