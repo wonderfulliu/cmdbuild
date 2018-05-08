@@ -149,10 +149,12 @@ export default {
     // 获取侧边栏数据
     getasideMsg() {
       let groupName = JSON.parse(sessionStorage.getItem('groupInfo')).Description;
+      console.log(JSON.parse(sessionStorage.getItem('groupInfo')));
       let data = '?groupName=' + groupName;
       this.$http.get("/viewController/getViewList" + data).then(
         info => {
           if (info.status == 200) {
+            console.log(info);
             // 遍历数组, 将description替换为title
             info.data.forEach(function(v, i) {
               v.title = v.Description;
