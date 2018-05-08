@@ -104,6 +104,20 @@
         }
       }
 
+      .ivu-menu-vertical{
+        .ivu-menu-submenu{
+          .ivu-menu{
+            max-height: 480px;
+            overflow-y: auto;
+          }
+        }
+        .ivu-menu-item{
+          padding: 10px 25px;
+          text-align: left;
+          font-size: 12px;
+        }
+      }
+
       .ivu-layout{
         .ivu-layout-sider{
           background: #2a3f54;
@@ -388,6 +402,11 @@ tr.ivu-table-row-highlight.ivu-table-row-hover{
   transition: font-size 0.2s ease 0.2s, transform 0.2s ease 0.2s;
   vertical-align: middle;
   font-size: 22px;
+}
+
+.ivu-menu-vertical .ivu-menu-item,
+.ivu-menu-vertical .ivu-menu-submenu-title{
+  padding: 10px 15px;
 }
 
 //pager
