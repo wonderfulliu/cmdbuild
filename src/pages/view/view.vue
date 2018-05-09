@@ -142,7 +142,7 @@ export default {
     // 获取侧边栏数据
     getasideMsg() {
       let groupName = JSON.parse(sessionStorage.getItem('groupInfo')).Description;
-      console.log(JSON.parse(sessionStorage.getItem('groupInfo')));
+      // console.log(JSON.parse(sessionStorage.getItem('groupInfo')));
       let data = '?groupName=' + groupName;
       this.$http.get("/viewController/getViewList" + data).then(
         info => {
@@ -153,7 +153,7 @@ export default {
             if (this.tableName == "") {
               this.tableName = this.sideMenuData[0].SourceFunction;
             }
-            console.log(this.$refs.submenu1);
+            // console.log(this.$refs.submenu1);
             this.gettableMsg();
           }
         },
@@ -319,11 +319,13 @@ export default {
     },
     // 表详情展示
     show(index) {
+      console.log(this.columns);
       let content = "";
       for (let i = 0; i < this.columns.length - 1; i++) {
         content += this.columns[i].title + `: ${this.data[index][i + 1]}<br>`;
       }
-      content = content.split('null').join('');//详情为null的改为空
+      content = content.split('null').join('');//详情为null的显示为空
+      console.log(content);
       this.$Modal.info({
         title: "详细信息",
         content: content

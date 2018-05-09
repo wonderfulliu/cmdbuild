@@ -81,6 +81,7 @@
         <Button type="error" size="large" long :loading="deleLoading" @click="configDele">删除</Button>
       </div>
     </Modal>
+    <!-- 显示详情, 暂时用不到 -->
     <Modal v-model="configViewModal">
       <p slot="header">
         <span>查看记录</span>
@@ -156,7 +157,7 @@ export default {
       tableHeight: "", //表格高度
       //模态框
       configDeleModal: false, //删除modal
-      configViewModal: false, //查看modal
+      configViewModal: false, //查看modal, 暂时用不到
       configAddModal: false,
       deleLoading: false,
       configViewData: "", //查看数据
@@ -234,16 +235,12 @@ export default {
           let markName = _this.attributeCName(v);
           let cname;
           if (markName != null) {
-            cname = markName.cname
+            cname = markName.cname;
             oTemp.title = cname;
             oTemp.key = v;
             oTemp.position = markName.position;
             oTemp.ellipsis = true;
             oTemp.sortable = true;
-            oTemp.filters = [{//这个是filter, 还不完全, 需要修改
-              label: "search",
-              value: 1
-            }]
             arrObj.push(oTemp);
           }
         });
@@ -517,7 +514,7 @@ export default {
     ctrlView() {
       let _this = this;
       if (_this.clickRow == true) {
-        console.log(_this.clickRow);
+        // console.log(_this.clickRow);
         //选中行
         _this.$http
           .get(
@@ -527,6 +524,7 @@ export default {
               _this.recordId
           )
           .then(function(info) {
+            console.log(info);
             let newObj = {};
             Object.keys(info.data).forEach(function(v, i) {
               if (_this.attributeCName(v)) {
@@ -538,12 +536,23 @@ export default {
                 }
               }
             });
-            _this.configViewData = newObj;
+            // console.log(newObj);
+            let content = '';
+            for(let k in newObj){
+              content += k + ': ' + newObj[k] + '<br>';
+            }
+            content = content.split('null').join('');//详情为null的显示为空
+            // console.log(content);
+            _this.$Modal.info({
+              title: "详细信息",
+              content: content
+            });
+            // _this.configViewData = newObj;
           })
           .catch(function(error) {
             //  console.log(error);
           });
-        _this.configViewModal = true;
+        // _this.configViewModal = true;
       } else {
         //未选中行
         _this.$Message.error("您未选中行！");
@@ -694,6 +703,19 @@ export default {
             });
           }
         });
+    },
+    // 字段搜索
+    fieldSearch(column){
+      console.log(column);
+      console.log(this.tableName);
+      // let tableName = this.tableName;
+      // let condition = {};
+      // condition[column.key] = this.configCondition;
+      // console.log(condition);
+      // let data = 'tableName=' + tableName + '&condition=' + JSON.stringify(condition);
+      // this.$http.post('/cardController/attribubtesFuzzyQuery', data).then(info => {
+      //   console.log(info);
+      // })
     },
     // 禁用于否
     isDisabled() {

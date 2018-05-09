@@ -31,13 +31,13 @@
                   <Icon type="pin"></Icon>
                   工作流
                 </MenuItem>
-              </router-link>
+              </router-link> -->
               <router-link to="/chart" active-class>
                 <MenuItem name="5">
                   <Icon type="stats-bars"></Icon>
                   Charts
                 </MenuItem>
-              </router-link> -->
+              </router-link>
             </div>
             <div class="layout-user">
               <MenuItem class="userInfo" name="5">
