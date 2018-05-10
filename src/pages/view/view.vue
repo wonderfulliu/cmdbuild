@@ -153,7 +153,6 @@ export default {
               this.tableName = this.sideMenuData[0].SourceFunction;
             }
             console.log(this.$refs.submenu1);
-            this.gettableMsg();
           }
         },
         function(info) {

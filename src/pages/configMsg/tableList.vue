@@ -272,6 +272,7 @@ export default {
       }
     },
     tableDataProce(info) {
+      console.log(info);
       let _this = this;
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
@@ -314,7 +315,6 @@ export default {
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
       let ConfigTdata = info.data.list;
-      // console.log(ConfigTdata);
       ConfigTdata.forEach(function(v, i) {
         for (let a in v) {
           if (v[a] != null && typeof v[a] == "object") {
@@ -400,11 +400,23 @@ export default {
         let a = v.attribute;
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
-          v.lookupMsg.forEach((val, index) => {
-            if (val.Description && val.Description == v.content) {
-              v.content = val.Id;
+          let conStr = v.content;
+          let conArry = conStr.split('-');
+          let q = 0;
+          v.content = findId(v.lookupMsg, conArry, 0, []);
+          console.log(v.content);
+          function findId(obj, conArry, q, newArry){
+            for(let val in obj){
+              if(obj[val].label && obj[val].label == conArry[q]){
+                newArry.push(obj[val].value);
+                q++;
+                if(q<conArry.length){
+                  findId(obj[val].children, conArry, q, newArry);
+                }
+              }
             }
-          });
+            return newArry;
+          }
         } else if (v.type == "reference") {
           for (let ri = 0; ri < relatedt.length; ri++) {
             if (v.lr == relatedt[ri].domainname) {
@@ -475,7 +487,29 @@ export default {
           "/relationController/getLookuplistByTable?table=" + _this.tableName
         )
         .then(function(info) {
-          _this.lookupInfo = info.data;
+          let newlookup = {};
+          for(let i in info.data){
+            newlookup[i] = transformObj(info.data[i]);
+            function transformObj(arr){
+              let arrb = [];
+              arr.forEach(function(v, i){
+                let obja = {};
+                if(v.Description){
+                  obja.label = v.Description;
+                }
+                obja.value = v.Id;
+                if(v.child){
+                  obja.children =[];
+                  if(v.child.length != 0){
+                    obja.children = transformObj(v.child);
+                  }
+                }
+                arrb.push(obja);
+              });
+              return arrb;
+            };
+          }
+          _this.lookupInfo = newlookup;
         });
       //relationTable
       _this.$http
