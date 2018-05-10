@@ -1,6 +1,6 @@
 <template>
-  <Layout>
-    <Header :offset-top="64" :style="{padding: 0}" class="layout-header-bar">
+  <Layout :style="{height:contH}">
+    <Header :offset-top="64" style="padding: 0" class="layout-header-bar">
       <Row>
         <Col span="9" offset="1" style="text-align: left">
         <Breadcrumb>
@@ -17,21 +17,43 @@
           <Button type="info" @click="gethistoryInfo" :class="{'active': ctrlBtnA}">信息</Button>
           <Button type="info" @click="gethistoryRelate" :class="{'active': ctrlBtnB}">关系</Button>
         </ButtonGroup>
-
         <Button type="ghost" @click="backBtn" style="margin-right: 20px;margin-left: 10px">返回</Button>
-
         </Col>
       </Row>
     </Header>
-
     <Content>
-      <div class="contentBody">
+      <div class="contentBody" :style="{height:contContentH}">
         <Table border
                size="small"
-               :height="tableHeight"
+               :height="tableH"
                :loading="loading"
                :columns="columnData"
                :data="tableData"></Table>
+        <div style="line-height: 64px;height:auto;" v-show="ctrlBtnA">
+          <Row>
+            <Col :xs="{span:24}" :sm="{span:24}" :md="{span:9,offset:15}" :lg="{span:8,offset:15}" style="text-align: right">
+            <Row>
+              <Col span="6">
+              共 {{ totalBar }} 条
+              </Col>
+              <Col span="2">
+              <Button type="text" icon="chevron-left" @click="pageFirst" :disabled="firstCl" title="首页"></Button>
+              </Col>
+              <Col span="14" style="width: 190px;text-align: center">
+              <Page simple
+                    show-total
+                    :page-size=20
+                    :total="totalBar"
+                    :current="pageNum"
+                    @on-change="pageChange"></Page>
+              </Col>
+              <Col span="2">
+              <Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button>
+              </Col>
+            </Row>
+            </Col>
+          </Row>
+        </div>
       </div>
     </Content>
 
@@ -64,14 +86,6 @@
         type: String,
         required: true
       },
-      'collapsedSider': {
-        type: Function,
-        default: null
-      },
-      'rotateIcon': {
-        type: Function,
-        default: null
-      },
       //记录id
       'recordId': {
         type: Number,
@@ -86,6 +100,11 @@
         tableCname: '',//表中文名
         HistoryViewData: {},
         historyId: '',
+        //配置
+        totalBar: 0,
+        pageNum: 1,
+        totalPage: 1,
+
         //设置
         ctrlBtnA: true,
         ctrlBtnB: false,
@@ -95,7 +114,11 @@
         //modal
         HistoryViewModal: false,
         hisLoading: true,
-        tableHeight: '',//content内容区
+        firstCl: true,//首页是否禁用
+        lastCl: true,//尾页是否禁用
+        contH: '',//内容区高
+        contContentH: '',//内容区内容高
+        tableH: '',//表格高度
       }
     },
     created: function(){
@@ -108,6 +131,14 @@
         _this.getHeight();
       }
     },
+    computed: {
+      menuitemClasses() {
+        return ["menu-item", this.isCollapsed ? "collapsed-menu" : ""];
+      },
+      rotateIcon() {
+        return ["menu-icon", this.isCollapsed ? "rotate-icon" : ""];
+      }
+    },
     methods:{
       //历史信息记录
       gethistoryInfo(){
@@ -116,15 +147,20 @@
         _this.ctrlBtnA = true;
         _this.ctrlBtnB = false;
         _this.titleName = '信息';
-        let data = {
-          table: _this.tableName,
-          Id: _this.recordId
-        };
         let odata = [];
-        _this.$http.post('/cardController/cardHistory',data)
+        _this.$http
+          .post('/cardController/cardHistory?table=' +
+            _this.tableName +
+            '&id=' +
+            _this.recordId +
+            '&pageNum=' +
+            _this.pageNum +
+            '&pageSize=20')
           .then(function(info){
-            let opt = info.data[0];
-            odata = info.data;
+            _this.totalBar = info.data.totalRecord;
+            _this.totalPage = info.data.totalPage;
+            let opt = info.data.list[0];
+            odata = info.data.list;
             odata.forEach(function(v ,i){
               v.BeginDate = _this.formatDateTime(v.BeginDate);
               v.EndDate = _this.formatDateTime(v.EndDate);
@@ -137,7 +173,7 @@
               });
             }
             _this.columnData = _this.operationBtn(arra);    //表头
-            _this.tableData = info.data;  //数据
+            _this.tableData = info.data.list;  //数据
             _this.loading = false;
           });
       },
@@ -268,11 +304,46 @@
       backBtn(){
         this.$router.go(-1);
       },
+      pageChange(page) {
+        this.pageNum = page;
+        this.pageDisabled();
+        this.gethistoryInfo();
+      },
+      pageDisabled(){
+        if(this.pageNum == 1 && this.pageNum == this.totalPage){
+          this.firstCl = true;
+          this.lastCl = true;
+        }else{
+          if(this.pageNum == 1 && this.pageNum != this.totalPage){
+            this.firstCl = true;
+            this.lastCl = false;
+          }else{
+            if(this.pageNum != 1 && this.pageNum == this.totalPage){
+              this.firstCl = false;
+              this.lastCl = true;
+            }else {
+              this.firstCl = false;
+              this.lastCl = false;
+            }
+          }
+        }
+      },
+      pageFirst() {
+        this.pageNum = 1;
+        this.pageDisabled();
+        this.gethistoryInfo();
+      },
+      pageLast() {
+        this.pageNum = this.totalPage;
+        this.pageDisabled();
+        this.gethistoryInfo();
+      },
       // 获取高度
       getHeight(){
         let clientH = document.documentElement.clientHeight;
-        this.tableHeight = (clientH - 192) + 'px';
-//      this.height = document.querySelector('#editContainer').offsetHeight - 74 + 'px';
+        this.contH = (clientH - 64) + 'px';
+        this.contContentH = (clientH - 138) + 'px';
+        this.tableH = clientH - 222;
       },
     }
     }

@@ -5,9 +5,30 @@
         <Col span="1">
           <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
         </Col>
-        <!--<Col span="1">
+        <!-- <Col span="1">
            <Button type="ghost">searchFilter</Button>
-        </Col>-->
+        </Col> -->
+
+        <Col span="3">
+          <Dropdown trigger="click" placement="bottom-start">
+              <Button type="primary">
+                字段筛选
+                <Icon type="arrow-down-b"></Icon>
+              </Button>
+              <DropdownMenu slot="list">
+                  <Dropdown placement="right" v-for="(item, index) in fieldData" :key="index" >
+                      <DropdownItem>
+                        <Checkbox v-model="item.flag" @on-change="fieldSearch"></Checkbox>{{item.cName}}
+                        <Icon type="ios-arrow-right"></Icon>
+                      </DropdownItem>
+                      <DropdownMenu slot="list">
+                        <Input v-model="item.value"></Input>
+                      </DropdownMenu>
+                  </Dropdown>
+              </DropdownMenu>
+          </Dropdown>
+        </Col>
+        
         <Col span="12" offset="5">
           <Input v-model="configCondition" placeholder="Enter something..." @on-enter="fuzzy">
             <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
@@ -81,6 +102,7 @@
         <Button type="error" size="large" long :loading="deleLoading" @click="configDele">删除</Button>
       </div>
     </Modal>
+    <!-- 显示详情, 暂时用不到 -->
     <Modal v-model="configViewModal">
       <p slot="header">
         <span>查看记录</span>
@@ -156,13 +178,18 @@ export default {
       tableHeight: "", //表格高度
       //模态框
       configDeleModal: false, //删除modal
-      configViewModal: false, //查看modal
+      configViewModal: false, //查看modal, 暂时用不到
       configAddModal: false,
       deleLoading: false,
       configViewData: "", //查看数据
       isdisable: "", //禁用与否, ''就是false
       firstCl: true,//首页是否禁用
       lastCl: false,//尾页是否禁用
+      // 字段搜索相关
+      fieldData: [],//带渲染字段数据
+      lsfieldData: [],//带渲染字段数据
+      changetableName: false,//判断是否切换表格
+      fielddataObj: {},//存储字段搜索的条件, 判断是否为空
     };
   },
   created() {
@@ -182,12 +209,14 @@ export default {
       this.getTableAttribute();
       this.getTableData();
       this.getlookup();
+      this.ischangetableName();
     },
     'funcionName': function(newValue, oldValue){
       this.clearSort();
       this.getTableAttribute();
       this.getTableData();
       this.getlookup();
+      this.ischangetableName();
     }
   },
   methods: {
@@ -224,24 +253,35 @@ export default {
     },
     getTableHead(info) {
       let thead = sessionStorage.getItem("config_" + this.tableName + "_head");
+      let fieldArr = sessionStorage.getItem("config_" + this.tableName + "_field");
       if (!thead) {
         let _this = this;
         //获取表头数据：
         let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
         let arrObj = [];
+        let fieldArr = [];//表头字段搜索
         arrA.forEach(function(v, i) {
           let oTemp = {};
+          let field = {};
           let markName = _this.attributeCName(v);
           let cname;
           if (markName != null) {
-            cname = markName.cname
+            cname = markName.cname;
+            field.eName = v;//字段英文名
+            field.cName = cname;//字段中文名
+            field.value = '';//双向绑定到搜索框的值
+            field.flag = false;//选中状态
             oTemp.title = cname;
             oTemp.key = v;
             oTemp.position = markName.position;
             oTemp.ellipsis = true;
             oTemp.sortable = true;
+<<<<<<< HEAD
             oTemp.filters = [];
+=======
+>>>>>>> ad6adaa11fa5ad84473e07f37819a5307f446511
             arrObj.push(oTemp);
+            fieldArr.push(field);
           }
         });
         let len = arrObj.length; //记录表头数量
@@ -261,14 +301,28 @@ export default {
           "config_" + _this.tableName + "_head",
           JSON.stringify(arrObj)
         );
+        sessionStorage.setItem(
+          "config_" + _this.tableName + "_field",
+          JSON.stringify(fieldArr)
+        );
 
         let newArr = arrObj;
         _this.ConfigThead = newArr;
+        _this.fieldData = fieldArr;
       } else {
         this.ConfigThead = JSON.parse(thead);
+        if (this.changetableName) {
+          this.changetableName = false;
+          this.fieldData = JSON.parse(fieldArr);
+        }
       }
     },
+    // 判断是否切换表名, 切换, 则调用getTableHead的时候执行最下面函数, 否则不执行
+    ischangetableName(){
+      this.changetableName = true;
+    },
     tableDataProce(info) {
+      console.log(info);
       let _this = this;
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
@@ -311,7 +365,6 @@ export default {
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
       let ConfigTdata = info.data.list;
-      // console.log(ConfigTdata);
       ConfigTdata.forEach(function(v, i) {
         for (let a in v) {
           if (v[a] != null && typeof v[a] == "object") {
@@ -397,11 +450,23 @@ export default {
         let a = v.attribute;
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
-          v.lookupMsg.forEach((val, index) => {
-            if (val.Description && val.Description == v.content) {
-              v.content = val.Id;
+          let conStr = v.content;
+          let conArry = conStr.split('-');
+          let q = 0;
+          v.content = findId(v.lookupMsg, conArry, 0, []);
+          console.log(v.content);
+          function findId(obj, conArry, q, newArry){
+            for(let val in obj){
+              if(obj[val].label && obj[val].label == conArry[q]){
+                newArry.push(obj[val].value);
+                q++;
+                if(q<conArry.length){
+                  findId(obj[val].children, conArry, q, newArry);
+                }
+              }
             }
-          });
+            return newArry;
+          }
         } else if (v.type == "reference") {
           for (let ri = 0; ri < relatedt.length; ri++) {
             if (v.lr == relatedt[ri].domainname) {
@@ -436,11 +501,18 @@ export default {
         }
       }
     },
+    // 分页
     pageChange(page) {
       this.pageNum = page;
       this.pageDisabled();
-      this.getTableData(this.tableName);
+      if (JSON.stringify(this.fielddataObj) != "{}") {
+        // 说明有字段搜索
+        this.fieldSearch();
+      } else {
+        this.getTableData(this.tableName);
+      }
     },
+    // 首页尾页禁用于否
     pageDisabled(){
       if(this.pageNum == 1){
         this.firstCl = true;
@@ -456,12 +528,22 @@ export default {
     pageFirst() {
       this.pageNum = 1;
       this.pageDisabled();
-      this.getTableData(this.tableName);
+      if (JSON.stringify(this.fielddataObj) != "{}") {
+        // 说明有字段搜索
+        this.fieldSearch();
+      } else {
+        this.getTableData(this.tableName);
+      }
     },
     pageLast() {
       this.pageNum = this.totalPage;
       this.pageDisabled();
-      this.getTableData(this.tableName);
+      if (JSON.stringify(this.fielddataObj) != "{}") {
+        // 说明有字段搜索
+        this.fieldSearch();
+      } else {
+        this.getTableData(this.tableName);
+      }
     },
     getlookup() {
       //获取相关数据
@@ -472,7 +554,29 @@ export default {
           "/relationController/getLookuplistByTable?table=" + _this.tableName
         )
         .then(function(info) {
-          _this.lookupInfo = info.data;
+          let newlookup = {};
+          for(let i in info.data){
+            newlookup[i] = transformObj(info.data[i]);
+            function transformObj(arr){
+              let arrb = [];
+              arr.forEach(function(v, i){
+                let obja = {};
+                if(v.Description){
+                  obja.label = v.Description;
+                }
+                obja.value = v.Id;
+                if(v.child){
+                  obja.children =[];
+                  if(v.child.length != 0){
+                    obja.children = transformObj(v.child);
+                  }
+                }
+                arrb.push(obja);
+              });
+              return arrb;
+            };
+          }
+          _this.lookupInfo = newlookup;
         });
       //relationTable
       _this.$http
@@ -514,7 +618,7 @@ export default {
     ctrlView() {
       let _this = this;
       if (_this.clickRow == true) {
-        console.log(_this.clickRow);
+        // console.log(_this.clickRow);
         //选中行
         _this.$http
           .get(
@@ -524,6 +628,7 @@ export default {
               _this.recordId
           )
           .then(function(info) {
+            console.log(info);
             let newObj = {};
             Object.keys(info.data).forEach(function(v, i) {
               if (_this.attributeCName(v)) {
@@ -535,12 +640,23 @@ export default {
                 }
               }
             });
-            _this.configViewData = newObj;
+            // console.log(newObj);
+            let content = '';
+            for(let k in newObj){
+              content += k + ': ' + newObj[k] + '<br>';
+            }
+            content = content.split('null').join('');//详情为null的显示为空
+            // console.log(content);
+            _this.$Modal.info({
+              title: "详细信息",
+              content: content
+            });
+            // _this.configViewData = newObj;
           })
           .catch(function(error) {
             //  console.log(error);
           });
-        _this.configViewModal = true;
+        // _this.configViewModal = true;
       } else {
         //未选中行
         _this.$Message.error("您未选中行！");
@@ -692,7 +808,64 @@ export default {
           }
         });
     },
-    // 禁用于否
+    // 字段搜索
+    fieldSearch(flag){
+      this.loading = true;
+      let dataObj = {};
+      // 选择出: 处于选中状态 && 搜索内容不为空 的内容发送给后台
+      this.fieldData.forEach((v, i) => {
+        if (v.flag && v.value !== "") {
+          dataObj[v.eName] = v.value;
+        }
+      })
+      // console.log(dataObj);
+      this.fielddataObj = dataObj;
+      if (JSON.stringify(dataObj) != "{}") {
+        let data = 'tableName=' + this.tableName + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=' + this.pageSize;
+        // console.log(data);
+        this.$http.post('/cardController/attribubtesFuzzyQuery', data).then(info => {
+          // console.log(info);
+          // this.getTableHead(info);
+          //获取表头数据：
+          let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
+          let arrObj = [];
+          arrA.forEach((v, i) => {
+            let oTemp = {};
+            let markName = this.attributeCName(v);
+            let cname;
+            if (markName != null) {
+              cname = markName.cname;
+              oTemp.title = cname;
+              oTemp.key = v;
+              oTemp.position = markName.position;
+              oTemp.ellipsis = true;
+              oTemp.sortable = true;
+              arrObj.push(oTemp);
+            }
+          });
+          let len = arrObj.length; //记录表头数量
+          let theadWidth =
+            document.querySelector(".contentBody .ivu-table-header").offsetWidth -
+            17;
+          let width = theadWidth / len > 200 ? theadWidth / len : 200;
+          arrObj.forEach((v, i) => {
+            v.width = width;
+          });
+
+          // 表头字段排序
+          arrObj.sort(function(a, b) {
+            return Number(a.position) - Number(b.position);
+          });
+
+          let newArr = arrObj;
+          this.ConfigThead = newArr;
+          this.tableDataProce(info);
+        })
+      } else {
+        this.getTableData();
+      }
+    },
+    // 增删改查按钮禁用于否
     isDisabled() {
       this.isdisable = this.Mode == "w" ? false : true;
     },

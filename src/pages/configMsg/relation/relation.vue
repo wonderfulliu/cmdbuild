@@ -186,6 +186,7 @@ export default {
     getTabledata(tableName) {
       // 根据传入的关系表的表名, 查找对应的信息
       let data = this.relationMsg; //有关系的表
+      console.log(data);
       let arr = [];
       for (let k in data.relationMsg) {
         if (k.split('Map_')[1] == tableName) {
@@ -326,8 +327,8 @@ export default {
     },
     // 关系记录跳转到对应表的所在的位置
     relationJump(value, index){
-      // console.log(value);
-      // console.log(index);
+      console.log(value);
+      console.log(index);
     },
   }
 };

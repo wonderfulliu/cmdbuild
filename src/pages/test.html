@@ -1,30 +1,480 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
 </head>
+
 <body>
-  
+
 </body>
 <script>
-  var arr = [
-    {position: '2'},
-    {position: '6'},
-    {position: '3'},
-    // {f: '5'},
-    {position: '8'},
-    {position: '1'},
-  ];
-  // var arr = arr.filter(function (x) {
-  //   return x.position;
-  // })
-  // console.log(arr);
-  arr.sort(function (a, b) {
-    return Number(a.position) - Number(b.position);
-  })
-  console.log(arr);
+  var obj = {
+    "IP_district": [{
+      "Description": "业务网",
+      "Id": 398305,
+      "child": [{
+        "Description": "模拟域",
+        "Id": 398310,
+        "child": [{
+          "Description": "老模拟服务器区",
+          "Id": 398327,
+          "child": []
+        }, {
+          "Description": "模拟客户端区",
+          "Id": 398328,
+          "child": []
+        }, {
+          "Description": "模拟央行区",
+          "Id": 398329,
+          "child": []
+        }, {
+          "Description": "模拟场务管理区",
+          "Id": 398330,
+          "child": []
+        }, {
+          "Description": "模拟增值服务区",
+          "Id": 398331,
+          "child": []
+        }, {
+          "Description": "模拟交易核心B区",
+          "Id": 398332,
+          "child": []
+        }, {
+          "Description": "模拟信息区",
+          "Id": 398334,
+          "child": []
+        }, {
+          "Description": "UAT环境",
+          "Id": 398335,
+          "child": []
+        }, {
+          "Description": "设备互联",
+          "Id": 398354,
+          "child": []
+        }, {
+          "Description": "培训系统",
+          "Id": 398336,
+          "child": []
+        }, {
+          "Description": "模拟交易核心A区",
+          "Id": 398333,
+          "child": []
+        }, {
+          "Description": "模拟、培训和UAT服务器后端管理网段",
+          "Id": 398372,
+          "child": []
+        }]
+      }, {
+        "Description": "办公域",
+        "Id": 398312,
+        "child": [{
+          "Description": "办公客户端区",
+          "Id": 398358,
+          "child": []
+        }, {
+          "Description": "办公服务器区",
+          "Id": 398357,
+          "child": []
+        }]
+      }, {
+        "Description": "设备互联",
+        "Id": 398313,
+        "child": [{
+          "Description": "设备互联",
+          "Id": 430363,
+          "child": []
+        }]
+      }, {
+        "Description": "开发域",
+        "Id": 398311,
+        "child": [{
+          "Description": "开发 服务器区",
+          "Id": 398355,
+          "child": []
+        }, {
+          "Description": "开发 客户端区",
+          "Id": 398356,
+          "child": []
+        }]
+      }, {
+        "Description": "生产域",
+        "Id": 398309,
+        "child": [{
+          "Description": "29号楼本币区",
+          "Id": 398315,
+          "child": []
+        }, {
+          "Description": "29号楼央行区",
+          "Id": 398316,
+          "child": []
+        }, {
+          "Description": "23号楼增值服务区",
+          "Id": 398321,
+          "child": []
+        }, {
+          "Description": "29号楼信息A区",
+          "Id": 398317,
+          "child": []
+        }, {
+          "Description": "29号楼外汇区",
+          "Id": 398318,
+          "child": []
+        }, {
+          "Description": "29号楼清算区",
+          "Id": 398319,
+          "child": []
+        }, {
+          "Description": "29号楼场务管理区",
+          "Id": 398320,
+          "child": []
+        }, {
+          "Description": "23号交易核心B区",
+          "Id": 398322,
+          "child": []
+        }, {
+          "Description": "23号楼交易核心A区",
+          "Id": 398323,
+          "child": []
+        }, {
+          "Description": "23号楼信息B区",
+          "Id": 398324,
+          "child": []
+        }, {
+          "Description": "用户接入区（广域网区）",
+          "Id": 398325,
+          "child": []
+        }, {
+          "Description": "MPLS接入区",
+          "Id": 398326,
+          "child": []
+        }]
+      }, {
+        "Description": "预留网段",
+        "Id": 398365,
+        "child": [{
+          "Description": "预留网段",
+          "Id": 398343,
+          "child": []
+        }]
+      }, {
+        "Description": "主机心跳",
+        "Id": 398314,
+        "child": [{
+          "Description": "业务网主机心跳",
+          "Id": 398342,
+          "child": []
+        }]
+      }]
+    }, {
+      "Description": "互联网",
+      "Id": 398306,
+      "child": [{
+        "Description": "设备互联",
+        "Id": 398370,
+        "child": [{
+          "Description": "设备互联",
+          "Id": 398359,
+          "child": []
+        }]
+      }, {
+        "Description": "生产域",
+        "Id": 398366,
+        "child": [{
+          "Description": "29号楼 货币网区",
+          "Id": 398344,
+          "child": []
+        }, {
+          "Description": "29号楼 票据网区",
+          "Id": 398345,
+          "child": []
+        }, {
+          "Description": "23号楼 网站区",
+          "Id": 398346,
+          "child": []
+        }, {
+          "Description": "29号楼 增值服务区",
+          "Id": 398347,
+          "child": []
+        }, {
+          "Description": "上海总部 托管网站",
+          "Id": 398348,
+          "child": []
+        }, {
+          "Description": "场务管理区",
+          "Id": 398349,
+          "child": []
+        }, {
+          "Description": "设备互联",
+          "Id": 398350,
+          "child": []
+        }, {
+          "Description": "互联网应用生产服务器区",
+          "Id": 10674091,
+          "child": []
+        }]
+      }, {
+        "Description": "模拟域",
+        "Id": 398367,
+        "child": [{
+          "Description": "模拟服务器区   ",
+          "Id": 398351,
+          "child": []
+        }, {
+          "Description": "设备互联",
+          "Id": 398341,
+          "child": []
+        }, {
+          "Description": "UAT环境",
+          "Id": 398374,
+          "child": []
+        }, {
+          "Description": "模拟客户端区",
+          "Id": 398352,
+          "child": []
+        }, {
+          "Description": "互联网应用模拟服务器区",
+          "Id": 10674098,
+          "child": []
+        }]
+      }, {
+        "Description": "开发域",
+        "Id": 398368,
+        "child": [{
+          "Description": "开发服务器区",
+          "Id": 398337,
+          "child": []
+        }, {
+          "Description": "开发客户端区",
+          "Id": 398338,
+          "child": []
+        }]
+      }, {
+        "Description": "办公域",
+        "Id": 398369,
+        "child": [{
+          "Description": "办公服务器区",
+          "Id": 398339,
+          "child": []
+        }, {
+          "Description": "办公客户端区",
+          "Id": 398340,
+          "child": []
+        }]
+      }, {
+        "Description": "主机心跳",
+        "Id": 398371,
+        "child": [{
+          "Description": "互联网主机心跳",
+          "Id": 398360,
+          "child": []
+        }]
+      }]
+    }, {
+      "Description": "涉密网",
+      "Id": 398307,
+      "child": [{
+        "Description": "涉密网络",
+        "Id": 398364,
+        "child": [{
+          "Description": "涉密网络",
+          "Id": 398361,
+          "child": []
+        }]
+      }]
+    }, {
+      "Description": "存储灾备互联",
+      "Id": 398308,
+      "child": [{
+        "Description": "存储灾备互联",
+        "Id": 398363,
+        "child": [{
+          "Description": "异地存储灾备",
+          "Id": 398362,
+          "child": []
+        }]
+      }]
+    }, {
+      "Id": 397708,
+      "child": []
+    }, {
+      "Description": "互联网应用生产服务器区",
+      "Id": 10674091
+    }, {
+      "Description": "模拟客户端区",
+      "Id": 398352
+    }, {
+      "Description": "模拟客户端区  ",
+      "Id": 398353
+    }, {
+      "Description": "设备互联",
+      "Id": 430363
+    }, {
+      "Description": "开发客户端区",
+      "Id": 398338
+    }, {
+      "Description": "UAT环境",
+      "Id": 398374
+    }, {
+      "Description": "模拟、培训和UAT服务器后端管理网段",
+      "Id": 398372
+    }, {
+      "Description": "模拟交易核心A区",
+      "Id": 398333
+    }, {
+      "Description": "业务网主机心跳",
+      "Id": 398342
+    }, {
+      "Description": "设备互联",
+      "Id": 398359
+    }, {
+      "Description": "异地存储灾备",
+      "Id": 398362
+    }, {
+      "Description": "涉密网络",
+      "Id": 398361
+    }, {
+      "Description": "培训系统",
+      "Id": 398336
+    }, {
+      "Description": "办公客户端区",
+      "Id": 398340
+    }, {
+      "Description": "办公服务器区",
+      "Id": 398339
+    }, {
+      "Description": "开发服务器区",
+      "Id": 398337
+    }, {
+      "Description": "设备互联",
+      "Id": 398341
+    }, {
+      "Description": "设备互联",
+      "Id": 398354
+    }, {
+      "Description": "模拟服务器区   ",
+      "Id": 398351
+    }, {
+      "Description": "设备互联",
+      "Id": 398350
+    }, {
+      "Description": "场务管理区",
+      "Id": 398349
+    }, {
+      "Description": "上海总部 托管网站",
+      "Id": 398348
+    }, {
+      "Description": "29号楼 增值服务区",
+      "Id": 398347
+    }, {
+      "Description": "23号楼 网站区",
+      "Id": 398346
+    }, {
+      "Description": "29号楼 票据网区",
+      "Id": 398345
+    }, {
+      "Description": "29号楼 货币网区",
+      "Id": 398344
+    }, {
+      "Description": "预留网段",
+      "Id": 398343
+    }, {
+      "Description": "互联网主机心跳",
+      "Id": 398360
+    }, {
+      "Description": "办公服务器区",
+      "Id": 398357
+    }, {
+      "Description": "开发 客户端区",
+      "Id": 398356
+    }, {
+      "Description": "办公客户端区",
+      "Id": 398358
+    }, {
+      "Description": "UAT环境",
+      "Id": 398335
+    }, {
+      "Description": "模拟信息区",
+      "Id": 398334
+    }, {
+      "Description": "模拟交易核心B区",
+      "Id": 398332
+    }, {
+      "Description": "模拟增值服务区",
+      "Id": 398331
+    }, {
+      "Description": "模拟场务管理区",
+      "Id": 398330
+    }, {
+      "Description": "模拟央行区",
+      "Id": 398329
+    }, {
+      "Description": "模拟客户端区",
+      "Id": 398328
+    }, {
+      "Description": "老模拟服务器区",
+      "Id": 398327
+    }, {
+      "Description": "MPLS接入区",
+      "Id": 398326
+    }, {
+      "Description": "用户接入区（广域网区）",
+      "Id": 398325
+    }, {
+      "Description": "23号楼信息B区",
+      "Id": 398324
+    }, {
+      "Description": "23号楼交易核心A区",
+      "Id": 398323
+    }, {
+      "Description": "23号交易核心B区",
+      "Id": 398322
+    }, {
+      "Description": "29号楼场务管理区",
+      "Id": 398320
+    }, {
+      "Description": "29号楼清算区",
+      "Id": 398319
+    }, {
+      "Description": "29号楼外汇区",
+      "Id": 398318
+    }, {
+      "Description": "29号楼信息A区",
+      "Id": 398317
+    }, {
+      "Description": "开发 服务器区",
+      "Id": 398355
+    }, {
+      "Description": "23号楼增值服务区",
+      "Id": 398321
+    }, {
+      "Description": "29号楼央行区",
+      "Id": 398316
+    }, {
+      "Description": "29号楼本币区",
+      "Id": 398315
+    }, {
+      "Id": 397710
+    }]
+  }
+
+  function get(arr, id) {
+    let a = arr.forEach((v, i) => {
+      if (v.Id == id && v.child instanceof Array && v.child.length == 0) {
+        // a = v;
+        console.log(v);
+        return v;
+      } else if (v.Id != id && v.child && v.child instanceof Array && v.child.length != 0) {
+        get(v.child, id);
+      }
+    })
+    console.log(a);
+    return a;
+  }
+  var a = get(obj.IP_district, 398362);
+  console.log(a);
 </script>
 </html>

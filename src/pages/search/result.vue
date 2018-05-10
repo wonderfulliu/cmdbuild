@@ -3,15 +3,18 @@
     <Layout>
       <!-- 侧边栏 -->
       <Sider ref="side1" hide-trigger collapsible :collapsed-width="0" v-model="isCollapsed">
-        <Menu active-name="1-2" theme="dark" width="auto" :open-names="['1']" :class="menuitemClasses" accordion>
+        <Menu theme="dark" width="auto" :open-names="['1']" :class="menuitemClasses" accordion>
           <Submenu name="1">
-            <template slot="title" style="text-align: left">
+            <template slot="title">
               查询配置信息列表
             </template>
-            <div class="treeContent">
-              <!--树状菜单-->
-              <Tree :data="asideMsg" @on-select-change='getSelectedNodes' ref='tree'></Tree>
-            </div>
+            <MenuItem :name="['1-']+[index+1]"
+                      style="padding-left: 25px"
+                      v-for="(item, index) in sideMenuData"
+                      :key="index"
+                      @click.native="menuSelected(item)">
+              {{item.Description}}
+            </MenuItem>
           </Submenu>
         </Menu>
       </Sider>
@@ -95,15 +98,9 @@
 export default {
   data() {
     return {
-      asideMsg: [
-        {
-          title: "视图信息列表",
-          expand: true,
-          children: []
-        }
-      ],
       tableName: "",
       tableCname: '',
+      sideMenuData: [],//侧栏菜单全部数据
       ids: "",
       pageNum: 1,
       pageSize: 20, //每页显示的数量
@@ -156,6 +153,32 @@ export default {
     }
   },
   methods: {
+    //点击侧栏获取表信息
+    menuSelected(msg){
+      //console.log(msg.Description);//获取中文表名
+      //console.log(msg.idElementClass);//获取英文表名
+      // 获取到点击的表的中文名
+      this.tableCname = msg.Description;
+      // 单击侧边栏时, 分页改为1
+      this.pageNum = 1;
+      // 更新完表名后再获取权限
+      this.tableName = msg.idElementClass.replace(/\"/g, "");
+      this.ids = msg.recordIdes;
+
+      // 获取表格权限
+      this.Authority.forEach((v, i) => {
+        if (v.table_name == this.tableName) {
+        this.Mode = v.Mode;
+      }
+      });
+      // console.log(this.Mode);
+      // 判断是否禁用
+      this.isdisable = this.Mode == "r" ? true : false;
+      this.getcnameTitle();
+      this.gettableMsg();
+      this.getSelect();
+      this.getrelationTable();
+    },
     //表格数据的处理
     dataProcess(info) {
       this.totalBar = info.data.totalRecord;
@@ -220,19 +243,15 @@ export default {
       // 获取侧边栏数据
     getasideMsg() {
       //给侧边栏赋search页面传来的侧边栏数据
-      this.asideMsg[0].children = this.$store.state.searchMsg
+      // 应该是进入该表后遍历所有侧边栏数据, 显示selected的那一项
+      this.sideMenuData = this.$store.state.searchMsg
         ? this.$store.state.searchMsg
         : JSON.parse(sessionStorage.getItem("searchMsg"));
-      // 应该是进入该表后遍历所有侧边栏数据, 显示selected的那一项
-      this.asideMsg[0].children.forEach((v, i) => {
-        if (v.selected == true) {
-          this.tableCname = v.title;
-          for (let k in v) {
-            if (k != "nodeKey" && k != "selected" && k != "title") {
-              this.tableName = k.replace(/\"/g, "");
-              this.ids = v[k];
-            }
-          }
+      this.sideMenuData.forEach((v, i) => {
+        if (i == 0) {
+          this.tableCname = v.Description;
+          this.tableName = v.idElementClass.replace(/\"/g, "");
+          this.ids = v.recordIdes;
           // 刚进来的时候也要获取一下权限, 因为没有点击侧边栏
           this.Authority.forEach((v, i) => {
             if (v.table_name == this.tableName) {

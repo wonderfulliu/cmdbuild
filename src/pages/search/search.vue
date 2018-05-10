@@ -53,14 +53,11 @@ export default {
               let i = 0; //判断第一个对象, 并给他加选中状态
               for (let k in info.data) {
                 let obj = {};
-                obj[k] = info.data[k];
-                if (i == 0) {
-                  obj.selected = true;
-                  i++;
-                }
+                obj.idElementClass = k;
+                obj.recordIdes = info.data[k];
                 for (let kTable in this.tableMsg) {
                   if (k == '"' + kTable + '"') {
-                    obj.title = this.tableMsg[kTable];
+                    obj.Description = this.tableMsg[kTable];
                   }
                 }
                 arrsearchMsg.push(obj);
