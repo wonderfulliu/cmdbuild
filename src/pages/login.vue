@@ -77,7 +77,7 @@ export default {
               _this.formInline.password
           )
           .then(function(info) {
-            console.log(info);
+            // console.log(info);
             if (info.status == 200) {
               if (info.data.Status == 0) {
                 _this.$Message.error({

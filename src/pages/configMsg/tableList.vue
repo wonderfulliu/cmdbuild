@@ -240,10 +240,7 @@ export default {
             oTemp.position = markName.position;
             oTemp.ellipsis = true;
             oTemp.sortable = true;
-            oTemp.filters = [{//这个是filter, 还不完全, 需要修改
-              label: "search",
-              value: 1
-            }]
+            oTemp.filters = [];
             arrObj.push(oTemp);
           }
         });
