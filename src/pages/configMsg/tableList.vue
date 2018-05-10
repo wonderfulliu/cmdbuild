@@ -5,9 +5,30 @@
         <Col span="1">
           <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
         </Col>
-        <!--<Col span="1">
+        <!-- <Col span="1">
            <Button type="ghost">searchFilter</Button>
-        </Col>-->
+        </Col> -->
+
+        <Col span="3">
+          <Dropdown trigger="click" placement="bottom-start" @on-click="fieldSearch">
+              <Button type="primary">
+                字段筛选
+                <Icon type="arrow-down-b"></Icon>
+              </Button>
+              <DropdownMenu slot="list">
+                  <Dropdown placement="right" v-for="(item, index) in fieldData" :key="index" >
+                      <DropdownItem>
+                        <Checkbox>{{item.cName}}</Checkbox>
+                        <Icon type="ios-arrow-right"></Icon>
+                      </DropdownItem>
+                      <DropdownMenu slot="list">
+                        <Input></Input>
+                      </DropdownMenu>
+                  </Dropdown>
+              </DropdownMenu>
+          </Dropdown>
+        </Col>
+        
         <Col span="12" offset="5">
           <Input v-model="configCondition" placeholder="Enter something..." @on-enter="fuzzy">
             <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
@@ -164,6 +185,8 @@ export default {
       isdisable: "", //禁用与否, ''就是false
       firstCl: true,//首页是否禁用
       lastCl: false,//尾页是否禁用
+      // 字段搜索相关
+      fieldData: [],//带渲染字段数据
     };
   },
   created() {
@@ -230,18 +253,23 @@ export default {
         //获取表头数据：
         let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
         let arrObj = [];
+        let fieldArr = [];//表头字段搜索
         arrA.forEach(function(v, i) {
           let oTemp = {};
+          let field = {};
           let markName = _this.attributeCName(v);
           let cname;
           if (markName != null) {
             cname = markName.cname;
+            field.eName = v;//字段英文名
+            field.cName = cname;//字段中文名
             oTemp.title = cname;
             oTemp.key = v;
             oTemp.position = markName.position;
             oTemp.ellipsis = true;
             oTemp.sortable = true;
             arrObj.push(oTemp);
+            fieldArr.push(field);
           }
         });
         let len = arrObj.length; //记录表头数量
@@ -264,6 +292,7 @@ export default {
 
         let newArr = arrObj;
         _this.ConfigThead = newArr;
+        _this.fieldData = fieldArr;
       } else {
         this.ConfigThead = JSON.parse(thead);
       }
@@ -706,7 +735,6 @@ export default {
     },
     // 字段搜索
     fieldSearch(column){
-      console.log(column);
       console.log(this.tableName);
       // let tableName = this.tableName;
       // let condition = {};
