@@ -14,6 +14,7 @@
             <MenuItem :name="['1-']+[index+1]"
                       style="padding-left: 25px"
                       v-for="(item, index) in sideMenuData"
+                      :key="index"
                       @click.native="menuSelected(item)">
               {{item.Description}}
             </MenuItem>
@@ -141,11 +142,11 @@ export default {
     // 获取侧边栏数据
     getasideMsg() {
       let groupName = JSON.parse(sessionStorage.getItem('groupInfo')).Description;
+      console.log(JSON.parse(sessionStorage.getItem('groupInfo')));
       let data = '?groupName=' + groupName;
       this.$http.get("/viewController/getViewList" + data).then(
         info => {
           if (info.status == 200) {
-//            console.log(info.data);
             this.sideMenuData = info.data;//侧栏全部数据并赋值
 
             //给this.tableName赋值

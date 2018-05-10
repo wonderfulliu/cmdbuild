@@ -65,7 +65,7 @@ export default {
       });
       //跳转页面 
       _this.$router.push({ path: "/search" });
-    },
+    }, 
     getGroup: function() {
       let _this = this;
       if (_this.formInline.user && _this.formInline.password) {
@@ -77,7 +77,7 @@ export default {
               _this.formInline.password
           )
           .then(function(info) {
-            console.log(info);
+            // console.log(info);
             if (info.status == 200) {
               if (info.data.Status == 0) {
                 _this.$Message.error({

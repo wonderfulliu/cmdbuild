@@ -11,6 +11,7 @@
             <MenuItem :name="['1-']+[index+1]"
                       style="padding-left: 25px"
                       v-for="(item, index) in sideMenuData"
+                      :key="index"
                       @click.native="menuSelected(item)">
               {{item.Description}}
             </MenuItem>
