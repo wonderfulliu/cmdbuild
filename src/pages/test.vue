@@ -1,38 +1,53 @@
 <template>
-    <div>
-      <col span="3">
-        <Dropdown>
-            <Button type="primary">
-              字段筛选
-              <Icon type="arrow-down-b"></Icon>
-            </Button>
-            <DropdownMenu slot="list">
-                <DropdownItem>驴打滚</DropdownItem>
-                <Dropdown placement="right" v-for="(item, index) in arr" :key="index">
-                    <DropdownItem @click.native="gg">
-                        <Checkbox>{{item.cname}}</Checkbox>
-                        <Icon type="ios-arrow-right"></Icon>
-                    </DropdownItem>
-                    <DropdownMenu slot="list">
-                        <Input></Input>
-                    </DropdownMenu>
-                </Dropdown>
-            </DropdownMenu>
-        </Dropdown>
-      </Col>
-    </div>
+  <Dropdown trigger="click">
+    <a href="javascript:void(0)">
+      北京小吃
+      <Icon type="arrow-down-b"></Icon>
+    </a>
+    <DropdownMenu slot="list">
+      <Dropdown placement="right-start">
+        <DropdownItem>
+          <Checkbox :value="apple" true-value="true" false-value='false' @on-change="changeA(this)">
+            苹果
+          </Checkbox>
+        </DropdownItem>
+        <DropdownMenu slot="list">
+          <DropdownItem>
+            <Input v-model="appleVal" size="small" placeholder="请输入..."></Input>
+          </DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+
+      <Dropdown placement="right-start">
+        <DropdownItem>
+          <Checkbox :value="banana" true-value="banana" @on-change="changeA(this)">
+            香蕉
+          </Checkbox>
+        </DropdownItem>
+        <DropdownMenu slot="list">
+          <DropdownItem>
+            <Input v-model="bananaVal" size="small" placeholder="请输入..."></Input>
+          </DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+    </DropdownMenu>
+  </Dropdown>
 </template>
 <script>
-export default {
-  data() {
-    return {
-      arr: [{cname: 'a'}, {cname: 'b'}]
-    };
-  },
-  methods: {
-    gg(){
-      console.log(1);
+  export default {
+    data() {
+      return {
+        apple:"",
+        appleVal: "",
+        banana: false,
+        bananaVal: "",
+      }
     },
+    methods: {
+      changeA(a) {
+        console.log(a);
+      },
+    }
   }
-};
+
 </script>

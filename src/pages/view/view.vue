@@ -155,6 +155,7 @@ export default {
             }
             // console.log(this.$refs.submenu1);
             this.gettableMsg();
+            // console.log(this.$refs.submenu1);
           }
         },
         function(info) {

@@ -17,17 +17,17 @@
             <template slot="title">
               应用组件
             </template>
-            <router-link to="/config/importXLS">
-              <MenuItem name="2-1">导入XLS文件</MenuItem>
-            </router-link>
             <router-link to="/config/exportXLS">
               <MenuItem name="2-2">导出XLS文件</MenuItem>
             </router-link>
-            <router-link to="/config/importRelate">
-              <MenuItem name="2-3">导入关系文件</MenuItem>
+            <router-link to="/config/importXLS">
+              <MenuItem name="2-1">导入XLS文件</MenuItem>
             </router-link>
             <router-link to="/config/exportRelate">
               <MenuItem name="2-4">导出关系文件</MenuItem>
+            </router-link>
+            <router-link to="/config/importRelate">
+              <MenuItem name="2-3">导入关系文件</MenuItem>
             </router-link>
           </Submenu>
         </Menu>

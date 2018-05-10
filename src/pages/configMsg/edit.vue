@@ -22,10 +22,12 @@
         <Form :label-width="100" class="formContainer">
           <FormItem :label="item.cname" v-for="(item, index) in editMsg" :key="index" v-if="item.title != 'Id'">
             <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
-            <Select v-if="item.type == 'lookup'" v-model="item.content">
+            <!--<Select v-if="item.type == 'lookup'" v-model="item.content">
               <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>
-            </Select>
-            <!--<Cascader v-if="item.type == 'lookup'" :data="lookupLeven2" v-model="item.content"></Cascader>-->
+            </Select>-->
+            <Cascader v-if="item.type == 'lookup'"
+                      :data="item.lookupMsg" v-model="item.content">
+            </Cascader>
             <Row v-if="item.type == 'date'">
               <Col span="11">
               <DatePicker type="date" placeholder="请选择日期" v-model="item.content"></DatePicker>
@@ -75,6 +77,7 @@ export default {
     // 获取公共仓库的要渲染的数据
     getaddMsg(){
       this.editMsg = this.$store.state.addMsg.titleMsg;//待渲染的数据
+      console.log(this.editMsg);
       this.jiluId = this.$store.state.addMsg.Id;//获取记录id
       this.tableName = this.$store.state.addMsg.tableName;//表名
       this.tableCname = this.$store.state.addMsg.tableCname;//表中文名
@@ -135,12 +138,14 @@ export default {
       data.table = this.tableName;
       data.Id = this.jiluId;
       // console.log(this.editMsg);
+      console.log(this.editMsg);
       this.editMsg.forEach((v, i) => {
         if (v.attribute) {
           if (v.type == "reference" && v.Id) {
             data[v.attribute] = v.Id;
-          } else if (v.type == "lookup" && typeof v.content === 'number') {
-            data[v.attribute] = v.content;
+          } else if (v.type == "lookup" && v.content) {
+            let len = v.content.length - 1;
+            data[v.attribute] = v.content[len];
           } else if (v.type == "date" && v.content) {
             data[v.attribute] = this.transformTime(v.content);
           }
@@ -151,9 +156,8 @@ export default {
           data[v.title] = v.content;
         }
       })
-
-      // console.log(data);
-      // return false;
+//       console.log(data);
+//       return false;
       // console.log(JSON.stringify(data));
       this.$http.put('/cardController/card', data).then(info => {
           // console.log(info);
