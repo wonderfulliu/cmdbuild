@@ -10,7 +10,7 @@
         </Col> -->
 
         <Col span="3">
-          <Dropdown trigger="click" placement="bottom-start" @on-click="fieldSearch">
+          <Dropdown trigger="click" placement="bottom-start">
               <Button type="primary">
                 字段筛选
                 <Icon type="arrow-down-b"></Icon>
@@ -18,11 +18,11 @@
               <DropdownMenu slot="list">
                   <Dropdown placement="right" v-for="(item, index) in fieldData" :key="index" >
                       <DropdownItem>
-                        <Checkbox>{{item.cName}}</Checkbox>
+                        <Checkbox v-model="item.flag" @on-change="fieldSearch"></Checkbox>{{item.cName}}
                         <Icon type="ios-arrow-right"></Icon>
                       </DropdownItem>
                       <DropdownMenu slot="list">
-                        <Input></Input>
+                        <Input v-model="item.value"></Input>
                       </DropdownMenu>
                   </Dropdown>
               </DropdownMenu>
@@ -187,6 +187,9 @@ export default {
       lastCl: false,//尾页是否禁用
       // 字段搜索相关
       fieldData: [],//带渲染字段数据
+      lsfieldData: [],//带渲染字段数据
+      changetableName: false,//判断是否切换表格
+      fielddataObj: {},//存储字段搜索的条件, 判断是否为空
     };
   },
   created() {
@@ -206,12 +209,14 @@ export default {
       this.getTableAttribute();
       this.getTableData();
       this.getlookup();
+      this.ischangetableName();
     },
     'funcionName': function(newValue, oldValue){
       this.clearSort();
       this.getTableAttribute();
       this.getTableData();
       this.getlookup();
+      this.ischangetableName();
     }
   },
   methods: {
@@ -248,6 +253,7 @@ export default {
     },
     getTableHead(info) {
       let thead = sessionStorage.getItem("config_" + this.tableName + "_head");
+      let fieldArr = sessionStorage.getItem("config_" + this.tableName + "_field");
       if (!thead) {
         let _this = this;
         //获取表头数据：
@@ -263,6 +269,8 @@ export default {
             cname = markName.cname;
             field.eName = v;//字段英文名
             field.cName = cname;//字段中文名
+            field.value = '';//双向绑定到搜索框的值
+            field.flag = false;//选中状态
             oTemp.title = cname;
             oTemp.key = v;
             oTemp.position = markName.position;
@@ -289,13 +297,25 @@ export default {
           "config_" + _this.tableName + "_head",
           JSON.stringify(arrObj)
         );
+        sessionStorage.setItem(
+          "config_" + _this.tableName + "_field",
+          JSON.stringify(fieldArr)
+        );
 
         let newArr = arrObj;
         _this.ConfigThead = newArr;
         _this.fieldData = fieldArr;
       } else {
         this.ConfigThead = JSON.parse(thead);
+        if (this.changetableName) {
+          this.changetableName = false;
+          this.fieldData = JSON.parse(fieldArr);
+        }
       }
+    },
+    // 判断是否切换表名, 切换, 则调用getTableHead的时候执行最下面函数, 否则不执行
+    ischangetableName(){
+      this.changetableName = true;
     },
     tableDataProce(info) {
       let _this = this;
@@ -465,11 +485,18 @@ export default {
         }
       }
     },
+    // 分页
     pageChange(page) {
       this.pageNum = page;
       this.pageDisabled();
-      this.getTableData(this.tableName);
+      if (JSON.stringify(this.fielddataObj) != "{}") {
+        // 说明有字段搜索
+        this.fieldSearch();
+      } else {
+        this.getTableData(this.tableName);
+      }
     },
+    // 首页尾页禁用于否
     pageDisabled(){
       if(this.pageNum == 1){
         this.firstCl = true;
@@ -485,12 +512,22 @@ export default {
     pageFirst() {
       this.pageNum = 1;
       this.pageDisabled();
-      this.getTableData(this.tableName);
+      if (JSON.stringify(this.fielddataObj) != "{}") {
+        // 说明有字段搜索
+        this.fieldSearch();
+      } else {
+        this.getTableData(this.tableName);
+      }
     },
     pageLast() {
       this.pageNum = this.totalPage;
       this.pageDisabled();
-      this.getTableData(this.tableName);
+      if (JSON.stringify(this.fielddataObj) != "{}") {
+        // 说明有字段搜索
+        this.fieldSearch();
+      } else {
+        this.getTableData(this.tableName);
+      }
     },
     getlookup() {
       //获取相关数据
@@ -734,18 +771,63 @@ export default {
         });
     },
     // 字段搜索
-    fieldSearch(column){
-      console.log(this.tableName);
-      // let tableName = this.tableName;
-      // let condition = {};
-      // condition[column.key] = this.configCondition;
-      // console.log(condition);
-      // let data = 'tableName=' + tableName + '&condition=' + JSON.stringify(condition);
-      // this.$http.post('/cardController/attribubtesFuzzyQuery', data).then(info => {
-      //   console.log(info);
-      // })
+    fieldSearch(flag){
+      this.loading = true;
+      let dataObj = {};
+      // 选择出: 处于选中状态 && 搜索内容不为空 的内容发送给后台
+      this.fieldData.forEach((v, i) => {
+        if (v.flag && v.value !== "") {
+          dataObj[v.eName] = v.value;
+        }
+      })
+      // console.log(dataObj);
+      this.fielddataObj = dataObj;
+      if (JSON.stringify(dataObj) != "{}") {
+        let data = 'tableName=' + this.tableName + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=' + this.pageSize;
+        // console.log(data);
+        this.$http.post('/cardController/attribubtesFuzzyQuery', data).then(info => {
+          // console.log(info);
+          // this.getTableHead(info);
+          //获取表头数据：
+          let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
+          let arrObj = [];
+          arrA.forEach((v, i) => {
+            let oTemp = {};
+            let markName = this.attributeCName(v);
+            let cname;
+            if (markName != null) {
+              cname = markName.cname;
+              oTemp.title = cname;
+              oTemp.key = v;
+              oTemp.position = markName.position;
+              oTemp.ellipsis = true;
+              oTemp.sortable = true;
+              arrObj.push(oTemp);
+            }
+          });
+          let len = arrObj.length; //记录表头数量
+          let theadWidth =
+            document.querySelector(".contentBody .ivu-table-header").offsetWidth -
+            17;
+          let width = theadWidth / len > 200 ? theadWidth / len : 200;
+          arrObj.forEach((v, i) => {
+            v.width = width;
+          });
+
+          // 表头字段排序
+          arrObj.sort(function(a, b) {
+            return Number(a.position) - Number(b.position);
+          });
+
+          let newArr = arrObj;
+          this.ConfigThead = newArr;
+          this.tableDataProce(info);
+        })
+      } else {
+        this.getTableData();
+      }
     },
-    // 禁用于否
+    // 增删改查按钮禁用于否
     isDisabled() {
       this.isdisable = this.Mode == "w" ? false : true;
     },
