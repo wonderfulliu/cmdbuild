@@ -180,7 +180,8 @@ export default {
         title: "Action",
         key: "action",
         fixed: "right",
-        width: 60,
+        width: 80,
+        align: 'center',
         render: (h, params) => {
           return h("div", [
             h(
@@ -211,7 +212,7 @@ export default {
         len ++;
       }
       // 设置表头每个td的宽度--77是action的宽度
-      let theadWidth = document.querySelector('.ivu-layout-content .ivu-table-header').offsetWidth - 77;
+      let theadWidth = document.querySelector('.ivu-layout-content .ivu-table-header').offsetWidth - 97 + 240;
       width = theadWidth / len > 200?theadWidth / len : 200;
       //获取表头
       for (var k in dataArr[0]) {

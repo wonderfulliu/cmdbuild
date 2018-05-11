@@ -282,7 +282,6 @@ export default {
         });
         let len = arrObj.length; //记录表头数量
         let theadWidth = document.querySelector(".contentBody .ivu-table-header").offsetWidth + 240;
-        console.log(theadWidth);
         let width = theadWidth / len > 200 ? theadWidth / len : 200;
         arrObj.forEach((v, i) => {
           v.width = width;
