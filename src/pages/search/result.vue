@@ -2,8 +2,8 @@
   <div id="searchforContainer">
     <Layout>
       <!-- 侧边栏 -->
-      <Sider ref="side1" hide-trigger collapsible :collapsed-width="0" v-model="isCollapsed">
-        <Menu theme="dark" width="auto" :open-names="['1']" :class="menuitemClasses" accordion>
+      <Sider ref="side1" hide-trigger collapsible width="240" :collapsed-width="0" v-model="isCollapsed">
+        <Menu theme="dark" width="auto" :open-names="['1']" :class="menuitemClasses" accordion :active-name="['1-']+[clickWhichone + 1]">
           <Submenu name="1">
             <template slot="title">
               查询配置信息列表
@@ -12,7 +12,7 @@
                       style="padding-left: 25px"
                       v-for="(item, index) in sideMenuData"
                       :key="index"
-                      @click.native="menuSelected(item)">
+                      @click.native="menuSelected(item, index)">
               {{item.Description}}
             </MenuItem>
           </Submenu>
@@ -43,11 +43,11 @@
               <Row>
                 <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:12,offset:1}" :lg="{span:14,offset:1}" style="text-align: left">
                   <ButtonGroup>
-                    <Button type="ghost" title="查看" icon="ios-eye" @click="show">查看</Button>
-                    <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="edit" :disabled='isdisable'>编辑</Button>
-                    <Button type="ghost" title="新增" icon="ios-plus-empty" @click="add" :disabled='isdisable'>新增</Button>
-                    <Button type="ghost" title="删除" icon="ios-trash-outline" @click="remove" :disabled='isdisable'>删除</Button>
-                    <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData">下载</Button>
+                    <Button type="ghost" title="" icon="ios-eye" @click="show">查看</Button>
+                    <Button type="ghost" title="" icon="ios-compose-outline" @click="edit" :disabled='isdisable'>编辑</Button>
+                    <Button type="ghost" title="" icon="ios-plus-empty" @click="add" :disabled='isdisable'>新增</Button>
+                    <Button type="ghost" title="" icon="ios-trash-outline" @click="remove" :disabled='isdisable'>删除</Button>
+                    <Button type="ghost" title="" icon="ios-download-outline" @click="exportData">下载</Button>
                     <!-- <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
                     <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete"></Button> -->
                   </ButtonGroup>
@@ -131,6 +131,8 @@ export default {
       highlight: true,//选中行高亮
       firstCl: true,//首页是否禁用
       lastCl: false,//尾页是否禁用
+      // 点击侧边栏哪个表格
+      clickWhichone: 0,
     };
   },
   created() {
@@ -154,9 +156,11 @@ export default {
   },
   methods: {
     //点击侧栏获取表信息
-    menuSelected(msg){
+    menuSelected(msg, index){
       //console.log(msg.Description);//获取中文表名
       //console.log(msg.idElementClass);//获取英文表名
+      // 把点击的表的序列存入公共仓库
+      this.$store.commit('getIndex', index);
       // 获取到点击的表的中文名
       this.tableCname = msg.Description;
       // 单击侧边栏时, 分页改为1
@@ -247,8 +251,11 @@ export default {
       this.sideMenuData = this.$store.state.searchMsg
         ? this.$store.state.searchMsg
         : JSON.parse(sessionStorage.getItem("searchMsg"));
+      // console.log(this.sideMenuData);
+      // 刚进来, 先获取公共仓库的存储的数据, 判断选中哪一个表
+      this.clickWhichone = this.$store.state.clickWhichone;
       this.sideMenuData.forEach((v, i) => {
-        if (i == 0) {
+        if (i == this.clickWhichone) {
           this.tableCname = v.Description;
           this.tableName = v.idElementClass.replace(/\"/g, "");
           this.ids = v.recordIdes;
@@ -281,18 +288,12 @@ export default {
         this.pageSize;
       this.$http
         .get("/luceneController/pageSearch" + data)
-        .then(
-          info => {
-            // console.log(info);
-            // 成功的回调
+        .then(info => {
             if (info.status == 200) {
               // console.log(info.data);
               this.dataProcess(info);
             }
           },
-          info => {
-            // 失败的回调
-          }
         )
         .catch(error => {
           console.log(error);
@@ -577,14 +578,14 @@ export default {
     },
     // 获取权限
     getAuthority() {
-    this.Authority = this.$store.state.Mode?this.$store.state.Mode:JSON.parse(sessionStorage.getItem('Mode'));
-  },
+      this.Authority = this.$store.state.Mode?this.$store.state.Mode:JSON.parse(sessionStorage.getItem('Mode'));
+    },
     // 高度自适应
     heightAdaptive(){
-    let clientH = document.documentElement.clientHeight;
-    this.contentbodyH = clientH - 64 + "px";
-    this.tableHeight = clientH - 64 - 145; //133包括按钮区域, margin-top, 分页所在区域
-  }
+      let clientH = document.documentElement.clientHeight;
+      this.contentbodyH = clientH - 64 + "px";
+      this.tableHeight = clientH - 64 - 145; //133包括按钮区域, margin-top, 分页所在区域
+    }
   }
 };
 </script>

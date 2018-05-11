@@ -138,7 +138,6 @@ export default {
       data.table = this.tableName;
       data.Id = this.jiluId;
       // console.log(this.editMsg);
-      console.log(this.editMsg);
       this.editMsg.forEach((v, i) => {
         if (v.attribute) {
           if (v.type == "reference" && v.Id) {
@@ -156,8 +155,8 @@ export default {
           data[v.title] = v.content;
         }
       })
-//       console.log(data);
-//       return false;
+      //console.log(data);
+      //return false;
       // console.log(JSON.stringify(data));
       this.$http.put('/cardController/card', data).then(info => {
           // console.log(info);

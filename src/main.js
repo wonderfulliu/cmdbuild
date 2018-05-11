@@ -33,6 +33,8 @@ const store = new Vuex.Store({
     // 以下是relation组件传递的信息
     relationMsg: '',
     domainlistMsg: '',
+    // 全局搜索点击的侧边栏的序列
+    clickWhichone: 0,
   },
   mutations: {//里面放方法
     getMode(state, val){
@@ -71,6 +73,9 @@ const store = new Vuex.Store({
     },
     getdomainlistMsg(state, val){
       state.domainlistMsg = val;
+    },
+    getIndex(state, val){
+      state.clickWhichone = val;
     },
   }
 })

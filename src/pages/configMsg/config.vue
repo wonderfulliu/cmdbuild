@@ -1,7 +1,7 @@
 <template>
   <div id="configContainer">
     <Layout>
-      <Sider ref="side1" hide-trigger collapsible :collapsed-width="0" v-model="isCollapsed">
+      <Sider ref="side1" hide-trigger collapsible width="240" :collapsed-width="0" v-model="isCollapsed">
         <Menu active-name="1-2" theme="dark" width="auto" :open-names="['1']" :class="menuitemClasses" accordion>
           <Submenu name="1">
             <template slot="title">

@@ -26,6 +26,7 @@ export default {
   },
   created() {
     this.gettableName();
+    this.$store.commit('getIndex', 0);//清空result时存的点击的侧边栏的序列
   },
   methods: {
     // 根据搜索的内容查询所有符合的表与记录

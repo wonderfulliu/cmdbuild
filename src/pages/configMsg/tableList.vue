@@ -54,13 +54,13 @@
           <Row>
             <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:14,offset:1}" :lg="{span:15,offset:1}" style="text-align: left">
               <ButtonGroup>
-                <Button type="ghost" title="查看" icon="ios-eye" @click="ctrlView">查看</Button>
-                <Button type="ghost" title="编辑" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'>编辑</Button>
-                <Button type="ghost" title="新增" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'>新增</Button>
-                <Button type="ghost" title="删除" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'>删除</Button>
-                <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory">历史</Button>
-                <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete">关系</Button>
-                <Button type="ghost" title="下载" icon="ios-download-outline" @click="configDownload">下载</Button>
+                <Button type="ghost" title="" icon="ios-eye" @click="ctrlView">查看</Button>
+                <Button type="ghost" title="" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'>编辑</Button>
+                <Button type="ghost" title="" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'>新增</Button>
+                <Button type="ghost" title="" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'>删除</Button>
+                <Button type="ghost" title="" icon="ios-paper-outline" @click="ctrlHistory">历史</Button>
+                <Button type="ghost" title="" icon="ios-infinite" @click="ctrlRelete">关系</Button>
+                <Button type="ghost" title="" icon="ios-download-outline" @click="configDownload">下载</Button>
               </ButtonGroup>
             </Col>
             <Col :xs="{span:24}" :sm="{span:24}" :md="{span:9}" :lg="{span:8}" style="text-align: right">
@@ -276,18 +276,13 @@ export default {
             oTemp.position = markName.position;
             oTemp.ellipsis = true;
             oTemp.sortable = true;
-<<<<<<< HEAD
-            oTemp.filters = [];
-=======
->>>>>>> ad6adaa11fa5ad84473e07f37819a5307f446511
             arrObj.push(oTemp);
             fieldArr.push(field);
           }
         });
         let len = arrObj.length; //记录表头数量
-        let theadWidth =
-          document.querySelector(".contentBody .ivu-table-header").offsetWidth -
-          17;
+        let theadWidth = document.querySelector(".contentBody .ivu-table-header").offsetWidth + 240;
+        console.log(theadWidth);
         let width = theadWidth / len > 200 ? theadWidth / len : 200;
         arrObj.forEach((v, i) => {
           v.width = width;
@@ -322,7 +317,7 @@ export default {
       this.changetableName = true;
     },
     tableDataProce(info) {
-      console.log(info);
+      // console.log(info);
       let _this = this;
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
@@ -350,9 +345,7 @@ export default {
         arra.push(obja);
       }
       let len = arra.length; //记录表头数量
-      let theadWidth =
-        document.querySelector(".contentBody .ivu-table-header").offsetWidth -
-        17;
+      let theadWidth = document.querySelector(".contentBody .ivu-table-header").offsetWidth + 240;
       let width = theadWidth / len > 200 ? theadWidth / len : 200;
       arra.forEach((v, i) => {
         v.width = width;
@@ -844,9 +837,7 @@ export default {
             }
           });
           let len = arrObj.length; //记录表头数量
-          let theadWidth =
-            document.querySelector(".contentBody .ivu-table-header").offsetWidth -
-            17;
+          let theadWidth = document.querySelector(".contentBody .ivu-table-header").offsetWidth + 240;
           let width = theadWidth / len > 200 ? theadWidth / len : 200;
           arrObj.forEach((v, i) => {
             v.width = width;

@@ -1,6 +1,8 @@
 <template>
   <div id="loginContainer">
-    <header>统一配置管理系统</header>
+    <header>
+      <img src="../img/logo.png" alt="外汇交易中心">
+    </header>
     <i-form ref="formInline" :model="formInline" :rules="ruleInline">
         <Form-item prop="user">
             <i-input type="text" v-model="formInline.user" placeholder="Username" @input="inpChange()">
@@ -147,9 +149,11 @@ export default {
     font-size: 28px;
     color: #4e6f7b;
     margin-top: 15px;
-    margin-left: 20px;
-    // text-shadow: 7px 4px 4px #fff;
+    margin-left: 30px;
     cursor: pointer;
+    img{
+      width: 130%;
+    }
   }
 }
 #loginContainer:hover {
