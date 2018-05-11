@@ -10,21 +10,23 @@
         </Col> -->
 
         <Col span="3">
-          <Dropdown trigger="click" placement="bottom-start">
+          <Dropdown class="fieldSearch" trigger="click" placement="bottom-start">
               <Button type="primary">
                 字段筛选
                 <Icon type="arrow-down-b"></Icon>
               </Button>
               <DropdownMenu slot="list">
-                  <Dropdown placement="right" v-for="(item, index) in fieldData" :key="index" >
-                      <DropdownItem>
-                        <Checkbox v-model="item.flag" @on-change="fieldSearch"></Checkbox>{{item.cName}}
-                        <Icon type="ios-arrow-right"></Icon>
-                      </DropdownItem>
-                      <DropdownMenu slot="list">
-                        <Input v-model="item.value"></Input>
-                      </DropdownMenu>
-                  </Dropdown>
+                  <div id="field">
+                    <Dropdown trigger="click" placement="right" v-for="(item, index) in fieldData" :key="index" >
+                        <DropdownItem>
+                          <Checkbox v-model="item.flag" @on-change="fieldSearch"></Checkbox>{{item.cName}}
+                          <Icon type="ios-arrow-right"></Icon>
+                        </DropdownItem>
+                        <DropdownMenu slot="list">
+                          <Input v-model="item.value"></Input>
+                        </DropdownMenu>
+                    </Dropdown>
+                  </div>
               </DropdownMenu>
           </Dropdown>
         </Col>
@@ -116,8 +118,6 @@
       </div>
     </Modal>
   </Layout>
-
-
 </template>
 
 <script>
@@ -595,7 +595,7 @@ export default {
         .then(function(info) {
           _this.totalBar = info.data.totalRecord;
           let ConfigTdata = info.data.list;
-          console.log(ConfigTdata);
+          // console.log(ConfigTdata);
           ConfigTdata.forEach(function(v, i) {
             for (let i in v) {
               if (v[i] != null && typeof v[i] == "object") {
@@ -818,38 +818,44 @@ export default {
         this.$http.post('/cardController/attribubtesFuzzyQuery', data).then(info => {
           // console.log(info);
           // this.getTableHead(info);
-          //获取表头数据：
-          let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
-          let arrObj = [];
-          arrA.forEach((v, i) => {
-            let oTemp = {};
-            let markName = this.attributeCName(v);
-            let cname;
-            if (markName != null) {
-              cname = markName.cname;
-              oTemp.title = cname;
-              oTemp.key = v;
-              oTemp.position = markName.position;
-              oTemp.ellipsis = true;
-              oTemp.sortable = true;
-              arrObj.push(oTemp);
-            }
-          });
-          let len = arrObj.length; //记录表头数量
-          let theadWidth = document.querySelector(".contentBody .ivu-table-header").offsetWidth + 240;
-          let width = theadWidth / len > 200 ? theadWidth / len : 200;
-          arrObj.forEach((v, i) => {
-            v.width = width;
-          });
+          if (info.data.list.length != 0) {
+            //获取表头数据：
+            let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
+            let arrObj = [];
+            arrA.forEach((v, i) => {
+              let oTemp = {};
+              let markName = this.attributeCName(v);
+              let cname;
+              if (markName != null) {
+                cname = markName.cname;
+                oTemp.title = cname;
+                oTemp.key = v;
+                oTemp.position = markName.position;
+                oTemp.ellipsis = true;
+                oTemp.sortable = true;
+                arrObj.push(oTemp);
+              }
+            });
+            let len = arrObj.length; //记录表头数量
+            let theadWidth = document.querySelector(".contentBody .ivu-table-header").offsetWidth + 240;
+            let width = theadWidth / len > 200 ? theadWidth / len : 200;
+            arrObj.forEach((v, i) => {
+              v.width = width;
+            });
 
-          // 表头字段排序
-          arrObj.sort(function(a, b) {
-            return Number(a.position) - Number(b.position);
-          });
+            // 表头字段排序
+            arrObj.sort(function(a, b) {
+              return Number(a.position) - Number(b.position);
+            });
 
-          let newArr = arrObj;
-          this.ConfigThead = newArr;
-          this.tableDataProce(info);
+            let newArr = arrObj;
+            this.ConfigThead = newArr;
+            this.tableDataProce(info);
+          } else {
+            this.ConfigTdata = [];
+            this.loading = false;
+          }
+          
         })
       } else {
         this.getTableData();
@@ -873,5 +879,38 @@ export default {
 .menuCtrl {
   margin: 4px 20px;
   line-height: 2;
+}
+.miniWindow{
+  .fieldSearch{
+    line-height: 0;
+    .ivu-dropdown-rel{
+      .ivu-btn.ivu-btn-primary{
+        // background-color: #55b5d1;
+        // border-color: #55b5d1;
+      }
+    }
+    .ivu-select-dropdown{
+      .ivu-dropdown-menu{
+        // max-height: 150px;
+        // overflow: scroll;
+        
+        .ivu-dropdown{
+          text-align: left;
+          .ivu-dropdown-rel{
+            label{
+              float: left;
+            }
+            i{
+              float: right;
+            }
+            .ivu-dropdown-item{
+              width: 180px;
+            }
+          }
+        }
+      }
+      // .ivu-dropdown-menu::-webkit-scrollbar {display:none}
+    }
+  }
 }
 </style>

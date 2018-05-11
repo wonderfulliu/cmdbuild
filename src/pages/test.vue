@@ -5,6 +5,7 @@
       <Icon type="arrow-down-b"></Icon>
     </a>
     <DropdownMenu slot="list">
+
       <Dropdown placement="right-start">
         <DropdownItem>
           <Checkbox :value="apple" true-value="true" false-value='false' @on-change="changeA(this)">
@@ -30,6 +31,7 @@
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
+      
     </DropdownMenu>
   </Dropdown>
 </template>

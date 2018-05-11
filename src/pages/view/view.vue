@@ -142,13 +142,13 @@ export default {
     // 获取侧边栏数据
     getasideMsg() {
       let groupName = JSON.parse(sessionStorage.getItem('groupInfo')).Description;
-      // console.log(JSON.parse(sessionStorage.getItem('groupInfo')));
+      console.log(JSON.parse(sessionStorage.getItem('groupInfo')));
       let data = '?groupName=' + groupName;
       this.$http.get("/viewController/getViewList" + data).then(
         info => {
           if (info.status == 200) {
             this.sideMenuData = info.data;//侧栏全部数据并赋值
-
+            console.log(info);
             //给this.tableName赋值
             if (this.tableName == "") {
               this.tableName = this.sideMenuData[0].SourceFunction;
