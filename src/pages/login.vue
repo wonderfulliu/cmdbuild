@@ -1,7 +1,8 @@
 <template>
   <div id="loginContainer">
     <header>
-      <img src="../img/logo.png" alt="外汇交易中心">
+      <img src="../img/logo.jpg" alt="外汇交易中心">
+      统一配置管理系统
     </header>
     <i-form ref="formInline" :model="formInline" :rules="ruleInline">
         <Form-item prop="user">
@@ -132,7 +133,7 @@ export default {
   padding: 20px 20px 20px;
   border-radius: 10px;
   background-color: rgba(255, 255, 255, 0.5);
-  margin: 145px auto;
+  margin: 200px auto;
   div.ivu-form-item:nth-child(2) {
     margin-bottom: 30px;
   }
@@ -143,22 +144,23 @@ export default {
     }
   }
   header {
+    width: 100%;
     position: absolute;
     left: 0;
     top: 0;
-    font-size: 28px;
+    font-size: 26px;
     color: #4e6f7b;
-    margin-top: 15px;
-    margin-left: 30px;
+    text-align: right;
+    padding: 15px 30px;
     cursor: pointer;
     img{
-      width: 130%;
+      float: left;
+      width: 11%;
+    }
+    p{
+      float: left;
     }
   }
-}
-#loginContainer:hover {
-  margin-top: 140px;
-  // box-shadow: 0px 0px 25px #ccc;
 }
 </style>
 
