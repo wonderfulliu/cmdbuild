@@ -386,10 +386,10 @@ export default {
     // 表详情展示
     show() {
       if (this.isClick == true) {
+        console.log(this.data);
         let content = "";
-        for (let i = 0; i < this.columns.length - 1; i++) {
-          content +=
-            this.columns[i].title + `: ${this.data[this.index][i + 1]}<br>`;
+        for (let i = 0; i < this.columns.length; i++) {
+          content += this.columns[i].title + `: ${this.data[this.index][i + 1]}<br>`;
         }
         content = content.split("null").join(""); //null为空
         this.$Modal.info({

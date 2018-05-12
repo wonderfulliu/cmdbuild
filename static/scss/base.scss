@@ -136,6 +136,8 @@
                   .treeContent {
                     overflow-y: scroll;
                     height: 400px;
+                    // height: 250px;
+
                     text-align: left;
                     .ivu-tree{
                       .ivu-tree-arrow {
@@ -155,6 +157,7 @@
                     }
 
                   }
+                  // .treeContent::-webkit-scrollbar {display:none}
                 }
               }
               .ivu-menu-submenu.ivu-menu-opened{

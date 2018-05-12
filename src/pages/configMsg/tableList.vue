@@ -281,8 +281,8 @@ export default {
           }
         });
         let len = arrObj.length; //记录表头数量
-        let theadWidth = document.querySelector(".contentBody .ivu-table-header").offsetWidth + 240;
-        let width = theadWidth / len > 200 ? theadWidth / len : 200;
+        let width = this.fieldWidth(".contentBody .ivu-table-header", len);
+        // console.log(width);
         arrObj.forEach((v, i) => {
           v.width = width;
         });
@@ -307,6 +307,7 @@ export default {
         this.ConfigThead = JSON.parse(thead);
         if (this.changetableName) {
           this.changetableName = false;
+          this.clickRow = false;
           this.fieldData = JSON.parse(fieldArr);
         }
       }
@@ -344,8 +345,7 @@ export default {
         arra.push(obja);
       }
       let len = arra.length; //记录表头数量
-      let theadWidth = document.querySelector(".contentBody .ivu-table-header").offsetWidth + 240;
-      let width = theadWidth / len > 200 ? theadWidth / len : 200;
+      let width = this.fieldWidth(".contentBody .ivu-table-header", len);
       arra.forEach((v, i) => {
         v.width = width;
       });
@@ -428,7 +428,8 @@ export default {
         //表头信息
         sessionStorage.getItem("config_" + this.tableName + "_attribute")
       );
-      // console.log(attr);
+      console.log(attr);
+      console.log(res);
       // return false;
       attr.forEach(function(v, i) {
         for (let k in res) {
@@ -440,13 +441,16 @@ export default {
 
       attr.forEach((v, i) => {
         let a = v.attribute;
+        console.log(v.content);
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
+          // console.log(v);
           let conStr = v.content;
-          let conArry = conStr.split('-');
+          // console.log(conStr);
+          let conArry = conStr.split('-');//此处为null的时候, 会报错, 此处是什么意思?
           let q = 0;
           v.content = findId(v.lookupMsg, conArry, 0, []);
-          console.log(v.content);
+          // console.log(v.content);
           function findId(obj, conArry, q, newArry){
             for(let val in obj){
               if(obj[val].label && obj[val].label == conArry[q]){
@@ -577,8 +581,8 @@ export default {
           _this.relationInfo = res.data;
         });
     },
+    // 模糊查询
     fuzzy() {
-      // 模糊查询
       let _this = this;
       _this.loading = true; //加载中
       let result = _this.$http
@@ -595,14 +599,14 @@ export default {
         .then(function(info) {
           _this.totalBar = info.data.totalRecord;
           let ConfigTdata = info.data.list;
-          // console.log(ConfigTdata);
           ConfigTdata.forEach(function(v, i) {
             for (let i in v) {
               if (v[i] != null && typeof v[i] == "object") {
-                v[i] = v[i].value;
+                v[i] = v[i].Description;
               }
             }
           });
+          console.log(ConfigTdata);
           _this.ConfigTdata = ConfigTdata;
           _this.loading = false; //加载完成时
         });
@@ -620,23 +624,35 @@ export default {
               _this.recordId
           )
           .then(function(info) {
-            console.log(info);
-            let newObj = {};
+            let newArr = [];
             Object.keys(info.data).forEach(function(v, i) {
+              let newObj = {};
               if (_this.attributeCName(v)) {
                 let attr = _this.attributeCName(v).cname;
+                let position = _this.attributeCName(v).position;
                 if (typeof info.data[v] == "object" && info.data[v] != null) {
                   newObj[attr] = info.data[v].Description;
+                  newObj.position = position;
                 } else {
                   newObj[attr] = info.data[v];
+                  newObj.position = position;
                 }
+                newArr.push(newObj);
               }
             });
-            // console.log(newObj);
+            // 排序
+            newArr.sort(function(a, b) {
+              return Number(a.position) - Number(b.position);
+            });
+            // console.log(newArr);
             let content = '';
-            for(let k in newObj){
-              content += k + ': ' + newObj[k] + '<br>';
-            }
+            newArr.forEach((v, i) => {
+              for(let k in v){
+                if (k != 'position') {
+                  content += k + ': ' + v[k] + '<br>';
+                }
+              }
+            })
             content = content.split('null').join('');//详情为null的显示为空
             // console.log(content);
             _this.$Modal.info({
@@ -771,10 +787,23 @@ export default {
     },
     configDownload() {
       //下载中文字段数据
-      window.open(
-        "/cardController/downLoadExcel?table=" + this.tableName,
-        "_self"
-      );
+      console.log(this.fielddataObj);
+      if (this.configCondition == '' && JSON.stringify(this.fielddataObj) == "{}") {
+        window.open(
+          "/cardController/downLoadExcel?table=" + this.tableName,
+          "_self"
+        );
+      } else if (this.configCondition != '') {
+        window.open(
+          "/cardController/downLoadExcel?table=" + this.tableName + '&condition=' + this.configCondition,
+          "_self"
+        );
+      } else if (JSON.stringify(this.fielddataObj) != "{}") {
+        window.open(
+          "/cardController/downLoadExcel?table=" + this.tableName + '&condition=' + JSON.stringify(this.fielddataObj),
+          "_self"
+        );
+      }
     },
     // 在跳转页面之前先获取到关系表的详细信息, 如果关系不为空, 再进行页面跳转
     getrelationMsg() {
@@ -837,8 +866,7 @@ export default {
               }
             });
             let len = arrObj.length; //记录表头数量
-            let theadWidth = document.querySelector(".contentBody .ivu-table-header").offsetWidth + 240;
-            let width = theadWidth / len > 200 ? theadWidth / len : 200;
+            let width = this.fieldWidth(".contentBody .ivu-table-header", len);
             arrObj.forEach((v, i) => {
               v.width = width;
             });
@@ -869,7 +897,13 @@ export default {
     heightAdaptive() {
       let clientH = document.documentElement.clientHeight;
       this.tableHeight = clientH - 64 - 140; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
-    }
+    },
+    // 字段宽度设置
+    fieldWidth(dom, len){
+      let theadWidth = document.querySelector(dom).offsetWidth + 240;
+      let width = theadWidth / len > 200 ? theadWidth / len : 200;
+      return width;
+    },
   },
   computed: {}
 };
@@ -893,7 +927,6 @@ export default {
       .ivu-dropdown-menu{
         // max-height: 150px;
         // overflow: scroll;
-        
         .ivu-dropdown{
           text-align: left;
           .ivu-dropdown-rel{

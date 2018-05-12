@@ -2,7 +2,7 @@
   <div id="configContainer">
     <Layout>
       <Sider ref="side1" hide-trigger collapsible width="240" :collapsed-width="0" v-model="isCollapsed">
-        <Menu active-name="1-2" theme="dark" width="auto" :open-names="['1']" :class="menuitemClasses" accordion>
+        <Menu active-name="1-2" theme="dark" width="auto" :open-names="['1']" accordion>
           <Submenu name="1">
             <template slot="title">
               配置信息列表
@@ -104,6 +104,7 @@ export default {
           let objTree = objFunc(oData);//将得到的数据转换成需要的格式
           // console.log(objTree);
           _this.ConfigTreeData = newTreeFunc(objTree); //打开侧栏第一个选项
+          console.log(_this.ConfigTreeData);
           function newTreeFunc(obj) {//这里第一次获取表名
             if (obj.length > 0) {
               obj[0].expand = true;
@@ -170,10 +171,30 @@ export default {
         } else {//不是最终表
           select[0].selected = false;
           select[0].expand = !select[0].expand;
+          this.keepSelected(select[0].children);
         }
       } else {//空数组
         //暂时还不知道怎么处理
       }
+    },
+    // 侧边栏合起来的时候, 保持之前的选中状态
+    keepSelected(arr){
+      // arr == select[0].children;
+      arr.forEach((v, i) => {
+        if (v.children && v.children.length != 0) {
+          this.keepSelected(v.children);
+        } else {
+          if(v.type == "view" || v.type == "dashboard"){
+            if (v.title == this.funcionName) {
+              v.selected = true;
+            }
+          } else {
+            if (v.title == this.tableCname) {
+              v.selected = true;
+            }
+          }
+        }
+      })
     },
     getRecordId(msg) {
       this.recordId = msg;
