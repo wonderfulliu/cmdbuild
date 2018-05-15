@@ -30,7 +30,7 @@
               </DropdownMenu>
           </Dropdown>
         </Col>
-        
+
         <Col span="12" offset="5">
           <Input v-model="configCondition" placeholder="Enter something..." @on-enter="fuzzy">
             <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
@@ -317,7 +317,6 @@ export default {
       this.changetableName = true;
     },
     tableDataProce(info) {
-      // console.log(info);
       let _this = this;
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
@@ -440,8 +439,6 @@ export default {
       });
 
       attr.forEach((v, i) => {
-        let a = v.attribute;
-        console.log(v.content);
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
           // console.log(v);
@@ -450,7 +447,6 @@ export default {
           let conArry = conStr.split('-');//此处为null的时候, 会报错, 此处是什么意思?
           let q = 0;
           v.content = findId(v.lookupMsg, conArry, 0, []);
-          // console.log(v.content);
           function findId(obj, conArry, q, newArry){
             for(let val in obj){
               if(obj[val].label && obj[val].label == conArry[q]){
@@ -883,7 +879,7 @@ export default {
             this.ConfigTdata = [];
             this.loading = false;
           }
-          
+
         })
       } else {
         this.getTableData();

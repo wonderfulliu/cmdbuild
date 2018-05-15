@@ -23,9 +23,12 @@
           <Form :label-width="150" class="formContainer">
             <FormItem :label="item.title" v-for="(item, index) in editMsg" :key="index" v-if="item.title != 'Id'">
               <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
-              <Select v-if="item.type == 'lookup'" v-model="item.content">
+              <!--<Select v-if="item.type == 'lookup'" v-model="item.content">
                 <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>
-              </Select>
+              </Select>-->
+              <Cascader v-if="item.type == 'lookup'"
+                        :data="item.lookupMsg" v-model="item.content">
+              </Cascader>
               <Row v-if="item.type == 'date'">
                 <Col span="11">
                 <DatePicker type="date" placeholder="请选择日期" v-model="item.content"></DatePicker>
@@ -131,8 +134,9 @@ export default {
         if (v.attribute) {
           if (v.type == "reference" && v.Id) {
             data[v.attribute] = v.Id;
-          } else if (v.type == "lookup" && typeof v.content === 'number') {
-            data[v.attribute] = v.content;
+          } else if (v.type == "lookup" && typeof v.content) {
+            let len = v.content.length - 1;
+            data[v.attribute] = v.content[len];
           } else if (v.type == "date" && v.content) {
             data[v.attribute] = this.transformTime(v.content);
           }

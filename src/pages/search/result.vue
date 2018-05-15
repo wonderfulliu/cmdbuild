@@ -448,7 +448,29 @@ export default {
         .post("/relationController/getLookuplistByTable" + data)
         .then(info => {
           if (info.status == 200) {
-            this.lookupMsg = info.data;
+            let newlookup = {};
+            for(let i in info.data){
+              newlookup[i] = transformObj(info.data[i]);
+              function transformObj(arr){
+                let arrb = [];
+                arr.forEach(function(v, i){
+                  let obja = {};
+                  if(v.Description){
+                    obja.label = v.Description;
+                  }
+                  obja.value = v.Id;
+                  if(v.child){
+                    obja.children =[];
+                    if(v.child.length != 0){
+                      obja.children = transformObj(v.child);
+                    }
+                  }
+                  arrb.push(obja);
+                });
+                return arrb;
+              };
+            }
+            this.lookupMsg = newlookup;
           }
         });
     },
@@ -481,7 +503,7 @@ export default {
           if (k != "Id") {
             titleMsg[k - 1].content = editcontentMsg[k];
           } else if (k == "Id") {
-            titleMsg[titleMsg.length - 1].content = editcontentMsg[k];
+//            titleMsg[titleMsg.length - 1].content = editcontentMsg[k];
             thisjiluId = editcontentMsg[k];
           }
         }
@@ -491,11 +513,27 @@ export default {
             for (let k in this.lookupMsg) {
               if (k == v.attribute) {
                 v.lookupMsg = this.lookupMsg[k];
-                v.lookupMsg.forEach((val, index) => {
-                  if (val.Description && val.Description == v.content) {
-                    v.content = val.Id;
+                let conStr = v.content;
+                let conArry;
+                if(typeof v.content == 'string'){
+                  console.log(1);
+                  conArry = conStr.split('-');
+                }else {
+                  conArry = conStr;
+                }
+                v.content = findId(v.lookupMsg, conArry, 0, []);
+                function findId(obj, conArry, q, newArry){
+                  for(let val in obj){
+                    if(obj[val].label && obj[val].label == conArry[q]){
+                      newArry.push(obj[val].value);
+                      q++;
+                      if(q<conArry.length){
+                        findId(obj[val].children, conArry, q, newArry);
+                      }
+                    }
                   }
-                });
+                  return newArry;
+                }
               }
             }
           }
@@ -508,7 +546,6 @@ export default {
             });
           }
         });
-
         let data = {
           tableName: this.tableName,
           tableCname: this.tableCname,
@@ -548,11 +585,11 @@ export default {
           for (let k in this.lookupMsg) {
             if (k == v.attribute) {
               v.lookupMsg = this.lookupMsg[k];
-              v.lookupMsg.forEach((val, index) => {
-                if (val.Description && val.Description == v.content) {
-                  v.content = val.Id;
+              /*v.lookupMsg.forEach((val, index) => {
+                if (val.label && val.label == v.content) {
+                  v.content = val.value;
                 }
-              });
+              });*/
             }
           }
         }
@@ -562,7 +599,7 @@ export default {
         tableCname: this.tableCname,
         titleMsg: titleMsg
       };
-      console.log(data);
+//      console.log(data);
       this.$store.commit("getaddMsg", data); //将整合好的数据推至公共仓库
       this.$router.push({ path: "/add" }); //跳转至新增页面
     },
