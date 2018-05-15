@@ -70,8 +70,6 @@ export default {
       searchMsg: "", //侧边栏表格搜索
       targetTable: [], //符合搜索结果的信息
       tableDetailmsg: [], //搜索出来的表的详细信息, 当 targetTable 置空时, 这个也置空
-      detailMsg: {},//
-      k: -1,
       flag: true,//判断函数的执行状态
       tOrf: true,//使侧边栏搜索到的内容在上面显示, 而不是被覆盖在下面
     };
@@ -255,11 +253,9 @@ export default {
     selected(value){
       console.log(this.ConfigTreeData);
       this.flag = true;
-      this.k = -1;
       this.tableDetailmsg = [];
-      this.detailMsg = {};
       this.gettableEname(this.ConfigTreeData, value);
-      console.log(this.detailMsg);
+      console.log(this.tableDetailmsg);
     },
     // gettableEname(tableMenu, tableCname){
     //   let len = tableMenu.length;
@@ -300,14 +296,13 @@ export default {
 
     // 获取对应表的英文名
     gettableEname(tableMenu, tableCname){
-      this.k ++;
       let len = tableMenu.length;
       tableMenu.forEach((v, i) => {
         if (!this.flag) {
-          return false;
+          this.tableDetailmsg.push(v);
+          return false;//从内层开始往数组里面 push
         }
-        if (v.children && v.children.length >= 0) {
-          this.detailMsg[this.k] = v.title;
+        if (v.children && v.children.length > 0) {
           // 如果有子元素, 那么就一直往下遍历
           this.gettableEname(v.children, tableCname);
         } else {
@@ -320,22 +315,17 @@ export default {
               this.tableName = v.idElementClass.split('"').join(""); //获取英文名
             }
             console.log('找到了!');
-            v.parent = this.tableDetailmsg.join('-');
+            this.tableDetailmsg.push(v);
             this.flag = false;
             return false;//结束当前循环
           } else {
             // 没找到
-            if (i >= len - 1) {
-              // 删除对象最后一个元素
-              delete this.detailMsg[this.k];
-              this.k --;
-            }
+            // if (i >= len - 1) {
+            //   删除对象最后一个元素
+            //   delete this.detailMsg[this.k];
+            //   this.k --;
+            // }
           }
-        }
-        if (i >= len - 1 && this.detailMsg[this.k]) {
-          // 删除对象最后一个元素
-          delete this.detailMsg[this.k];
-          this.k --;
         }
       })
     },
