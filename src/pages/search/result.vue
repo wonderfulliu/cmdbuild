@@ -252,8 +252,9 @@ export default {
         ? this.$store.state.searchMsg
         : JSON.parse(sessionStorage.getItem("searchMsg"));
       // console.log(this.sideMenuData);
-      // 刚进来, 先获取公共仓库的存储的数据, 判断选中哪一个表
+      // 刚进来, 先获取公共仓库的存储的数据, 判断选中哪一个表(是方便编辑等操作返回时还在原来的表上)
       this.clickWhichone = this.$store.state.clickWhichone;
+      console.log(this.sideMenuData);
       this.sideMenuData.forEach((v, i) => {
         if (i == this.clickWhichone) {
           this.tableCname = v.Description;

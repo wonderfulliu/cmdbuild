@@ -3,19 +3,12 @@
     <Layout>
       <!-- 侧边栏 -->
       <Sider ref="side1" hide-trigger collapsible width="240" :collapsed-width="0" v-model="isCollapsed">
-        <Menu theme="dark"
-              width="auto"
-              :open-names="['1']"
-              :class="menuitemClasses" accordion>
+        <Menu theme="dark" width="auto" :open-names="['1']" :class="menuitemClasses" :active-name="'1-' + [clickWhichone + 1]" accordion>
           <Submenu name="1" ref="submenu1">
             <template slot="title">
               查询配置信息列表
             </template>
-            <MenuItem :name="['1-']+[index+1]"
-                      style="padding-left: 25px"
-                      v-for="(item, index) in sideMenuData"
-                      :key="index"
-                      @click.native="menuSelected(item)">
+            <MenuItem v-for="(item, index) in sideMenuData" :key="index" :name="'1-' + index + 1" style="padding-left: 25px" @click.native="menuSelected(item, index)">
               {{item.Description}}
             </MenuItem>
           </Submenu>
@@ -42,6 +35,7 @@
             stripe
             border
             size="small"
+            @on-sort-change="sorting"
             :height="tableHeight"
             :loading='loading'
             :columns="columns"
@@ -113,6 +107,11 @@ export default {
       searched: false,
       firstCl: true,//首页是否禁用
       lastCl: false,//尾页是否禁用
+      // 字段排序
+      sortAttribute: '', //排序的字段
+      sort: '', //排序的方式
+      // 点击侧边栏哪个表格
+      clickWhichone: 0,
     };
   },
   created() {
@@ -148,8 +147,8 @@ export default {
         info => {
           if (info.status == 200) {
             this.sideMenuData = info.data;//侧栏全部数据并赋值
-            // console.log(info);
-            //给this.tableName赋值
+            console.log(this.sideMenuData);
+            //如果tableName为空, 则默认显示第一个
             if (this.tableName == "") {
               this.tableName = this.sideMenuData[0].SourceFunction;
             }
@@ -164,9 +163,11 @@ export default {
       );
     },
     //点击侧栏获取表信息
-    menuSelected(msg){
+    menuSelected(msg, index){
       //console.log(msg.Description);//获取中文表名
       //console.log(msg.SourceFunction);//获取英文表名
+      // 把点击的表的序列存入公共仓库(此处没有编辑等操作, 不必存入公共仓库等操作)
+      // this.$store.commit('getIndex', index);
       this.searchMsg = '';
       this.tableName = msg.SourceFunction;
       this.gettableMsg();
@@ -221,6 +222,7 @@ export default {
         newObj.key = ++i;
         newObj.width = width;
         newObj.ellipsis = true;
+        newObj.sortable = true;
         newtitleArr.push(newObj);
       }
       newtitleArr.push(end);
@@ -242,7 +244,7 @@ export default {
     // 获取表格数据
     gettableMsg() {
       this.loading = true;
-      let data = { funcionName: this.tableName, pageNum: this.pageNum };
+      let data = { funcionName: this.tableName, pageNum: this.pageNum, sortAttribute: this.sortAttribute, sort: this.sort};
       this.$http
         .post("/viewController/getViewCardList", this.$qs.stringify(data))
         .then(
@@ -327,7 +329,7 @@ export default {
         content += this.columns[i].title + `: ${this.data[index][i + 1]}<br>`;
       }
       content = content.split('null').join('');//详情为null的显示为空
-      console.log(content);
+      // console.log(content);
       this.$Modal.info({
         title: "详细信息",
         content: content
@@ -363,6 +365,13 @@ export default {
       let clientH = document.documentElement.clientHeight;
       this.contentbodyH = (clientH - 64) + 'px';
       this.tableHeight = clientH - 64 - 160;//133包括按钮区域, margin-top, 分页所在区域
+    },
+    //字段排序
+    sorting(s){
+      // console.log(s);
+      this.sortAttribute = s.column.title;
+      this.sort = s.order;
+      this.gettableMsg();
     },
   }
 };
