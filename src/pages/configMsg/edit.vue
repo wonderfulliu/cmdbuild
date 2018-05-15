@@ -59,7 +59,6 @@ export default {
       chooseMsg: '',//存储editTable页面传来的数据
       jiluId: '',//记录id
       contHeight: '',//content内容区
-//      lookupLeven2: '',//lookup2级目录
     };
   },
   created() {

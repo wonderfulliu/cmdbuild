@@ -272,7 +272,7 @@ export default {
       }
     },
     tableDataProce(info) {
-      console.log(info);
+//      console.log(info);
       let _this = this;
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
@@ -397,14 +397,12 @@ export default {
       });
 
       attr.forEach((v, i) => {
-        let a = v.attribute;
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
           let conStr = v.content;
           let conArry = conStr.split('-');
           let q = 0;
           v.content = findId(v.lookupMsg, conArry, 0, []);
-          console.log(v.content);
           function findId(obj, conArry, q, newArry){
             for(let val in obj){
               if(obj[val].label && obj[val].label == conArry[q]){
