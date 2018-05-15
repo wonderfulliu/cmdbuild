@@ -8,10 +8,10 @@
             <template slot="title">
               查询配置信息列表
             </template>
-            <MenuItem :name="['1-']+[index+1]"
+            <MenuItem :key="index"
+                      :name="['1-']+[index+1]"
                       style="padding-left: 25px"
                       v-for="(item, index) in sideMenuData"
-                      :key="index"
                       @click.native="menuSelected(item, index)">
               {{item.Description}}
             </MenuItem>

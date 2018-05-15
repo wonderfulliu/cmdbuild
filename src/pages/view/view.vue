@@ -8,7 +8,12 @@
             <template slot="title">
               查询配置信息列表
             </template>
-            <MenuItem v-for="(item, index) in sideMenuData" :key="index" :name="'1-' + index + 1" style="padding-left: 25px" @click.native="menuSelected(item, index)">
+            <MenuItem :key="index"
+                      :name="'1-' + index + 1"
+                      style="padding-left: 25px"
+                      :class="{'ivu-menu-item-active':menuActive&&index==0}"
+                      v-for="(item, index) in sideMenuData"
+                      @click.native="menuSelected(item, index)">
               {{item.Description}}
             </MenuItem>
           </Submenu>
@@ -103,6 +108,7 @@ export default {
       contentbodyH: '',//内容区域高度
       tableHeight: '', //表格高度区域
       //设置
+      menuActive: true, //侧栏默认选中
       isCollapsed: false,
       searched: false,
       firstCl: true,//首页是否禁用
@@ -164,6 +170,7 @@ export default {
     },
     //点击侧栏获取表信息
     menuSelected(msg, index){
+      this.menuActive = false;
       //console.log(msg.Description);//获取中文表名
       //console.log(msg.SourceFunction);//获取英文表名
       // 把点击的表的序列存入公共仓库(此处没有编辑等操作, 不必存入公共仓库等操作)
