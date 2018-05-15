@@ -70,6 +70,9 @@ export default {
       searchMsg: "", //侧边栏表格搜索
       targetTable: [], //符合搜索结果的信息
       tableDetailmsg: [], //搜索出来的表的详细信息, 当 targetTable 置空时, 这个也置空
+      detailMsg: {},//
+      k: -1,
+      flag: true,//判断函数的执行状态
       tOrf: true,//使侧边栏搜索到的内容在上面显示, 而不是被覆盖在下面
     };
   },
@@ -250,39 +253,91 @@ export default {
     },
     //选中搜索出来的表名
     selected(value){
+      console.log(this.ConfigTreeData);
+      this.flag = true;
+      this.k = -1;
+      this.tableDetailmsg = [];
+      this.detailMsg = {};
       this.gettableEname(this.ConfigTreeData, value);
-      console.log(this.tableDetailmsg);
+      console.log(this.detailMsg);
     },
+    // gettableEname(tableMenu, tableCname){
+    //   let len = tableMenu.length;
+    //   // console.log(len);
+    //   tableMenu.forEach((v, i) => {
+    //     if (!this.flag) {
+    //       return false;
+    //     }
+    //     if (v.children && v.children.length > 0) {
+    //       this.tableDetailmsg.push(v);//临时存储遍历的这一项
+    //       this.gettableEname(v.children, tableCname);
+    //     } else {
+    //       if (v.title == tableCname) {
+    //         // 符合条件
+    //         if (v.type == "view" || v.type == "dashboard") {
+    //           this.funcionName = v.funcionName;
+    //         } else {
+    //           this.tableName = v.idElementClass.split('"').join(""); //获取英文名
+    //         }
+    //         this.tableDetailmsg.push(v);//临时存储遍历的这一项
+    //         console.log('找到了!');
+    //         this.flag = false;
+    //         return false;//结束当前循环
+    //       } else {
+    //         // 不符合条件, 当都不符合条件的时候, 清空之前所有存储的项
+    //         // this.tableDetailmsg.pop();
+    //         if (i >= len - 1) {
+    //           this.tableDetailmsg.pop();
+    //         }
+    //       }
+    //     }
+    //   })
+    // },
+
+
+
+
+
     // 获取对应表的英文名
     gettableEname(tableMenu, tableCname){
-      if (tableMenu.length > 0) {
-        let length = tableMenu.length;
-        tableMenu.forEach((v, i) => {
-          if (v.children && v.children.length != 0) {
-            // 先将可能的结果保存一下
-            this.tableDetailmsg.push(v);
-            this.gettableEname(v.children, tableCname);
-          } else {
-            if (v.title == tableCname) {
-              console.log(v);
-              // 找到符合的表
-              if (v.type == "view" || v.type == "dashboard") {
-                this.funcionName = v.funcionName;
-              } else {
-                this.tableName = v.idElementClass.split('"').join(""); //获取英文名
-              }
-              this.$router.push({ path: "/config/tableList" });
-              console.log(11);
-              return false;//为啥不管用
+      this.k ++;
+      let len = tableMenu.length;
+      tableMenu.forEach((v, i) => {
+        if (!this.flag) {
+          return false;
+        }
+        if (v.children && v.children.length >= 0) {
+          this.detailMsg[this.k] = v.title;
+          // 如果有子元素, 那么就一直往下遍历
+          this.gettableEname(v.children, tableCname);
+        } else {
+          // 直到找到最内层
+          if (v.title == tableCname) {
+            // 找到了
+            if (v.type == "view" || v.type == "dashboard") {
+              this.funcionName = v.funcionName;
             } else {
-              if (i >= length - 1) {
-                console.log(1);
-                this.tableDetailmsg = [];
-              }
+              this.tableName = v.idElementClass.split('"').join(""); //获取英文名
+            }
+            console.log('找到了!');
+            v.parent = this.tableDetailmsg.join('-');
+            this.flag = false;
+            return false;//结束当前循环
+          } else {
+            // 没找到
+            if (i >= len - 1) {
+              // 删除对象最后一个元素
+              delete this.detailMsg[this.k];
+              this.k --;
             }
           }
-        })
-      }
+        }
+        if (i >= len - 1 && this.detailMsg[this.k]) {
+          // 删除对象最后一个元素
+          delete this.detailMsg[this.k];
+          this.k --;
+        }
+      })
     },
     // 设置为打开状态
     tableOpen(){
