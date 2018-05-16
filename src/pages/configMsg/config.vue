@@ -249,7 +249,6 @@ export default {
     selected(value){
       this.flag = true;
       this.gettableEname(this.ConfigTreeData, value);
-      console.log(this.ConfigTreeData);
     },
     // 获取对应表的英文名
     gettableEname(tableMenu, tableCname){
