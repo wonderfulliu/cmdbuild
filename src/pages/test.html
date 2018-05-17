@@ -151,34 +151,38 @@
       }
     },
     methods: {
-    search(){
-      this.flag = true;
-      this.tableDetailmsg = [];
-      this.gettableEname(this.data, 'haha666');
-    },
-    gettableEname(tableMenu, tableCname) {
-      let len = tableMenu.length;
-      tableMenu.forEach((v, i) => {
-        if (!this.flag) {
-          this.tableDetailmsg.push(v);
-          return false; //从内层开始往数组里面 push
-        }
-        if (v.children && v.children.length > 0) {
-          // 如果有子元素, 那么就一直往下遍历
-          this.gettableEname(v.children, tableCname);
-        } else {
-          // 直到找到最内层
-          if (v.name == tableCname) {
-            // 找到了
-            console.log("找到了!");
-            this.tableDetailmsg.push(v);
-            this.flag = false;
-            return false; //结束当前循环
+      search() {
+        this.flag = true;
+        this.tableDetailmsg = [];
+        this.gettableEname(this.data, 'haha666');
+        console.log(this.tableDetailmsg);
+      },
+      gettableEname(data, name) {
+        let thisone;
+        let flag = true;
+        data.forEach((v, i) => {
+          if (!flag) {
+            return false;
           }
-        }
-      });
+          if (!this.flag) {
+            this.tableDetailmsg.push(thisone);
+            flag = false;
+          }
+          thisone = v;
+          if (v.children && v.children.length > 0) {
+            this.gettableEname(v.children, name);
+          } else {
+            if (!this.flag) {
+              return false;
+            }
+            if (v.name == name) {
+              this.tableDetailmsg.push(v);
+              this.flag = false;
+            }
+          }
+        })
+      }
     }
-  }
   })
 </script>
 

@@ -31,7 +31,7 @@
           </Dropdown>
         </Col>
 
-        <Col span="12" offset="5">
+        <Col span="12" offset="3">
           <Input v-model="configCondition" placeholder="Enter something..." @on-enter="fuzzy">
             <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
           </Input>

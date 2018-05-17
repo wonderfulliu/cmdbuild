@@ -28,7 +28,30 @@
               <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
             </div>
             </Col>
-            <Col span="12" offset="5">
+
+            <Col span="3">
+              <Dropdown class="fieldSearch" trigger="click" placement="bottom-start">
+                  <Button type="primary">
+                    字段筛选
+                    <Icon type="arrow-down-b"></Icon>
+                  </Button>
+                  <DropdownMenu slot="list">
+                      <div id="field">
+                        <Dropdown trigger="click" placement="right" v-for="(item, index) in fieldData" :key="index" >
+                            <DropdownItem>
+                              <Checkbox v-model="item.flag" @on-change="fieldSearch"></Checkbox>{{item.cName}}
+                              <Icon type="ios-arrow-right"></Icon>
+                            </DropdownItem>
+                            <DropdownMenu slot="list">
+                              <Input v-model="item.value"></Input>
+                            </DropdownMenu>
+                        </Dropdown>
+                      </div>
+                  </DropdownMenu>
+              </Dropdown>
+            </Col>
+
+            <Col span="12" offset="3">
               <Input v-model="searchMsg" placeholder="Enter something...">
                 <Button slot="append" type="info" icon="ios-search" @click="search">搜索</Button>
               </Input>
