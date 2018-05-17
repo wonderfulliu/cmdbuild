@@ -8,6 +8,7 @@ import 'iview/dist/styles/iview.css'
 import axios from 'axios'
 import querystring from 'querystring'
 import Vuex from 'vuex'
+import echarts from "echarts"
 import '../static/scss/base.css'   //公共样式
 
 Vue.config.productionTip = false
@@ -16,6 +17,8 @@ Vue.use(Vuex)
 Vue.prototype.$http = axios
 
 Vue.prototype.$qs = querystring;
+
+Vue.prototype.$echarts = echarts;
 
 //公共仓库存储数据
 const store = new Vuex.Store({
@@ -84,11 +87,51 @@ const store = new Vuex.Store({
 //另一个组件通过以下方法就可以获取, searchMsg就是要获取的数据
 // this.$store.state.lookupMsg
 
+Vue.component('Chart',{
+  name: 'Chart',
+  template: `<div>123</div>`,
+  props: {
+    xField: {
+      type: String,
+      required: true, //是否为必传项
+    },
+    yField: {
+      type: String,
+      required: true,
+    },
+    functionName: {
+      type: String,
+      required: true,
+    },
+  },
+  data: function () {
+    return {
+
+    }
+  },
+  created(){
+    this.getDashboard();
+  },
+  methods: {
+    getDashboard(){
+      this.$http
+        .get('/dashboardController/getData?xField='+this.xField+
+          '&yField='+this.yField+
+          '&functionName='+this.functionName)
+        .then(function(info){
+          console.log(info.data)
+        })
+    }
+
+  }
+});
 
 new Vue({
   el: '#app',
   router,
   store,
-  components: { App },
+  components: {
+    App
+  },
   template: '<App/>'
 })
