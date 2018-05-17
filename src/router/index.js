@@ -23,7 +23,6 @@ import exportRelate from '@/pages/configMsg/apply/exportRelate'
 import relation from '@/pages/configMsg/relation/relation'
 import relationTable from '@/pages/configMsg/relation/relationTable'
 
-
 // chart
 import chart from '@/pages/chart/chart'
 // 视图
@@ -107,7 +106,7 @@ export default new Router({
               path: 'cedit',
               name: 'cedit',
               component: cedit
-            }, 
+            },
             {
               path: 'configEdit',
               name: 'configEdit',
