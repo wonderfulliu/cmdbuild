@@ -69,7 +69,8 @@ export default {
       Mode: "",
       searchMsg: "", //侧边栏表格搜索
       targetTable: [], //符合搜索结果的信息
-      tableDetailmsg: [], //搜索出来的表的详细信息, 当 targetTable 置空时, 这个也置空
+      flag: true,//判断函数的执行状态
+      flags: false,
       tOrf: true,//使侧边栏搜索到的内容在上面显示, 而不是被覆盖在下面
     };
   },
@@ -104,6 +105,7 @@ export default {
             );
           }
           let objTree = this.objFunc(oData); //将得到的数据转换成需要的格式
+          this.ConfigTreeData = this.getEnter(objTree);
           this.ConfigTreeData = this.newTreeFunc(objTree); //打开侧栏第一个选项
         });
     },
@@ -139,8 +141,8 @@ export default {
     //打开侧栏第一个选项
     newTreeFunc(obj) {
       if (obj.length > 0) {
-        obj[0].expand = true;
         if (obj[0].children) {
+          obj[0].expand = true;
           this.newTreeFunc(obj[0].children);
         } else {
           obj[0].selected = true;
@@ -153,22 +155,24 @@ export default {
       }
       return obj;
     },
-    // 权限, 点击侧边栏的时候表格变化
+    // 点击侧边栏的时候表格变化
     getTreeNodes(select) {
       // console.log(select);
+      // console.log(this.ConfigTreeData);
       if (select.length != 0) {
         //不是空数组
         if (!select[0].children) {
           //最终表
-          let eName = select[0].idElementClass.split('"').join(""); //获取英文名
-          this.tableName = eName; //获取表英文名
-          this.tableCname = select[0].title; //获取表的中文名
-          this.$router.push({ path: "/config/tableList" });
+          if (select[0].type == "class") {
+            let eName = select[0].idElementClass.split('"').join(""); //获取英文名
+            this.tableName = eName; //获取表英文名
+          }
 
           this.tableType = select[0].type; //获取表类别
           if (select[0].type == "view" || select[0].type == "dashboard") {
             this.funcionName = select[0].funcionName; //viewfuncionName
           }
+          this.tableCname = select[0].title; //获取表的中文名
           this.Mode = select[0].Mode;
         } else {
           //不是最终表
@@ -183,19 +187,12 @@ export default {
     },
     // 侧边栏合起来的时候, 保持之前的选中状态
     keepSelected(arr) {
-      // arr == select[0].children;
       arr.forEach((v, i) => {
         if (v.children && v.children.length != 0) {
           this.keepSelected(v.children);
         } else {
-          if (v.type == "view" || v.type == "dashboard") {
-            if (v.title == this.funcionName) {
-              v.selected = true;
-            }
-          } else {
-            if (v.title == this.tableCname) {
-              v.selected = true;
-            }
+          if (v.title == this.tableCname) {
+            v.selected = true;
           }
         }
       });
@@ -250,43 +247,80 @@ export default {
     },
     //选中搜索出来的表名
     selected(value){
+      this.flag = true;
       this.gettableEname(this.ConfigTreeData, value);
-      console.log(this.tableDetailmsg);
     },
     // 获取对应表的英文名
     gettableEname(tableMenu, tableCname){
-      if (tableMenu.length > 0) {
-        let length = tableMenu.length;
-        tableMenu.forEach((v, i) => {
-          if (v.children && v.children.length != 0) {
-            // 先将可能的结果保存一下
-            this.tableDetailmsg.push(v);
-            this.gettableEname(v.children, tableCname);
-          } else {
-            if (v.title == tableCname) {
-              console.log(v);
-              // 找到符合的表
-              if (v.type == "view" || v.type == "dashboard") {
-                this.funcionName = v.funcionName;
-              } else {
-                this.tableName = v.idElementClass.split('"').join(""); //获取英文名
-              }
-              this.$router.push({ path: "/config/tableList" });
-              console.log(11);
-              return false;//为啥不管用
-            } else {
-              if (i >= length - 1) {
-                console.log(1);
-                this.tableDetailmsg = [];
-              }
-            }
+      let len = tableMenu.length;//万一是最后一个表, 那么用来回调
+      let thisone;
+      let flag3 = true;
+      tableMenu.forEach((v, i) => {
+        if (v.type == "folder") {
+          v.expand = false;
+        } else if (v.type == "class" || v.type == "view" || v.type == "dashboard") {
+          v.selected = false;
+        }
+        
+        if (!flag3) {
+          return false;
+        }
+        if (!this.flag) {
+          this.tableOpen(thisone);
+          // 最后一张表, 才有权限属性
+          if (thisone.Mode) {
+            this.Mode = thisone.Mode;
           }
-        })
+          flag3 = false;
+          return false;//从内层开始往数组里面 push
+        }
+        thisone = v;
+        if (v.children && v.children.length > 0) {
+          // 如果有子元素, 那么就一直往下遍历
+          this.gettableEname(v.children, tableCname);
+          // 此文件夹内有需要的表格, 且是最后一个文件夹
+          if (i == len - 1 && !this.flag) {
+            this.tableOpen(v);
+          }
+        } else {
+          // 直到找到最内层
+          if (v.title == tableCname) {
+            // 找到了
+            if (v.type == "view" || v.type == "dashboard") {
+              this.funcionName = v.funcionName;
+            } else {
+              this.tableName = v.idElementClass.split('"').join(""); //获取英文名
+            }
+            // 找到最内层的最后一个表且是需要找的表
+            if (i == len - 1) {
+              this.tableOpen(v);
+            }
+            this.flag = false;
+            return false;//结束当前循环
+          }
+        }
+      })
+    },
+    // 设置为打开 / 选中状态
+    tableOpen(v){
+      if (v.type == "folder") {
+        v.expand = true;
+      } else if (v.type == "class" || v.type == "view" || v.type == "dashboard") {
+        v.selected = true;
+        this.tableCname = v.title;
       }
     },
-    // 设置为打开状态
-    tableOpen(){
-
+    // 找最内层
+    getEnter(obj){
+      obj.forEach((v, i) => {
+        if (v.children && v.children.length > 0) {
+          v.expand = false;
+          this.getEnter(v.children);
+        } else {
+          v.selected = false;
+        }
+      })
+      return obj;
     },
   }
 };
