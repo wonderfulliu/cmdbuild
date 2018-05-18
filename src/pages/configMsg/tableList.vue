@@ -265,6 +265,33 @@ export default {
       let fieldArr = sessionStorage.getItem("config_" + this.tableName + "_field");
       if (!thead) {
         let _this = this;
+        // let end = {
+        //   title: "Action",
+        //   key: "action",
+        //   fixed: "right",
+        //   width: 80,
+        //   align: 'center',
+        //   render: (h, params) => {
+        //     return h("div", [
+        //       h(
+        //         "Button",
+        //         {
+        //           props: {
+        //             type: "primary",
+        //             size: "small"
+        //           },
+        //           style: {},
+        //           on: {
+        //             click: () => {
+        //               this.show(params.index);
+        //             }
+        //           }
+        //         },
+        //         "详情"
+        //       )
+        //     ]);
+        //   }
+        // };
         //获取表头数据：
         let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
         let arrObj = [];
@@ -300,6 +327,9 @@ export default {
         arrObj.sort(function(a, b) {
           return Number(a.position) - Number(b.position);
         });
+
+        // arrObj.push(end);
+        
         sessionStorage.setItem(
           "config_" + _this.tableName + "_head",
           JSON.stringify(arrObj)

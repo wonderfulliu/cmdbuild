@@ -265,7 +265,25 @@ export default {
         newtitleArr.push(newObj);
         fieldArr.push(field);
       }
-      this.fieldData = fieldArr;//将获取到的数据给字段搜索渲染
+      // 如果this.fieldData.length > 0 && this.field中对象的属性与dataArr[0]的属性相同, 说明不需要更新fieldData
+      let flag = false;//用来判断是否需要更新this.field的值
+      if (this.fieldData.length > 0) {
+        Object.keys(dataArr[0]).forEach((v, i) => {
+          this.fieldData.forEach((val, j) => {
+            if (val.cName == v && i == j) {
+              flag = true;
+            }
+          })
+        })
+        if (!flag) {
+          this.fieldData = fieldArr;//将获取到的数据给字段搜索渲染
+        }
+      } else {
+        this.fieldData = fieldArr;//将获取到的数据给字段搜索渲染
+      }
+      
+
+      // this.fieldData = fieldArr;//将获取到的数据给字段搜索渲染
       newtitleArr.push(end);
       this.columns = newtitleArr;
       // 渲染表格数据
@@ -310,6 +328,8 @@ export default {
       this.pageDisabled();
       if (this.searchMsg != '') {
         this.search();
+      }else if (JSON.stringify(this.fielddataObj) != "{}") {
+        this.fieldSearch();
       } else {
         this.gettableMsg();
       }
@@ -329,12 +349,28 @@ export default {
     pageFirst(){
       this.pageNum = 1;
       this.pageDisabled();
-      this.gettableMsg();
+      // this.gettableMsg();
+
+      if (this.searchMsg != '') {
+        this.search();
+      }else if (JSON.stringify(this.fielddataObj) != "{}") {
+        this.fieldSearch();
+      } else {
+        this.gettableMsg();
+      }
     },
     pageLast(){
       this.pageNum = this.totalPage;
       this.pageDisabled();
-      this.gettableMsg();
+      // this.gettableMsg();
+
+      if (this.searchMsg != '') {
+        this.search();
+      }else if (JSON.stringify(this.fielddataObj) != "{}") {
+        this.fieldSearch();
+      } else {
+        this.gettableMsg();
+      }
     },
     // 搜索
     search() {
@@ -416,62 +452,34 @@ export default {
     },
     // 字段搜索
     fieldSearch(flag){
+      this.pageNum = 1;
       this.loading = true;
       let dataObj = {};
       // 选择出: 处于选中状态 && 搜索内容不为空 的内容发送给后台
+      // console.log(this.fieldData);
       this.fieldData.forEach((v, i) => {
         if (v.flag && v.value !== "") {
-          dataObj[v.eName] = v.value;
+          dataObj[v.cName] = v.value;
         }
       })
       // console.log(dataObj);
       this.fielddataObj = dataObj;
       if (JSON.stringify(dataObj) != "{}") {
-        let data = 'tableName=' + this.tableName + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=' + this.pageSize;
+        let data = 'functionName=' + this.tableName + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=20';
         // console.log(data);
-        this.$http.post('/cardController/attribubtesFuzzyQuery', data).then(info => {
+        this.$http.post('/viewController/attribubtesFuzzyQuery', data).then(info => {
           // console.log(info);
-          // this.getTableHead(info);
-          if (info.data.list.length != 0) {
-            //获取表头数据：
-            let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
-            let arrObj = [];
-            arrA.forEach((v, i) => {
-              let oTemp = {};
-              let markName = this.attributeCName(v);
-              let cname;
-              if (markName != null) {
-                cname = markName.cname;
-                oTemp.title = cname;
-                oTemp.key = v;
-                oTemp.position = markName.position;
-                oTemp.ellipsis = true;
-                oTemp.sortable = true;
-                arrObj.push(oTemp);
-              }
-            });
-            let len = arrObj.length; //记录表头数量
-            let width = this.fieldWidth(".contentBody .ivu-table-header", len);
-            arrObj.forEach((v, i) => {
-              v.width = width;
-            });
-
-            // 表头字段排序
-            arrObj.sort(function(a, b) {
-              return Number(a.position) - Number(b.position);
-            });
-
-            let newArr = arrObj;
-            this.ConfigThead = newArr;
-            this.tableDataProce(info);
+          if (info.data.list.length > 0) {
+            // 对得到的数据进行处理
+            this.dataProcess(info);
           } else {
-            this.ConfigTdata = [];
+            this.data = [];
             this.loading = false;
           }
 
         })
       } else {
-        this.getTableData();
+        this.gettableMsg();
       }
     },
   }

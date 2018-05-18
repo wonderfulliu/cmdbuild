@@ -18,6 +18,9 @@
             <template slot="title">
               应用组件
             </template>
+            <router-link to="/config/password">
+              <MenuItem name="2-5">修改账户密码</MenuItem>
+            </router-link>
             <router-link to="/config/exportXLS">
               <MenuItem name="2-2">导出XLS文件</MenuItem>
             </router-link>
