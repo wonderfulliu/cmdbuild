@@ -39,15 +39,13 @@
                 </MenuItem>
               </router-link>
             </div>
-            <div class="user-manual">
+            <div class="layout-user">
               <MenuItem name="5" @click.native="usermanualDownload">
                 <Button type="primary">
                   用户手册
                   <Icon type="archive"></Icon>
                 </Button>
               </MenuItem>
-            </div>
-            <div class="layout-user">
               <MenuItem class="userInfo" name="5">
                 <div class="buddha">
                   <Icon type="person"></Icon>
