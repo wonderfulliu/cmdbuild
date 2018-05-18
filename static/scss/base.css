@@ -210,6 +210,9 @@ tr.ivu-table-row-highlight.ivu-table-row-hover td {
   float: right;
   padding-right: 20px; }
 
+.user-manual {
+  float: right; }
+
 .layout-user .ivu-dropdown .ivu-dropdown-rel a {
   color: #c6c8cd; }
 
