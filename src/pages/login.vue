@@ -116,7 +116,8 @@ export default {
       let data = "?groupName=" + groupName;
       this.$http.post("/authorityController/getGroup" + data).then(info => {
         if (info.status == 200) {
-          this.$store.commit("getMode", info.data);
+          // console.log(info);
+          this.$store.commit("getMode", info.data);//表名与该登录人员的权限信息
           sessionStorage.setItem("Mode", JSON.stringify(info.data));
         }
       });
