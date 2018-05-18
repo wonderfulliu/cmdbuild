@@ -100,7 +100,11 @@
         this.$router.push({ path: '/' });
       },
       usermanualDownload(){
-
+        let data = 'CMDBuild新系统用户使用手册v1.1.docx';
+        window.open(
+          "/fileController/downLoadFile?fileName=" + data,
+          "_self"
+        )
       },
   }
   }

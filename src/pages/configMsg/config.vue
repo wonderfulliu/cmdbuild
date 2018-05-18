@@ -18,6 +18,9 @@
             <template slot="title">
               应用组件
             </template>
+            <router-link to="/config/password">
+              <MenuItem name="2-5">修改账户密码</MenuItem>
+            </router-link>
             <router-link to="/config/exportXLS">
               <MenuItem name="2-2">导出XLS文件</MenuItem>
             </router-link>
@@ -179,11 +182,13 @@ export default {
           if (select[0].type == "class") {
             let eName = select[0].idElementClass.split('"').join(""); //获取英文名
             this.tableName = eName; //获取表英文名
+            this.$router.push({path: '/config/tableList'});
           }
 
           this.tableType = select[0].type; //获取表类别
           if (select[0].type == "view" || select[0].type == "dashboard") {
             this.funcionName = select[0].funcionName; //viewfuncionName
+            this.$router.push({path: '/config/tableList'});
           }
           this.tableCname = select[0].title; //获取表的中文名
           this.Mode = select[0].Mode;
