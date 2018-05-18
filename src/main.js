@@ -87,44 +87,55 @@ const store = new Vuex.Store({
 //另一个组件通过以下方法就可以获取, searchMsg就是要获取的数据
 // this.$store.state.lookupMsg
 
-Vue.component('Chart',{
+/*Vue.component('Chart',{
   name: 'Chart',
-  template: `<div>123</div>`,
+  template: `<div id="mChart" style="height:280px"></div>`,
   props: {
-    xField: {
-      type: String,
-      required: true, //是否为必传项
-    },
-    yField: {
-      type: String,
-      required: true,
-    },
-    functionName: {
-      type: String,
+    chartdata: {
+      type: Array,
       required: true,
     },
   },
   data: function () {
     return {
-
     }
   },
   created(){
     this.getDashboard();
   },
+  mounted(){
+
+  },
   methods: {
     getDashboard(){
-      this.$http
-        .get('/dashboardController/getData?xField='+this.xField+
-          '&yField='+this.yField+
-          '&functionName='+this.functionName)
-        .then(function(info){
-          console.log(info.data)
-        })
-    }
+      console.log(this.chartdata);
+      this.drawLine(this.chartdata.charts.category,this.chartdata.charts.legend,this.chartdata.charts.series);
+    },
+    //绘制图表
+    drawLine(category, legend, series){
+      let _this = this;
+      let echarts = require('echarts');
+      //初始化实例
+      let mChart = echarts.init(document.getElementById('mChart'));
+      //绘制
+      mChart.setOption({
+        title: {
+          text: _this.chartdata.title
+        },
+        tooltip: {},
+        legend: {
+          data: legend
+        },
+        xAxis :{
+          data: category
+        },
+        yAxis: {},
+        series : series
+      });
+    },
 
   }
-});
+});*/
 
 new Vue({
   el: '#app',

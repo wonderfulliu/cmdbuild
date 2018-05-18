@@ -34,19 +34,10 @@
         <Row v-if="sideMenu.currentItem.columns">
           <Col span="12">
             <Row>
-              <Col span="24" :key="ci" v-for="(ck, ci) in sideMenu.currentItem.columns[0].charts">
+              <Col span="24" :key="ci" v-for="(cv, ci) in dashboard.chartDatas">
                 <Card style="margin:15px">
-                  <p slot="title" style="text-align: left">
-                    {{sideMenu.currentItem.charts[ck].description}}
-                  </p>
-                  <a href="#" slot="extra">
-                    <Icon type="ios-loop-strong"></Icon>
-                    刷新
-                  </a>
                   <div>
-                    <Chart :xField="sideMenu.currentItem.charts[ck].categoryAxisField"
-                           :yField="sideMenu.currentItem.charts[ck].valueAxisFields[0]"
-                           :functionName="sideMenu.currentItem.charts[ck].dataSourceName"></Chart>
+                    <div id="mChart+'ci'"></div>
                   </div>
                 </Card>
               </Col>
@@ -55,10 +46,10 @@
 
           <Col span="12">
             <Row>
-              <Col span="24" :key="ci" v-for="(ck, ci) in sideMenu.currentItem.columns[1].charts">
+              <Col span="24">
               <Card style="margin:15px">
                 <p slot="title" style="text-align: left">
-                  {{sideMenu.currentItem.charts[ck].description}}
+
                 </p>
                 <a href="#" slot="extra">
                   <Icon type="ios-loop-strong"></Icon>
@@ -88,12 +79,23 @@ export default {
         active: true, //侧栏默认选中
         currentItem: {},//当前dashboard数据
       },
+      dashboard: {
+        chartDatas: [],
+        leftChartData: [],
+        rightChartData: [],
+        selfClartData: []
+      },
       menuHeight: '', //侧栏内容最大高度
       isCollapsed: false
     };
   },
   created(){
     this.getsideMenu();
+
+    for(let index in this.chartDatas){
+      this.drawLine(index,this.chartDatas[index]);
+    }
+
   },
   mounted(){
     let _this = this;
@@ -112,8 +114,8 @@ export default {
             info.data.forEach(function(v, i){
               let oItem = JSON.parse(v);
               if(i ==0){
-                _this.sideMenu.currentItem = oItem;
-                _this.contentRender(_this.sideMenu.currentItem);
+                _this.sideMenu.currentItem = oItem; //初始加载
+                _this.contentRender(_this.sideMenu.currentItem);//渲染初始加载页面
               }
               newArr.push(oItem);
             });
@@ -128,7 +130,53 @@ export default {
     },
     //内容区域渲染
     contentRender(item){
-      console.log(item);
+      let chartsArr = item.charts;
+      let coluArr = item.columns[0].charts;
+      for(let ckey in coluArr){
+        this.getDashboardData(ckey, chartsArr[coluArr[ckey]]);
+      }
+      console.log(this.dashboard.chartDatas);
+    },
+    //获取图标数据
+    getDashboardData(index, value){
+      let _this = this;
+      let xField = value.categoryAxisField;
+      let yField = value.valueAxisFields[0];
+      let functionName = value.dataSourceName;
+      this.$http
+        .get('/dashboardController/getData?xField=' + xField +
+          '&yField=' + yField +
+          '&functionName=' + functionName)
+        .then(info => {
+              _this.dashboard.chartDatas[index] = {
+                charts : info.data,
+                title : value.description
+              };
+        }, info => {
+          console.log(info)
+        });
+    },
+    //绘制图表
+    drawLine(index, value){//category, legend, series
+      let _this = this;
+      let echarts = require('echarts');
+      //初始化实例
+      let mChart = echarts.init(document.getElementById('mChart'+index));
+      //绘制
+      mChart.setOption({
+        title: {
+          text: value.title
+        },
+        tooltip: {},
+        legend: {
+          data: value.charts.legend
+        },
+        xAxis :{
+          data: value.charts.category
+        },
+        yAxis: {},
+        series: value.charts.series
+      });
     },
     // 高度自适应
     heightAdaptive() {
@@ -143,7 +191,7 @@ export default {
         'menu-item',
         this.isCollapsed ? 'collapsed-menu' : ''
       ]
-    }
+    },
   },
 }
 </script>
