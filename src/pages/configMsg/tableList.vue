@@ -31,7 +31,7 @@
           </Dropdown>
         </Col>
 
-        <Col span="12" offset="5">
+        <Col span="12" offset="3">
           <Input v-model="configCondition" placeholder="Enter something..." @on-enter="fuzzy">
             <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
           </Input>
@@ -151,6 +151,12 @@ export default {
       type: Array,
       default: null
     },
+    pageNums: {
+      type: Number
+    },
+    Id: {
+      type: Number
+    }
   },
   data() {
     return {
@@ -185,10 +191,9 @@ export default {
       isdisable: "", //禁用与否, ''就是false
       firstCl: true,//首页是否禁用
       lastCl: false,//尾页是否禁用
-      // 字段搜索相关
-      fieldData: [],//带渲染字段数据
-      lsfieldData: [],//带渲染字段数据
       changetableName: false,//判断是否切换表格
+      // 字段搜索相关
+      fieldData: [],//待渲染字段数据
       fielddataObj: {},//存储字段搜索的条件, 判断是否为空
     };
   },
@@ -217,6 +222,9 @@ export default {
       this.getTableData();
       this.getlookup();
       this.ischangetableName();
+    },
+    'pageNums': function(newValue, oldValue){
+      this.pageNum = this.pageNums;
     }
   },
   methods: {
@@ -228,6 +236,7 @@ export default {
     // 如果表名已经获取到, 可以调用以下函数
     isgetTablename() {
       if (this.tableName) {
+        this.pageNum = this.pageNums;
         this.isDisabled();
         this.getTableAttribute();
         this.getTableData();
@@ -321,7 +330,10 @@ export default {
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
       let ConfigTdata = info.data.list;
-      ConfigTdata.forEach(function(v, i) {
+      ConfigTdata.forEach((v, i) => {
+        if (v.Id == this.Id) {//关系跳转设置默认选中状态
+          v._highlight = true;
+        }
         for (let a in v) {
           if (v[a] != null && typeof v[a] == "object") {
             v[a] = v[a].Description;
@@ -356,7 +368,10 @@ export default {
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
       let ConfigTdata = info.data.list;
-      ConfigTdata.forEach(function(v, i) {
+      ConfigTdata.forEach((v, i) => {
+        if (v.Id == this.Id) {//关系跳转设置默认选中状态
+          v._highlight = true;
+        }
         for (let a in v) {
           if (v[a] != null && typeof v[a] == "object") {
             v[a] = v[a].Description;
@@ -367,6 +382,7 @@ export default {
       _this.loading = false; //加载完成时
     },
     getTableData() {//表格数据获取
+      this.pageNum = this.pageNums;
       let _this = this;
       _this.loading = true; //加载中
       if (_this.tableType == "view" || _this.tableType == "dashboard") {
@@ -383,7 +399,7 @@ export default {
               "&sort=" +
               _this.sort
           )
-          .then(function(info) {
+          .then((info) => {
             _this.getViewTableHead(info);
             _this.viewDataProce(info);
           });
@@ -401,8 +417,7 @@ export default {
               "&sort=" +
               _this.sort
           )
-          .then(function(info) {
-            // console.log(info);
+          .then((info) => {
             _this.getTableHead(info);
             _this.tableDataProce(info);
           });
@@ -427,8 +442,8 @@ export default {
         //表头信息
         sessionStorage.getItem("config_" + this.tableName + "_attribute")
       );
-      console.log(attr);
-      console.log(res);
+      // console.log(attr);
+      // console.log(res);
       // return false;
       attr.forEach(function(v, i) {
         for (let k in res) {
@@ -812,8 +827,8 @@ export default {
             // console.log(info.data);
             //将数据存储到公共仓库, 页面跳转...
             let data = {
-              tableName: this.tableName,
-              Id: this.recordId,
+              tableName: this.tableName,//原表表名
+              Id: this.recordId,//原纪录id
               relationMsg: info.data
             };
             this.$store.commit("getrelationMsg", data);

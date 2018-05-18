@@ -41,6 +41,9 @@ export default {
       relationMsg: "", //待渲染的关系数据
       domainListMsg: "", //待渲染的中间表数据
       tableId: "",//表的Id, 注意这个不是关系表的Id, 而是原表的Id
+      tableName: '',// 原表表名
+      // now的关系表名
+      relationTable: '',
       // 下拉框数据
       selectNow: "",
       selectFuture: "",
@@ -116,21 +119,22 @@ export default {
     getMsg() {
       this.CEtableMsg = this.$store.state.tableMsg; //获取中英文对照表名
       this.relationMsg = this.$store.state.relationMsg; //获取到待渲染的关系数据
-      this.tableId = this.relationMsg.Id;//表的Id
-      this.isdisable = this.relationMsg.disabled;
+      this.tableName = this.relationMsg.tableName;//原表表名
+      this.tableId = this.relationMsg.Id;//原表的纪录的Id
+      this.isdisable = this.relationMsg.disabled;//关系的权限状态
     },
     // 一进入页面, 就请求表的关系表的数据
     getDomainList() {
-      let data = "?table=" + this.relationMsg.tableName;
+      let data = "?table=" + this.tableName;
       this.$http.get("/relationController/getDomainList" + data).then(info => {
         if (info.status == 200 && Object.keys(info.data).length != 0) {
           // 找到关系表名, 找到n:1关系, 找到中文名, 并且拼在英文表名后面
-          this.zhongjianbiao = info.data;//其实并不是中间表, 只是与该条记录有关的表的集合
-          let relationArr = [];
+          this.zhongjianbiao = info.data;//中间表集合, 里面的 v.domainname 是中间表名字, 与该条记录有关的表的集合
+          let relationArr = [];//用来存储与该表的该条纪录有关系的表(多)
           info.data.forEach((v, i) => {
-            let obj = {};
+            let obj = {};//用来存储与该表的该条纪录有关系的表(单)
             let NandOne = v.domaincardinality.split(":");
-            if (this.relationMsg.tableName == v.domainclass2) {
+            if (this.tableName == v.domainclass2) {
               obj.relationTable = v.domainclass1;//关系表名
               obj.crelationTable = this.EtoC(this.CEtableMsg, v.domainclass1, v.domainname);//关系表中文名, 用于渲染
               obj.domainname = v.domainname;//中间表名
@@ -143,7 +147,7 @@ export default {
             }
             relationArr.push(obj);
           });
-          this.domainListMsg = relationArr;//于表的记录有关系的表的详情的集合
+          this.domainListMsg = relationArr;//表的关系表详情的集合
           this.$store.commit('getdomainlistMsg', info.data);
           this.getfutureSelectdata();//没有放在getMsg里面时因为获取不到this.domainListMsg的数据
           this.getnowSelectdata();
@@ -157,6 +161,7 @@ export default {
     // 获取future select数据
     getfutureSelectdata(){
       let data = this.domainListMsg;
+      // console.log(data);
       let future = [];
       data.forEach((v, i) => {
         let obj = {};
@@ -165,10 +170,12 @@ export default {
         future.push(obj);
       })
       this.future = future;
+      // console.log(this.future);
     },
     // 获取now select框数据
     getnowSelectdata(){
-      let data = this.relationMsg
+      let data = this.relationMsg;
+      // console.log(data);
       let now = [];
       for (let k in data.relationMsg) {
         let obj = {};
@@ -186,7 +193,6 @@ export default {
     getTabledata(tableName) {
       // 根据传入的关系表的表名, 查找对应的信息
       let data = this.relationMsg; //有关系的表
-      console.log(data);
       let arr = [];
       for (let k in data.relationMsg) {
         if (k.split('Map_')[1] == tableName) {
@@ -195,6 +201,7 @@ export default {
             let obj = {};
             obj.Description = v.Description;
             obj.BeginDate = v.BeginDate;
+            obj.Id = v.Id;
             arr.push(obj);
           });
         }
@@ -203,6 +210,13 @@ export default {
     },
     // 查看下拉框变化时触发
     selectN(value){
+      // console.log(value);
+      // console.log(this.domainListMsg);
+      this.domainListMsg.forEach((v, i) => {
+        if (v.domainname == value) {
+          this.relationTable = v.relationTable;
+        }
+      })
       this.getTabledata(value);
     },
     // 添加数据下拉框变化的时候
@@ -218,7 +232,7 @@ export default {
       this.getrefMsg(relationTable, NorOne);
     },
 
-    //点击选中的关系表, 请求数据, 并且根据N:1关系判断表格是单选还是多选
+    //点击选中的关系表, 请求数据, 并且根据 N:1 关系判断表格是单选还是多选
     // 获取reference表头中文名数据
     getrefctMsg(relationTable, num) {
       let data = { table: relationTable };
@@ -326,9 +340,34 @@ export default {
       this.$router.go(-1);
     },
     // 关系记录跳转到对应表的所在的位置
-    relationJump(value, index){
-      console.log(value);
-      console.log(index);
+    relationJump(value){
+      let relationCtable = '';
+      let pageNum = 1;
+      let jiluId = value.row.Id;
+      //1.根据英文表名, 获取中文表名, 方便跳转后侧边栏的搜索
+      for(let k in this.CEtableMsg){
+        if (k == this.relationTable) {
+          relationCtable = this.CEtableMsg[k];
+        }
+      }
+      
+      let data = '?table=' + this.relationTable + '&pageSize=20&id=' + value.row.Id;
+      this.$http.get('/cardController/getPageCardByIndex' + data).then(info => {
+        // console.log(info);
+        if (info.status == 200) {
+          pageNum = info.data;
+          let msg = {
+            relationCtable: relationCtable,//侧边栏搜索使用
+            pageNum: pageNum,// 分页跳转使用
+            jiluId: jiluId//最终定位使用
+          }
+          this.$emit('sTof', msg);
+          this.$router.push({ path: "/config/tableList" });
+        }
+      })
+      
+      
+      
     },
   }
 };

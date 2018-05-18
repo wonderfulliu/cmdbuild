@@ -43,7 +43,10 @@
                      :Mode='Mode'
                      :tableType='tableType'
                      :funcionName="funcionName"
-                     :tableCname='tableCname'>
+                     :tableCname='tableCname'
+                     @sTof="getMfs"
+                     :pageNums="pageNums"
+                     :Id="Id">
         </router-view>
       </transition>
 
@@ -68,10 +71,14 @@ export default {
       Authority: "", //存储权限
       Mode: "",
       searchMsg: "", //侧边栏表格搜索
+      searchedMsg: '',//选中的侧边栏信息
       targetTable: [], //符合搜索结果的信息
       flag: true,//判断函数的执行状态
       flags: false,
       tOrf: true,//使侧边栏搜索到的内容在上面显示, 而不是被覆盖在下面
+      relationMsg: '',
+      pageNums: 1,
+      Id: null,
     };
   },
   created: function() {
@@ -85,6 +92,11 @@ export default {
     rotateIcon() {
       return ["menu-icon", this.isCollapsed ? "rotate-icon" : ""];
     }
+  },
+  watch:{
+    searchedMsg: function(){
+      this.gettableEname(this.ConfigTreeData, this.searchedMsg);
+    },
   },
   methods: {
     collapsedSider() {
@@ -163,6 +175,7 @@ export default {
         //不是空数组
         if (!select[0].children) {
           //最终表
+          this.pageNums = 1;
           if (select[0].type == "class") {
             let eName = select[0].idElementClass.split('"').join(""); //获取英文名
             this.tableName = eName; //获取表英文名
@@ -248,7 +261,8 @@ export default {
     //选中搜索出来的表名
     selected(value){
       this.flag = true;
-      this.gettableEname(this.ConfigTreeData, value);
+      this.searchedMsg = value;
+      // this.gettableEname(this.ConfigTreeData, value);
     },
     // 获取对应表的英文名
     gettableEname(tableMenu, tableCname){
@@ -321,6 +335,14 @@ export default {
         }
       })
       return obj;
+    },
+    // 从relation获取传来的跳转信息
+    getMfs(data){
+      // console.log(data);
+      this.relationMsg = data;
+      this.pageNums = data.pageNum;
+      this.Id = data.jiluId;
+      this.searchedMsg = data.relationCtable;
     },
   }
 };
