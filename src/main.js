@@ -18,8 +18,6 @@ Vue.prototype.$http = axios
 
 Vue.prototype.$qs = querystring;
 
-Vue.prototype.$echarts = echarts;
-
 //公共仓库存储数据
 const store = new Vuex.Store({
   state: {//里面放数据
@@ -87,55 +85,63 @@ const store = new Vuex.Store({
 //另一个组件通过以下方法就可以获取, searchMsg就是要获取的数据
 // this.$store.state.lookupMsg
 
-/*Vue.component('Chart',{
+Vue.component('Chart',{
   name: 'Chart',
-  template: `<div id="mChart" style="height:280px"></div>`,
+  template: `<div :id="'mChart'+index" style="height:280px"></div>`,
   props: {
     chartdata: {
-      type: Array,
-      required: true,
+      type: Object,
+      required: true
     },
+    index: {
+      type: Number,
+      required: true
+    }
   },
   data: function () {
     return {
     }
   },
   created(){
-    this.getDashboard();
+    this.drawLine(this.chartdata);
   },
   mounted(){
-
   },
   methods: {
-    getDashboard(){
-      console.log(this.chartdata);
-      this.drawLine(this.chartdata.charts.category,this.chartdata.charts.legend,this.chartdata.charts.series);
-    },
     //绘制图表
-    drawLine(category, legend, series){
+    drawLine(data){
+      console.log(data)
       let _this = this;
       let echarts = require('echarts');
-      //初始化实例
-      let mChart = echarts.init(document.getElementById('mChart'));
-      //绘制
-      mChart.setOption({
-        title: {
-          text: _this.chartdata.title
-        },
-        tooltip: {},
-        legend: {
-          data: legend
-        },
-        xAxis :{
-          data: category
-        },
-        yAxis: {},
-        series : series
-      });
-    },
+      if(data.chartAttr.category){
+        let legend = data.chartAttr.legend;
+        let category = data.chartAttr.category;
+        let series = data.chartAttr.series;
+        //初始化实例
+        let mChart = echarts.init(document.getElementById('mChart'+_this.index));
+        //绘制
+        console.log(data.title);
+        mChart.setOption({
+          title: {
+            text: data.title
+          },
+          tooltip: {},
+          legend: {
+            data: {}
+          },
+          xAxis :{
+            data: category
+          },
+          yAxis: {},
+          series : series
+        });
+      }else {
+        //document.getElementById('mChart'+_this.index).innerHTML = "暂无数据"
+      }
 
+    }
   }
-});*/
+});
 
 new Vue({
   el: '#app',
