@@ -24,9 +24,9 @@
         <Header class="layout-header-bar">
           <Row>
             <Col span="1">
-            <div>
-              <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
-            </div>
+              <div>
+                <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
+              </div>
             </Col>
 
             <Col span="3">
@@ -141,6 +141,9 @@ export default {
       sort: '', //排序的方式
       // 点击侧边栏哪个表格
       clickWhichone: 0,
+      // 字段搜索相关
+      fieldData: [],//待渲染字段数据(表头所有字段)
+      fielddataObj: {},//存储字段搜索的条件, 判断是否为空
     };
   },
   created() {
@@ -176,7 +179,7 @@ export default {
         info => {
           if (info.status == 200) {
             this.sideMenuData = info.data;//侧栏全部数据并赋值
-            console.log(this.sideMenuData);
+            // console.log(this.sideMenuData);
             //如果tableName为空, 则默认显示第一个
             if (this.tableName == "") {
               this.tableName = this.sideMenuData[0].SourceFunction;
@@ -207,6 +210,7 @@ export default {
       this.totalBar = info.data.totalRecord;
       this.totalPage = info.data.totalPage;
       let dataArr = info.data.list;
+      // console.log(dataArr);
       let end = {
         title: "Action",
         key: "action",
@@ -246,15 +250,22 @@ export default {
       let theadWidth = document.querySelector('.ivu-layout-content .ivu-table-header').offsetWidth - 97 + 240;
       width = theadWidth / len > 200?theadWidth / len : 200;
       //获取表头
+      let fieldArr = [];//表头字段搜索
       for (var k in dataArr[0]) {
         let newObj = {};
+        let field = {};//存储字段
+        field.flag = false;
+        field.cName = k;
+        field.value = '';
         newObj.title = k;
         newObj.key = ++i;
         newObj.width = width;
         newObj.ellipsis = true;
         newObj.sortable = true;
         newtitleArr.push(newObj);
+        fieldArr.push(field);
       }
+      this.fieldData = fieldArr;//将获取到的数据给字段搜索渲染
       newtitleArr.push(end);
       this.columns = newtitleArr;
       // 渲染表格数据
@@ -403,6 +414,66 @@ export default {
       this.sort = s.order;
       this.gettableMsg();
     },
+    // 字段搜索
+    fieldSearch(flag){
+      this.loading = true;
+      let dataObj = {};
+      // 选择出: 处于选中状态 && 搜索内容不为空 的内容发送给后台
+      this.fieldData.forEach((v, i) => {
+        if (v.flag && v.value !== "") {
+          dataObj[v.eName] = v.value;
+        }
+      })
+      // console.log(dataObj);
+      this.fielddataObj = dataObj;
+      if (JSON.stringify(dataObj) != "{}") {
+        let data = 'tableName=' + this.tableName + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=' + this.pageSize;
+        // console.log(data);
+        this.$http.post('/cardController/attribubtesFuzzyQuery', data).then(info => {
+          // console.log(info);
+          // this.getTableHead(info);
+          if (info.data.list.length != 0) {
+            //获取表头数据：
+            let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
+            let arrObj = [];
+            arrA.forEach((v, i) => {
+              let oTemp = {};
+              let markName = this.attributeCName(v);
+              let cname;
+              if (markName != null) {
+                cname = markName.cname;
+                oTemp.title = cname;
+                oTemp.key = v;
+                oTemp.position = markName.position;
+                oTemp.ellipsis = true;
+                oTemp.sortable = true;
+                arrObj.push(oTemp);
+              }
+            });
+            let len = arrObj.length; //记录表头数量
+            let width = this.fieldWidth(".contentBody .ivu-table-header", len);
+            arrObj.forEach((v, i) => {
+              v.width = width;
+            });
+
+            // 表头字段排序
+            arrObj.sort(function(a, b) {
+              return Number(a.position) - Number(b.position);
+            });
+
+            let newArr = arrObj;
+            this.ConfigThead = newArr;
+            this.tableDataProce(info);
+          } else {
+            this.ConfigTdata = [];
+            this.loading = false;
+          }
+
+        })
+      } else {
+        this.getTableData();
+      }
+    },
   }
 };
 </script>
@@ -410,6 +481,36 @@ export default {
 #viewContainer {
   height: 100%;
   margin-left: -1px;
+  .fieldSearch{
+    line-height: 0;
+    .ivu-dropdown-rel{
+      .ivu-btn.ivu-btn-primary{
+        // background-color: #55b5d1;
+        // border-color: #55b5d1;
+      }
+    }
+    .ivu-select-dropdown{
+      .ivu-dropdown-menu{
+        // max-height: 150px;
+        // overflow: scroll;
+        .ivu-dropdown{
+          text-align: left;
+          .ivu-dropdown-rel{
+            label{
+              float: left;
+            }
+            i{
+              float: right;
+            }
+            .ivu-dropdown-item{
+              width: 180px;
+            }
+          }
+        }
+      }
+      // .ivu-dropdown-menu::-webkit-scrollbar {display:none}
+    }
+  }
   .layout {
     height: 100%;
     .ivu-layout-content {
