@@ -308,7 +308,7 @@ export default {
           "config_" + _this.tableName + "_field",
           JSON.stringify(fieldArr)
         );
-
+        
         let newArr = arrObj;
         _this.ConfigThead = newArr;
         _this.fieldData = fieldArr;
@@ -857,7 +857,6 @@ export default {
         // console.log(data);
         this.$http.post('/cardController/attribubtesFuzzyQuery', data).then(info => {
           // console.log(info);
-          // this.getTableHead(info);
           if (info.data.list.length != 0) {
             //获取表头数据：
             let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
