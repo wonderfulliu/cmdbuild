@@ -317,7 +317,7 @@ export default {
           for(let k in rowData) {
             chooseMsg.description = rowData[v.key];
             if (k = 'Id') {//取出Id
-              chooseMsg.Id = rowData[k];
+              chooseMsg.Id = rowData[k]; 
             }
           }
         }
