@@ -243,13 +243,13 @@ export default {
       let i = 0;
       // 设置每个td的宽度
       let len = 0;
-      let width = 200;
+      let width = 110;
       for (var k in dataArr[0]) {
         len ++;
       }
       // 设置表头每个td的宽度--77是action的宽度
       let theadWidth = document.querySelector('.ivu-layout-content .ivu-table-header').offsetWidth - 97 + 240;
-      width = theadWidth / len > 200?theadWidth / len : 200;
+      width = theadWidth / len > 110 ? theadWidth / len : 110;
       //获取表头
       let fieldArr = [];//表头字段搜索
       for (var k in dataArr[0]) {

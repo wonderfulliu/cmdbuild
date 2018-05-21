@@ -76,7 +76,7 @@ export default {
     // 获取公共仓库的要渲染的数据
     getaddMsg(){
       this.editMsg = this.$store.state.addMsg.titleMsg;//待渲染的数据
-      console.log(this.editMsg);
+      // console.log(this.editMsg);
       this.jiluId = this.$store.state.addMsg.Id;//获取记录id
       this.tableName = this.$store.state.addMsg.tableName;//表名
       this.tableCname = this.$store.state.addMsg.tableCname;//表中文名

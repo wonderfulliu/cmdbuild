@@ -945,7 +945,7 @@ export default {
     // 字段宽度设置
     fieldWidth(dom, len){
       let theadWidth = document.querySelector(dom).offsetWidth + 240;
-      let width = theadWidth / len > 200 ? theadWidth / len : 200;
+      let width = theadWidth / len > 140 ? theadWidth / len : 140;
       return width;
     },
     // 获取当前行详细信息

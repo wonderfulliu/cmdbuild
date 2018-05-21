@@ -88,7 +88,7 @@ export default {
     };
   },
   created() {
-//    this.heightAdaptive();
+    //this.heightAdaptive();
     this.getrefMsg();
   },
   mounted () {
@@ -126,7 +126,7 @@ export default {
       // 设置表格宽度
       let len = titleMsg.length;
       let theadWidth = document.querySelector(".ivu-table-wrapper .ivu-table-header").offsetWidth - 17 - 60;
-      let width = theadWidth / len > 200 ? theadWidth / len : 200;
+      let width = theadWidth / len > 140 ? theadWidth / len : 140;
       //判断返回的表格数据是否有Id
       let flag = this.hasId(dataArr[0]);
       //获取表头
@@ -149,7 +149,7 @@ export default {
         newtitleArr.push(Id);
       }
       this.columns = newtitleArr;
-
+      this.initTableColumn(this.columns);
       // 渲染表格数据
       let newtableArr = []; //存储最终要赋给表格的数据
       dataArr.forEach(function(v, i) {
@@ -337,7 +337,18 @@ export default {
     heightAdaptive() {
       let clientH = document.documentElement.clientHeight;
       this.tableHeight = clientH - 202; //导航、按钮区、分页区：64；margin：10
-    }
+    },
+    // 获取当前行详细信息
+    initTableColumn(columnName){
+      for(let i = 0; i < columnName.length; i++){
+        if(!columnName[i].render) {
+          this.$set(columnName[i], 'ellipsis', true);
+          this.$set(columnName[i], 'render', (h, params) => {
+            return h('span', {attrs: {title: params.row[params.column.key]}}, params.row[params.column.key]);
+          });
+        }
+      }
+    },
   }
 };
 </script>
