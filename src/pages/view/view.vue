@@ -155,6 +155,7 @@ export default {
     window.onresize = () => {
       _this.heightAdaptive();
     }
+    // this.initTableColumn(this.columns);
   },
   computed: {
     rotateIcon() {
@@ -281,11 +282,10 @@ export default {
       } else {
         this.fieldData = fieldArr;//将获取到的数据给字段搜索渲染
       }
-      
-
       // this.fieldData = fieldArr;//将获取到的数据给字段搜索渲染
       newtitleArr.push(end);
       this.columns = newtitleArr;
+      this.initTableColumn(this.columns);
       // 渲染表格数据
       let newcontentArr = [];
       dataArr.forEach(function(v, i) {
@@ -400,7 +400,7 @@ export default {
     },
     // 表详情展示
     show(index) {
-      console.log(this.columns);
+      // console.log(this.columns);
       let content = "";
       for (let i = 0; i < this.columns.length - 1; i++) {
         content += this.columns[i].title + `: ${this.data[index][i + 1]}<br>`;
@@ -480,6 +480,17 @@ export default {
         })
       } else {
         this.gettableMsg();
+      }
+    },
+    // 获取当前行详细信息
+    initTableColumn(columnName){
+      for(let i = 0; i < columnName.length; i++){
+        if(!columnName[i].render) {
+          this.$set(columnName[i], 'ellipsis', true);
+          this.$set(columnName[i], 'render', (h, params) => {
+            return h('span', {attrs: {title: params.row[params.column.key]}}, params.row[params.column.key]);
+          });
+        }
       }
     },
   }
