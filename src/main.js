@@ -87,54 +87,123 @@ const store = new Vuex.Store({
 
 Vue.component('Chart',{
   name: 'Chart',
-  template: `<div :id="'mChart'+index" style="height:280px"></div>`,
+  template: `<div :id="'chart'+random1+'a'+random2" style="height:280px"></div>`,
   props: {
     chartdata: {
       type: Object,
-      required: true
-    },
-    index: {
-      type: Number,
       required: true
     }
   },
   data: function () {
     return {
+      random1: Math.floor(Math.random()*100000),
+      random2: Math.floor(Math.random()*100000)
+    }
+  },
+  watch:{
+    'chartdata': function(newValue, oldValue){
+      this.getChartsMsg(this.chartdata);
     }
   },
   created(){
-    this.drawLine(this.chartdata);
   },
   mounted(){
+    this.getChartsMsg(this.chartdata);
   },
   methods: {
+    //获取图表数据
+    getChartsMsg(msg){
+      this.$http
+        .get('/dashboardController/getData?xField=' + msg.chartAttr.xField +
+          '&yField=' + msg.chartAttr.yField +
+          '&functionName=' + msg.chartAttr.functionName)
+        .then(info => {
+          this.drawLine(msg.title, msg.chartAttr.type, info.data);
+        })
+        .catch(err => {
+          this.drawLine(msg.title, msg.chartAttr.type, null);
+        })
+
+    },
     //绘制图表
-    drawLine(data){
-      console.log(data)
+    drawLine(title, type, chartAttr){
+      console.log(type);
+      console.log(chartAttr);
       let _this = this;
       let echarts = require('echarts');
-      if(data.chartAttr.category){
-        let legend = data.chartAttr.legend;
-        let category = data.chartAttr.category;
-        let series = data.chartAttr.series;
+      if(chartAttr != null){
         //初始化实例
-        let mChart = echarts.init(document.getElementById('mChart'+_this.index));
-        //绘制
-        console.log(data.title);
-        mChart.setOption({
-          title: {
-            text: data.title
-          },
-          tooltip: {},
-          legend: {
-            data: {}
-          },
-          xAxis :{
-            data: category
-          },
-          yAxis: {},
-          series : series
-        });
+        let mChart = echarts.init(document.getElementById('chart'+_this.random1+'a'+_this.random2));
+        if(type == 'bar'){
+          //绘制柱状图
+          mChart.hideLoading();
+          mChart.setOption({
+            title: {
+              text: title,
+              left: 'center',
+              textStyle: {
+                color: '#333'
+              }
+            },
+            tooltip: {},
+            xAxis :{
+              data: chartAttr.category,
+            },
+            yAxis: {},
+            series : [{
+              type: type,
+              barMaxWidth: 35,
+              name: chartAttr.series[0].name,
+              data: chartAttr.series[0].data
+            }]
+          });
+        }else if(type == 'pie'){
+          //绘制饼图
+          let dataArr = [];
+          for(let i in chartAttr.category){
+            let newO = {
+              value: chartAttr.series[0].data[i],
+              name: chartAttr.category[i]
+            }
+            dataArr.push(newO);
+          };
+          mChart.setOption({
+            title: {
+              text: title,
+              left: 'center',
+              textStyle: {
+                color: '#333'
+              }
+            },
+            tooltip: {},
+            series : [{
+              type: type,
+              name: chartAttr.series[0].name,
+              data: dataArr
+            }]
+          });
+        }else if(type == 'line'){
+          //绘制线图
+          mChart.setOption({
+            title: {
+              text: title,
+              left: 'center',
+              textStyle: {
+                color: '#333'
+              }
+            },
+            xAxis :{
+              data: chartAttr.category,
+            },
+            tooltip: {},
+            series : [{
+              type: type,
+              name: chartAttr.series[0].name,
+              data: chartAttr.series[0].data
+            }]
+          });
+        }
+
       }else {
         //document.getElementById('mChart'+_this.index).innerHTML = "暂无数据"
       }

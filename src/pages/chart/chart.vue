@@ -17,10 +17,10 @@
       </Sider>
       <Layout class="miniWindow">
         <Row v-if="chartDatas.columnSelf">
-          <Col span="24">
+          <Col span="24" :key="csi" v-for="(csv, csi) in chartDatas.columnSelf">
           <Card style="margin:15px">
             <div>
-              一屏展示
+              <Chart :chartdata="csv"></Chart>
             </div>
           </Card>
           </Col>
@@ -32,7 +32,7 @@
                 <Card style="margin:15px">
                   <div>
                     <!--<div :id="'mChart'+cli" @click="drawLine(cli, clv)" style="height:280px"></div>-->
-                    <Chart :chartdata="clv" :index="cli"></Chart>
+                    <Chart :chartdata="clv"></Chart>
                   </div>
                 </Card>
               </Col>
@@ -44,7 +44,7 @@
               <Col span="24" :key="cri" v-for="(crv, cri) in chartDatas.columnRight">
               <Card style="margin:15px">
                 <div>
-                  Content of no border type
+                  <Chart :chartdata="crv"></Chart>
                 </div>
               </Card>
               </Col>
@@ -118,6 +118,7 @@ export default {
         };
         //遍历左边
         for(let cli in item.columns[0].charts){
+
           let clk = item.columns[0].charts[cli];
           let chartObj = {};
           if(!charts[clk]){
@@ -126,6 +127,7 @@ export default {
             chartObj = {
               title: charts[clk].description,
               chartAttr:{
+                type: charts[clk].type,
                 xField: charts[clk].categoryAxisField,
                 yField: charts[clk].valueAxisFields[0],
                 functionName: charts[clk].dataSourceName
@@ -135,8 +137,19 @@ export default {
             chartObj = {
               title: charts[clk].description,
               chartAttr:{
+                type: charts[clk].type,
                 xField: charts[clk].labelField,
                 yField: charts[clk].singleSeriesField,
+                functionName: charts[clk].dataSourceName
+              }
+            };
+          }else if(charts[clk].type == 'line'){
+            chartObj = {
+              title: charts[clk].description,
+              chartAttr:{
+                type: charts[clk].type,
+                xField: charts[clk].categoryAxisField,
+                yField: charts[clk].valueAxisFields[0],
                 functionName: charts[clk].dataSourceName
               }
             };
@@ -153,6 +166,7 @@ export default {
             chartObj = {
               title: charts[crk].description,
               chartAttr:{
+                type: charts[crk].type,
                 xField: charts[crk].categoryAxisField,
                 yField: charts[crk].valueAxisFields[0],
                 functionName: charts[crk].dataSourceName
@@ -162,8 +176,19 @@ export default {
             chartObj = {
               title: charts[crk].description,
               chartAttr:{
+                type: charts[crk].type,
                 xField: charts[crk].labelField,
                 yField: charts[crk].singleSeriesField,
+                functionName: charts[crk].dataSourceName
+              }
+            };
+          }else if(charts[crk].type == 'line'){
+            chartObj = {
+              title: charts[crk].description,
+              chartAttr:{
+                type: charts[crk].type,
+                xField: charts[crk].categoryAxisField,
+                yField: charts[crk].valueAxisFields[0],
                 functionName: charts[crk].dataSourceName
               }
             };
@@ -171,7 +196,6 @@ export default {
           newobj.columnRight.push(chartObj);
         }
         this.chartDatas = newobj;
-        this.getChartsMsg();
       }else {
         //一屏
         let newobj = {
@@ -183,6 +207,7 @@ export default {
             chartObj = {
               title: charts[csk].description,
               chartAttr:{
+                type: charts[csk].type,
                 xField: charts[csk].categoryAxisField,
                 yField: charts[csk].valueAxisFields[0],
                 functionName: charts[csk].dataSourceName
@@ -197,17 +222,26 @@ export default {
                 functionName: charts[csk].dataSourceName
               }
             };
+          }else if(charts[csk].type == 'line'){
+            chartObj = {
+              title: charts[csk].description,
+              chartAttr:{
+                type: charts[csk].type,
+                xField: charts[csk].categoryAxisField,
+                yField: charts[csk].valueAxisFields[0],
+                functionName: charts[csk].dataSourceName
+              }
+            };
           }
           newobj.columnSelf.push(chartObj);
         }
         this.chartDatas = newobj;
-        this.getChartsMsg();
       }
     },
     //获取图表数据
-    getChartsMsg(){
-      for(let k in this.chartDatas) {
-        this.chartDatas[k].forEach((v, i) => {
+    getChartsMsg(chartDatas){
+      for(let k in chartDatas) {
+        chartDatas[k].forEach((v, i) => {
           this.$http
           .get('/dashboardController/getData?xField=' + v.chartAttr.xField +
             '&yField=' + v.chartAttr.yField +
@@ -216,11 +250,11 @@ export default {
               v.chartAttr = info.data;
           })
           .catch(err => {
-            v.chartAttr = {};
+            delete v.chartAttr;
           })
         })
       }
-      console.log(this.chartDatas);
+      return chartDatas;
     },
     //绘制图表
     drawLine(index, value){//category, legend, series
