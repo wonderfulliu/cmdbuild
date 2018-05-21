@@ -26,6 +26,7 @@ import relationTable from '@/pages/configMsg/relation/relationTable'
 
 // chart
 import chart from '@/pages/chart/chart'
+import dashboard from '@/pages/chart/dashboard'
 // 视图
 import view from '@/pages/view/view'
 // 工作流
@@ -123,7 +124,14 @@ export default new Router({
         {
           path: '/chart',
           name: 'chart',
-          component: chart
+          component: chart,
+          children:[
+            {
+              path: 'dashboard',
+              name: 'dashboard',
+              component: dashboard
+            }
+          ]
         },
         {
           path: '/view',

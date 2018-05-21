@@ -127,17 +127,16 @@ Vue.component('Chart',{
     },
     //绘制图表
     drawLine(title, type, chartAttr){
-      console.log(type);
-      console.log(chartAttr);
       let _this = this;
       let echarts = require('echarts');
+      let mChart = echarts.init(document.getElementById('chart'+_this.random1+'a'+_this.random2));
+      //mChart.showLoading();
+      let option = {};
       if(chartAttr != null){
         //初始化实例
-        let mChart = echarts.init(document.getElementById('chart'+_this.random1+'a'+_this.random2));
         if(type == 'bar'){
           //绘制柱状图
-          mChart.hideLoading();
-          mChart.setOption({
+          option = {
             title: {
               text: title,
               left: 'center',
@@ -153,10 +152,15 @@ Vue.component('Chart',{
             series : [{
               type: type,
               barMaxWidth: 35,
+              itemStyle: {
+                normal:{
+                  color: '#1abb9c',
+                },
+              },
               name: chartAttr.series[0].name,
-              data: chartAttr.series[0].data
+              data: chartAttr.series[0].data,
             }]
-          });
+          };
         }else if(type == 'pie'){
           //绘制饼图
           let dataArr = [];
@@ -167,7 +171,7 @@ Vue.component('Chart',{
             }
             dataArr.push(newO);
           };
-          mChart.setOption({
+          option = {
             title: {
               text: title,
               left: 'center',
@@ -175,16 +179,17 @@ Vue.component('Chart',{
                 color: '#333'
               }
             },
+            color:['rgb(38,185,154)','rgb(52,152,219)','rgb(189,195,199)','rgb(155,89,182)','rgb(231,76,60)'],
             tooltip: {},
             series : [{
               type: type,
               name: chartAttr.series[0].name,
               data: dataArr
             }]
-          });
+          };
         }else if(type == 'line'){
           //绘制线图
-          mChart.setOption({
+          option = {
             title: {
               text: title,
               left: 'center',
@@ -198,15 +203,22 @@ Vue.component('Chart',{
             tooltip: {},
             series : [{
               type: type,
+              cursor: 'pointer',
+              itemStyle: {
+                normal:{
+                  color: '#96ca59'
+                }
+              },
               name: chartAttr.series[0].name,
               data: chartAttr.series[0].data
             }]
-          });
+          };
         }
-
       }else {
-        //document.getElementById('mChart'+_this.index).innerHTML = "暂无数据"
+        document.getElementById('chart'+_this.random1+'a'+_this.random2).innerHTML = "暂无数据"
       }
+      mChart.setOption(option);
+      //mChart.hideLoading();
 
     }
   }

@@ -5,10 +5,6 @@
         <Col span="1">
           <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
         </Col>
-        <!-- <Col span="1">
-           <Button type="ghost">searchFilter</Button>
-        </Col> -->
-
         <Col span="3">
           <Dropdown class="fieldSearch" trigger="click" placement="bottom-start">
               <Button type="primary">
@@ -30,7 +26,6 @@
               </DropdownMenu>
           </Dropdown>
         </Col>
-
         <Col span="12" offset="3">
           <Input v-model="configCondition" placeholder="Enter something..." @on-enter="fuzzy">
             <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
@@ -329,7 +324,7 @@ export default {
         });
 
         // arrObj.push(end);
-        
+
         sessionStorage.setItem(
           "config_" + _this.tableName + "_head",
           JSON.stringify(arrObj)
@@ -338,7 +333,7 @@ export default {
           "config_" + _this.tableName + "_field",
           JSON.stringify(fieldArr)
         );
-        
+
         let newArr = arrObj;
         _this.ConfigThead = newArr;
         _this.initTableColumn(_this.ConfigThead);
