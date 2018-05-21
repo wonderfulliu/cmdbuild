@@ -341,9 +341,11 @@ export default {
         
         let newArr = arrObj;
         _this.ConfigThead = newArr;
+        _this.initTableColumn(_this.ConfigThead);
         _this.fieldData = fieldArr;
       } else {
         this.ConfigThead = JSON.parse(thead);
+        this.initTableColumn(this.ConfigThead);
         if (this.changetableName) {
           this.changetableName = false;
           this.clickRow = false;
@@ -391,6 +393,7 @@ export default {
         v.width = width;
       });
       _this.ConfigThead = arra;
+      _this.initTableColumn(_this.ConfigThead);
     },
     //view类型表数据处理
     viewDataProce(info){
@@ -918,6 +921,7 @@ export default {
 
             let newArr = arrObj;
             this.ConfigThead = newArr;
+            this.initTableColumn(this.ConfigThead);
             this.tableDataProce(info);
           } else {
             this.ConfigTdata = [];
@@ -943,6 +947,17 @@ export default {
       let theadWidth = document.querySelector(dom).offsetWidth + 240;
       let width = theadWidth / len > 200 ? theadWidth / len : 200;
       return width;
+    },
+    // 获取当前行详细信息
+    initTableColumn(columnName){
+      for(let i = 0; i < columnName.length; i++){
+        if(!columnName[i].render) {
+          this.$set(columnName[i], 'ellipsis', true);
+          this.$set(columnName[i], 'render', (h, params) => {
+            return h('span', {attrs: {title: params.row[params.column.key]}}, params.row[params.column.key]);
+          });
+        }
+      }
     },
   },
   computed: {}

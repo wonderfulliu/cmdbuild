@@ -213,7 +213,7 @@ export default {
 
       // console.log(newtitleArr);
       this.columns = newtitleArr; //将获取到的表头字段赋值给table的columns
-
+      this.initTableColumn(this.columns);
       // 渲染表格数据
       let newcontentArr = []; //存储最终要赋给表格的数据
       dataArr.forEach(function(v, i) {
@@ -254,7 +254,7 @@ export default {
       // console.log(this.sideMenuData);
       // 刚进来, 先获取公共仓库的存储的数据, 判断选中哪一个表(是方便编辑等操作返回时还在原来的表上)
       this.clickWhichone = this.$store.state.clickWhichone;
-      console.log(this.sideMenuData);
+      // console.log(this.sideMenuData);
       this.sideMenuData.forEach((v, i) => {
         if (i == this.clickWhichone) {
           this.tableCname = v.Description;
@@ -504,7 +504,7 @@ export default {
           if (k != "Id") {
             titleMsg[k - 1].content = editcontentMsg[k];
           } else if (k == "Id") {
-//            titleMsg[titleMsg.length - 1].content = editcontentMsg[k];
+          //titleMsg[titleMsg.length - 1].content = editcontentMsg[k];
             thisjiluId = editcontentMsg[k];
           }
         }
@@ -517,7 +517,6 @@ export default {
                 let conStr = v.content;
                 let conArry;
                 if(typeof v.content == 'string'){
-                  console.log(1);
                   conArry = conStr.split('-');
                 }else {
                   conArry = conStr;
@@ -600,7 +599,7 @@ export default {
         tableCname: this.tableCname,
         titleMsg: titleMsg
       };
-//      console.log(data);
+      //console.log(data);
       this.$store.commit("getaddMsg", data); //将整合好的数据推至公共仓库
       this.$router.push({ path: "/add" }); //跳转至新增页面
     },
@@ -623,7 +622,18 @@ export default {
       let clientH = document.documentElement.clientHeight;
       this.contentbodyH = clientH - 64 + "px";
       this.tableHeight = clientH - 64 - 145; //133包括按钮区域, margin-top, 分页所在区域
-    }
+    },
+    // 获取当前行详细信息
+    initTableColumn(columnName){
+      for(let i = 0; i < columnName.length; i++){
+        if(!columnName[i].render) {
+          this.$set(columnName[i], 'ellipsis', true);
+          this.$set(columnName[i], 'render', (h, params) => {
+            return h('span', {attrs: {title: params.row[params.column.key]}}, params.row[params.column.key]);
+          });
+        }
+      }
+    },
   }
 };
 </script>
