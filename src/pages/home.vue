@@ -32,7 +32,7 @@
                   工作流
                 </MenuItem>
               </router-link> -->
-              <router-link to="/chart" active-class>
+              <router-link to="/chart/dashboard" active-class>
                 <MenuItem name="5">
                   <Icon type="stats-bars"></Icon>
                   Charts
