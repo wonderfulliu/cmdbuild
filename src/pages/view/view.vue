@@ -8,7 +8,7 @@
             <template slot="title">
               查询配置信息列表
             </template>
-            <MenuItem :key="index"
+            <MenuItem :key="index" 
                       :name="'1-' + index + 1"
                       style="padding-left: 25px"
                       :class="{'ivu-menu-item-active':menuActive&&index==0}"
