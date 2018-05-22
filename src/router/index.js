@@ -175,11 +175,11 @@ export default new Router({
         }
       ]
     },
-    {
-      path: '/config',
-      name: 'config',
-      component: config
-    }
+    // {
+    //   path: '/config',
+    //   name: 'config',
+    //   component: config
+    // }
   ]
 })
 
