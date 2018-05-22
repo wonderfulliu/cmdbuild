@@ -87,7 +87,7 @@ const store = new Vuex.Store({
 
 Vue.component('Chart',{
   name: 'Chart',
-  template: `<div :id="'chart'+random1+'a'+random2" style="height:280px"></div>`,
+  template: `<div :id="'chart'+random1+'a'+random2" style="height:320px"></div>`,
   props: {
     chartdata: {
       type: Object,
@@ -139,14 +139,33 @@ Vue.component('Chart',{
           option = {
             title: {
               text: title,
-              left: 'center',
               textStyle: {
-                color: '#333'
+                color: '#333',
+                fontSize: 15
               }
             },
-            tooltip: {},
+            legend:{
+              type: 'scroll',
+              orient: 'vertical',
+              right: 0,
+              top: 40
+            },
             xAxis :{
               data: chartAttr.category,
+            },
+            tooltip: {},
+            toolbox:{
+              show: true,
+              feature: {
+                saveAsImage: {},
+                dataView: {
+                  readOnly: false,
+                  buttonColor: 'rgb(26, 187, 156)'
+                },
+                magicType: {
+                  type: ['bar', 'line']
+                }
+              }
             },
             yAxis: {},
             series : [{
@@ -174,13 +193,23 @@ Vue.component('Chart',{
           option = {
             title: {
               text: title,
-              left: 'center',
               textStyle: {
-                color: '#333'
+                color: '#333',
+                fontSize: 15
               }
             },
-            color:['rgb(38,185,154)','rgb(52,152,219)','rgb(189,195,199)','rgb(155,89,182)','rgb(231,76,60)'],
+            color:['rgb(38,185,154)','rgb(231,76,60)','rgb(52,152,219)','rgb(189,195,199)','rgb(155,89,182)'],
             tooltip: {},
+            toolbox:{
+              show: true,
+              feature: {
+                saveAsImage: {},
+                dataView: {
+                  readOnly: false,
+                  buttonColor: 'rgb(26, 187, 156)'
+                },
+              }
+            },
             series : [{
               type: type,
               name: chartAttr.series[0].name,
@@ -192,15 +221,31 @@ Vue.component('Chart',{
           option = {
             title: {
               text: title,
-              left: 'center',
               textStyle: {
-                color: '#333'
+                color: '#333',
+                fontSize: 15
               }
+            },
+            legend:{
+              orient: 'vertical'
             },
             xAxis :{
               data: chartAttr.category,
             },
             tooltip: {},
+            toolbox:{
+              show: true,
+              feature: {
+                saveAsImage: {},
+                dataView: {
+                  readOnly: false,
+                  buttonColor: 'rgb(26, 187, 156)'
+                },
+                magicType: {
+                  type: ['bar', 'line']
+                }
+              }
+            },
             series : [{
               type: type,
               cursor: 'pointer',

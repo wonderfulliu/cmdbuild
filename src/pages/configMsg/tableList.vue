@@ -51,7 +51,7 @@
           <Row>
             <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:14,offset:1}" :lg="{span:15,offset:1}" style="text-align: left">
               <ButtonGroup>
-                <Button type="ghost" title="" icon="ios-eye" @click="ctrlView">查看</Button>
+                <!--<Button type="ghost" title="" icon="ios-eye" @click="ctrlView">查看</Button>-->
                 <Button type="ghost" title="" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'>编辑</Button>
                 <Button type="ghost" title="" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'>新增</Button>
                 <Button type="ghost" title="" icon="ios-trash-outline" @click="ctrlDele" :disabled='isdisable'>删除</Button>
@@ -258,35 +258,31 @@ export default {
     getTableHead(info) {
       let thead = sessionStorage.getItem("config_" + this.tableName + "_head");
       let fieldArr = sessionStorage.getItem("config_" + this.tableName + "_field");
+      let end = {
+        title: "Action",
+        key: "action",
+        fixed: "right",
+        width: 80,
+        align: 'center',
+        render: (h, params) => {
+          return h("div", [
+              h("Button",{
+                props: {
+                  type: "primary",
+                  size: "small"
+                },
+                style: {},
+                on: {
+                  click: () => {
+                    this.ctrlView(params.row.Id);
+                  }
+                }
+              },"详情")
+            ]);
+        }
+      };
       if (!thead) {
         let _this = this;
-        // let end = {
-        //   title: "Action",
-        //   key: "action",
-        //   fixed: "right",
-        //   width: 80,
-        //   align: 'center',
-        //   render: (h, params) => {
-        //     return h("div", [
-        //       h(
-        //         "Button",
-        //         {
-        //           props: {
-        //             type: "primary",
-        //             size: "small"
-        //           },
-        //           style: {},
-        //           on: {
-        //             click: () => {
-        //               this.show(params.index);
-        //             }
-        //           }
-        //         },
-        //         "详情"
-        //       )
-        //     ]);
-        //   }
-        // };
         //获取表头数据：
         let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
         let arrObj = [];
@@ -323,8 +319,6 @@ export default {
           return Number(a.position) - Number(b.position);
         });
 
-        // arrObj.push(end);
-
         sessionStorage.setItem(
           "config_" + _this.tableName + "_head",
           JSON.stringify(arrObj)
@@ -335,11 +329,14 @@ export default {
         );
 
         let newArr = arrObj;
+        newArr.push(end);
         _this.ConfigThead = newArr;
         _this.initTableColumn(_this.ConfigThead);
         _this.fieldData = fieldArr;
       } else {
-        this.ConfigThead = JSON.parse(thead);
+        let arrObj2 = JSON.parse(thead);
+        arrObj2.push(end);
+        this.ConfigThead = arrObj2;
         this.initTableColumn(this.ConfigThead);
         if (this.changetableName) {
           this.changetableName = false;
@@ -650,7 +647,59 @@ export default {
           _this.loading = false; //加载完成时
         });
     },
-    ctrlView() {
+    ctrlView(recordId) {
+      let _this = this;
+        _this.$http
+          .get(
+            "/cardController/card?table=" +
+            _this.tableName +
+            "&Id=" +
+            recordId
+          )
+          .then(function(info) {
+            let newArr = [];
+            Object.keys(info.data).forEach(function(v, i) {
+              let newObj = {};
+              if (_this.attributeCName(v)) {
+                let attr = _this.attributeCName(v).cname;
+                let position = _this.attributeCName(v).position;
+                if (typeof info.data[v] == "object" && info.data[v] != null) {
+                  newObj[attr] = info.data[v].Description;
+                  newObj.position = position;
+                } else {
+                  newObj[attr] = info.data[v];
+                  newObj.position = position;
+                }
+                newArr.push(newObj);
+              }
+            });
+            // 排序
+            newArr.sort(function(a, b) {
+              return Number(a.position) - Number(b.position);
+            });
+            // console.log(newArr);
+            let content = '';
+            newArr.forEach((v, i) => {
+              for(let k in v){
+              if (k != 'position') {
+                content += k + ': ' + v[k] + '<br>';
+              }
+            }
+          })
+            content = content.split('null').join('');//详情为null的显示为空
+            // console.log(content);
+            _this.$Modal.info({
+              title: "详细信息",
+              content: content
+            });
+            // _this.configViewData = newObj;
+          })
+          .catch(function(error) {
+            //  console.log(error);
+          });
+        // _this.configViewModal = true;
+    },
+    /*ctrlView() {
       let _this = this;
       if (_this.clickRow == true) {
         // console.log(_this.clickRow);
@@ -708,7 +757,7 @@ export default {
         //未选中行
         _this.$Message.error("您未选中行！");
       }
-    },
+    },*/
     ctrlDele() {
       if (this.clickRow == true) {
         this.configDeleModal = true;
