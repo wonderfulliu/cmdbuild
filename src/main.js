@@ -102,14 +102,12 @@ Vue.component('Chart',{
   },
   watch:{
     'chartdata': function(newValue, oldValue){
-      console.log(0);
       this.getChartsMsg(this.chartdata);
     }
   },
   created(){
   },
   mounted(){
-    console.log(1);
     this.getChartsMsg(this.chartdata);
   },
   methods: {
