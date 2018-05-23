@@ -123,7 +123,7 @@ export default {
       // 设置表格宽度
       let len = titleMsg.length;
       let theadWidth = document.querySelector(".ivu-table-wrapper .ivu-table-header").offsetWidth - 17 - 60;
-      let width = theadWidth / len > 140 ? theadWidth / len : 140;
+      let width = theadWidth / len > 150 ? theadWidth / len : 150;
       //判断返回的表格数据是否有Id
       let flag = this.hasId(dataArr[0]);
       //获取表头

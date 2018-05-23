@@ -988,8 +988,8 @@ export default {
     },
     // 字段宽度设置
     fieldWidth(dom, len){
-      let theadWidth = document.querySelector(dom).offsetWidth + 240;
-      let width = theadWidth / len > 140 ? theadWidth / len : 140;
+      let theadWidth = document.querySelector(dom).offsetWidth + 240 - 97;
+      let width = theadWidth / len > 150 ? theadWidth / len : 150;
       return width;
     },
     // 获取当前行详细信息

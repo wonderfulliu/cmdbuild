@@ -190,8 +190,8 @@ export default {
       let dataArr = info.data.list; //要处理和渲染的表格数据
       // 设置表格宽度
       let len = this.cnameTitle.length;
-      let theadWidth = document.querySelector(".ivu-table-wrapper .ivu-table-header").offsetWidth + 240;
-      let width = theadWidth / len > 200 ? theadWidth / len : 200;
+      let theadWidth = document.querySelector(".ivu-table-wrapper .ivu-table-header").offsetWidth + 240 - 17;
+      let width = theadWidth / len > 150 ? theadWidth / len : 150;
       this.cnameTitle.forEach((v, i) => {
         v.width = width;
       });
