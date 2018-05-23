@@ -349,7 +349,7 @@ export default {
     ischangetableName(){
       this.changetableName = true;
     },
-    tableDataProce(info) {
+    tableDataProce(info) {//================================================
       let _this = this;
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
@@ -357,6 +357,7 @@ export default {
       ConfigTdata.forEach((v, i) => {
         if (v.Id == this.Id) {//关系跳转设置默认选中状态
           v._highlight = true;
+          // this.getRecordInfo();
         }
         for (let a in v) {
           if (v[a] != null && typeof v[a] == "object") {
@@ -388,7 +389,7 @@ export default {
       _this.initTableColumn(_this.ConfigThead);
     },
     //view类型表数据处理
-    viewDataProce(info){
+    viewDataProce(info){//=====================================================
       let _this = this;
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
@@ -396,6 +397,7 @@ export default {
       ConfigTdata.forEach((v, i) => {
         if (v.Id == this.Id) {//关系跳转设置默认选中状态
           v._highlight = true;
+          // this.getRecordInfo();
         }
         for (let a in v) {
           if (v[a] != null && typeof v[a] == "object") {
@@ -456,7 +458,6 @@ export default {
     },
     // 点击表格的行
     getRecordInfo(res) {
-      // console.log(res);//本行具体信息
       this.clickRow = true; //点击状态参数
       this.recordId = res.Id; //获取记录id
       let lookupdt = this.lookupInfo;
@@ -467,9 +468,10 @@ export default {
         //表头信息
         sessionStorage.getItem("config_" + this.tableName + "_attribute")
       );
-      // console.log(attr);
       // console.log(res);
+      // console.log(attr);//本行具体信息
       // return false;
+      // 找到字段对应的中文名
       attr.forEach(function(v, i) {
         for (let k in res) {
           if (v.attribute == k) {
@@ -477,15 +479,19 @@ export default {
           }
         }
       });
-
+      // return false;
       attr.forEach((v, i) => {
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
           // console.log(v);
           let conStr = v.content;
           // console.log(conStr);
-          let conArry = conStr.split('-');//此处为null的时候, 会报错, 此处是什么意思?
-          let q = 0;
+          let conArry;
+          if (conStr != null) {
+            conArry = conStr.split('-');
+          } else {
+            conArry = [null];
+          }
           v.content = findId(v.lookupMsg, conArry, 0, []);
           function findId(obj, conArry, q, newArry){
             for(let val in obj){
@@ -495,6 +501,8 @@ export default {
                 if(q<conArry.length){
                   findId(obj[val].children, conArry, q, newArry);
                 }
+              } else if (!obj[val].label) {
+                newArry.push(obj[val].value);
               }
             }
             return newArry;

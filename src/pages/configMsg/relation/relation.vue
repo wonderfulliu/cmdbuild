@@ -16,7 +16,7 @@
               <Select @on-change="selectF" label-in-value v-model="selectFuture" clearable filterable>
                 <Option v-for="(item, index) in future" :value="item.value" :key="index">{{ item.label }}</Option>
               </Select>
-            </FormItem>
+            </FormItem> 
           </Col>
           <Col span="2" offset="1">
             <Button type="ghost" title="返回" icon="reply" @click="back"></Button>
@@ -349,7 +349,7 @@ export default {
         if (k == this.relationTable) {
           relationCtable = this.CEtableMsg[k];
         }
-      }
+      } 
       
       let data = '?table=' + this.relationTable + '&pageSize=20&id=' + value.row.Id;
       this.$http.get('/cardController/getPageCardByIndex' + data).then(info => {

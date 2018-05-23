@@ -98,6 +98,7 @@ export default {
   },
   watch:{
     searchedMsg: function(){
+      this.flag = true;
       this.gettableEname(this.ConfigTreeData, this.searchedMsg);
     },
   },

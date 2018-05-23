@@ -104,7 +104,7 @@ export default {
         // 设置开头单选
         var start = {
           type: "index",
-          width: 60,
+          width: 50,
           align: "center"
         };
       } else if (this.NorOne == 'N') {
@@ -112,13 +112,13 @@ export default {
         this.isN = true;
         var start = {
           type: 'selection',
-          width: 60,
+          width: 50,
           align: 'center'
         };
       }
 
       // 设置每个td的宽度(写在此处)
-      let width = 200;
+      let width = 150;
       //判断返回的表格数据是否有Id
       let flag = this.hasId(dataArr[0]);
       //获取表头
@@ -133,11 +133,19 @@ export default {
         v.ellipsis = true;
         newtitleArr.push(v);
       });
+
+      let theadWidth = document.querySelector('#configContainer').offsetWidth - 17 - 240 - 100 - 50;
+      width = theadWidth / j > 150 ? theadWidth / j : 150;
+
+      titleMsg.forEach(function(v, i) {
+        v.width = width;
+      });
+      
       if (flag) {
         var Id = {
           title: "Id",
           key: "Id",
-          width: 200
+          width: 100
         };
         newtitleArr.push(Id);
       }
@@ -234,11 +242,6 @@ export default {
         width: 50,
         align: "center"
       };
-
-      // 设置每个td的宽度(写在此处)
-      let width = 200;
-      //判断返回的表格数据是否有Id
-      // let flag = this.hasId(dataArr[0]);
 
       let newtitleArr = this.columns;
       let newcontentArr = []; //存储最终要赋给表格的数据
@@ -367,7 +370,7 @@ export default {
     // 高度自适应
     heightAdaptive() {
       let clientH = document.documentElement.clientHeight;
-      console.log(clientH);
+      // console.log(clientH);
       this.contentbodyH = clientH - 64 + "px";
       this.tableHeight = clientH - 64 - 128; //133包括按钮区域, margin-top, 分页所在区域
     }
