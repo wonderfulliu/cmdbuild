@@ -81,6 +81,9 @@
         navActive:0
       };
     },
+    created(){
+      this.getDashboardList();
+    },
     computed: {
       rotateIcon() {
         return ["menu-icon", this.isCollapsed ? "rotate-icon" : ""];
@@ -106,6 +109,16 @@
           "_self"
         )
       },
+      getDashboardList(){
+        this.$http.get('/dashboardController/getFunctionMenu')
+          .then(info => {
+          let newArr = [];
+          info.data.forEach(function(v, i){
+            newArr.push(JSON.parse(v));
+          });
+          sessionStorage.setItem("DashboardMenuList",JSON.stringify(newArr));
+        })
+      }
   }
   }
 </script>

@@ -119,9 +119,9 @@
 export default {
   props: {
     tableName: {
-      type: String,
-      required: true
-    },
+  type: String,
+    required: true
+},
     tableCname: {
       type: String,
       required: true
