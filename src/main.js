@@ -262,6 +262,7 @@ Vue.component('Chart',{
       }else {
         document.getElementById('chart'+_this.random1+'a'+_this.random2).innerHTML = "暂无数据"
       }
+      mChart.clear();//清空画布，防止缓存
       mChart.setOption(option);
       //mChart.hideLoading();
 

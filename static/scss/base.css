@@ -290,4 +290,7 @@ tr.ivu-table-row-highlight.ivu-table-row-hover td {
 .pageContainer {
   width: 400px; }
 
+.ivu-page-simple .ivu-page-simple-pager input {
+  width: 50px; }
+
 /*# sourceMappingURL=base.css.map */

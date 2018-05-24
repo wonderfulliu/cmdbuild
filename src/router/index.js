@@ -9,6 +9,7 @@ import home from '@/pages/home'
 // 配置信息
 import config from '@/pages/configMsg/config'
 import tableList from '@/pages/configMsg/tableList'
+import cDashboard from '@/pages/configMsg/dashboard'
 import historyRecord from '@/pages/configMsg/history/history'
   // 添加, 编辑
 import cadd from '@/pages/configMsg/add'
@@ -63,6 +64,11 @@ export default new Router({
               path: 'tableList',
               name: 'tableList',
               component: tableList
+            },
+            {
+              path: 'cDashboard',
+              name: 'cDashboard',
+              component: cDashboard
             },
             {
               path: 'historyRecord',  //历史记录
@@ -180,6 +186,7 @@ export default new Router({
     //   name: 'config',
     //   component: config
     // }
-  ]
+  ],
+  //mode: 'history'
 })
 

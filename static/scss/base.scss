@@ -1,3 +1,4 @@
+@charset "utf-8";
 /*color*/
 .ivu-btn-info {
   color: #fff;
@@ -420,6 +421,10 @@ tr.ivu-table-row-highlight.ivu-table-row-hover{
   width: 400px;
 }
 // 分页电梯宽度修改
-.ivu-page-simple .ivu-page-simple-pager input {
-  width: 50px;
+.ivu-page-simple{
+  .ivu-page-simple-pager{
+    input {
+      width: 50px;
+    }
+  }
 }

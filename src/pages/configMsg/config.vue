@@ -132,8 +132,9 @@ export default {
         let oBranch = {};
         oBranch.title = v.description;
         oBranch.type = v.type;
-
-        if (v.type == "view" || v.type == "dashboard") {
+        if( v.type == "dashboard"){
+          console.log(v);
+        }else if(v.type == "view") {
           oBranch.funcionName = v.functionName;
         } else if (v.type == "folder") {
           oBranch.expand = false; //菜单是否展开 true展开
@@ -184,13 +185,14 @@ export default {
             let eName = select[0].idElementClass.split('"').join(""); //获取英文名
             this.tableName = eName; //获取表英文名
             this.$router.push({path: '/config/tableList'});
-          }
-
-          this.tableType = select[0].type; //获取表类别
-          if (select[0].type == "view" || select[0].type == "dashboard") {
+          }else if (select[0].type == "view") {
             this.funcionName = select[0].funcionName; //viewfuncionName
             this.$router.push({path: '/config/tableList'});
+          }else if(select[0].type == "dashboard"){
+            console.log(select);
+            this.$router.push({path: '/config/cDashboard'});
           }
+          this.tableType = select[0].type; //获取表类别
           this.tableCname = select[0].title; //获取表的中文名
           this.Mode = select[0].Mode;
         } else {
@@ -281,7 +283,7 @@ export default {
         } else if (v.type == "class" || v.type == "view" || v.type == "dashboard") {
           v.selected = false;
         }
-        
+
         if (!flag3) {
           return false;
         }
