@@ -86,7 +86,7 @@ export default {
                 _this.$Message.error({
                   content: info.data.data,
                   duration: 2
-                });
+                }); 
               } else if (info.data.Status == 1) {
                 _this.$Message.error({
                   content: info.data.data

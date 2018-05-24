@@ -180,6 +180,7 @@ export default new Router({
     //   name: 'config',
     //   component: config
     // }
-  ]
+  ],
+  // mode: 'history',//可以吧 # 给掉
 })
 
