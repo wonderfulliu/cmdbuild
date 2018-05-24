@@ -38,15 +38,16 @@
       </Sider>
 
       <transition name="fade" mode="out-in">
-        <router-view :tableName='tableName'
-                     :collapsedSider='collapsedSider'
-                     :rotateIcon='rotateIcon'
-                     @transferRecord='getRecordId'
-                     :recordId='recordId'
-                     :Mode='Mode'
-                     :tableType='tableType'
+        <router-view :tableName="tableName"
+                     :collapsedSider="collapsedSider"
+                     :rotateIcon="rotateIcon"
+                     @transferRecord="getRecordId"
+                     :recordId="recordId"
+                     :Mode="Mode"
+                     :tableType="tableType"
                      :funcionName="funcionName"
                      :tableCname='tableCname'
+                     :dashboardName="dashboardName"
                      @sTof="getMfs"
                      :pageNums="pageNums"
                      :Id="Id">
@@ -70,6 +71,7 @@ export default {
       tableCname: "", //表的中文名
       funcionName: "",
       tableType: "", //表类别
+      dashboardName: "", //dashboard类型传递表名
       recordId: "",
       Authority: "", //存储权限
       Mode: "",
@@ -132,9 +134,7 @@ export default {
         let oBranch = {};
         oBranch.title = v.description;
         oBranch.type = v.type;
-        if( v.type == "dashboard"){
-          console.log(v);
-        }else if(v.type == "view") {
+        if(v.type == "view") {
           oBranch.funcionName = v.functionName;
         } else if (v.type == "folder") {
           oBranch.expand = false; //菜单是否展开 true展开
@@ -190,6 +190,7 @@ export default {
             this.$router.push({path: '/config/tableList'});
           }else if(select[0].type == "dashboard"){
             console.log(select);
+            this.dashboardName = select[0].title; //获取表中文名
             this.$router.push({path: '/config/cDashboard'});
           }
           this.tableType = select[0].type; //获取表类别
