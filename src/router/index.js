@@ -187,10 +187,6 @@ export default new Router({
     //   component: config
     // }
   ],
-<<<<<<< HEAD
-  //mode: 'history'
-=======
   // mode: 'history',//可以吧 # 给掉
->>>>>>> 7fdced8290532e4af8a8172af333069d2e70b904
 })
 
