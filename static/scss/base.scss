@@ -135,7 +135,7 @@
                 }
                 .ivu-menu{
                   .treeContent {
-                    overflow-y: scroll;
+                    overflow-y: auto;
                     height: 400px;
                     // height: 250px;
 
@@ -217,7 +217,7 @@
             margin-top: 10px;
             // margin-bottom: 90px;
             min-height: 260px;
-            overflow-y: auto;
+            //overflow-y: auto;
             .formContainer{
               width: 500px;
               padding: 20px 0;
@@ -428,3 +428,15 @@ tr.ivu-table-row-highlight.ivu-table-row-hover{
     }
   }
 }
+
+//fieldSearch  下拉菜单最大高度
+.fieldSearch{
+  .ivu-select-dropdown{
+    ul.ivu-dropdown-menu{
+      overflow-y: auto;
+      max-height: 400px;
+    }
+  }
+}
+
+
