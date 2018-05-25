@@ -146,12 +146,12 @@ Vue.component('Chart',{
             },
             legend:{
               type: 'scroll',
-              orient: 'vertical',
-              right: 0,
-              top: 40
             },
             xAxis :{
               data: chartAttr.category,
+              axisLabel: {
+                rotate:40
+              }
             },
             tooltip: {},
             toolbox:{

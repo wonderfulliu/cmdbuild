@@ -1,5 +1,5 @@
 <template>
-  <Layout class="miniWindow" ref="contentBody" :style="{height:contentbodyH}">
+  <Layout class="miniWindow" :style="{height:contentH}" style="overflow: hidden">
     <Header ref="conBhead" :style="{padding: 0}" class="layout-header-bar">
       <Row>
         <Col span="1">
@@ -18,8 +18,8 @@
                           <Checkbox v-model="item.flag" @on-change="fieldSearch"></Checkbox>{{item.cName}}
                           <Icon type="ios-arrow-right"></Icon>
                         </DropdownItem>
-                        <DropdownMenu slot="list">
-                          <Input v-model="item.value"></Input>
+                        <DropdownMenu slot="list" style="padding-left: 10px;padding-right: 10px;">
+                          <Input size="small" v-model="item.value"></Input>
                         </DropdownMenu>
                     </Dropdown>
                   </div>
@@ -33,7 +33,7 @@
         </Col>
       </Row>
     </Header>
-    <Content ref="conBbody">
+    <Content :style="{height:contentbodyH}">
       <div class="contentBody">
         <Table border
                stripe
@@ -47,10 +47,10 @@
                :columns="ConfigThead"
                :data="ConfigTdata">
         </Table>
-        <div style="line-height: 64px;height:auto;">
+        <div style="line-height: 64px; height: 64px;" id="pagerCont">
           <Row>
-            <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:14,offset:1}" :lg="{span:15,offset:1}" style="text-align: left">
-              <ButtonGroup>
+            <Col :xs="{span:4,offset:1}" :sm="{span:10,offset:1}" :md="{span:13,offset:1}" :lg="{span:15,offset:1}" style="text-align: left">
+              <ButtonGroup v-if="clientW>=1102">
                 <!--<Button type="ghost" title="" icon="ios-eye" @click="ctrlView">查看</Button>-->
                 <Button type="ghost" title="" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'>编辑</Button>
                 <Button type="ghost" title="" icon="ios-plus-empty" @click="configAdd" :disabled='isdisable'>新增</Button>
@@ -59,8 +59,34 @@
                 <Button type="ghost" title="" icon="ios-infinite" @click="ctrlRelete">关系</Button>
                 <Button type="ghost" title="" icon="ios-download-outline" @click="configDownload">下载</Button>
               </ButtonGroup>
+              <Dropdown style="margin-left: 20px" v-if="clientW<1102" placement="top" trigger="click">
+                <Button type="ghost">
+                  操作
+                  <Icon type="arrow-down-b"></Icon>
+                </Button>
+                <DropdownMenu slot="list">
+                  <DropdownItem :disabled='isdisable'>
+                    <div @click="ctrlEdit">编辑</div>
+                  </DropdownItem>
+                  <DropdownItem :disabled='isdisable'>
+                    <div @click="configAdd">新增</div>
+                  </DropdownItem>
+                  <DropdownItem :disabled='isdisable'>
+                    <div @click="ctrlDele">删除</div>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <div @click="ctrlHistory">历史</div>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <div @click="ctrlRelete">关系</div>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <div @click="configDownload">下载</div>
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
             </Col>
-            <Col :xs="{span:24}" :sm="{span:24}" :md="{span:9}" :lg="{span:8}" style="text-align: right">
+            <Col :xs="{span:18}" :sm="{span:13}" :md="{span:10}" :lg="{span:8}" style="text-align: right">
               <Row>
                 <Col span="6">
                 共 {{ totalBar }} 条
@@ -174,7 +200,9 @@ export default {
       loading: true,
       highlight: true,
       clickRow: false,
-      contentBody: "",
+      clientW: "",
+      //配置高度
+      contentH: "",
       contentbodyH: "", //内容区域高度
       tableHeight: "", //表格高度
       //模态框
@@ -1038,11 +1066,6 @@ export default {
     isDisabled() {
       this.isdisable = this.Mode == "w" ? false : true;
     },
-    // 高度自适应
-    heightAdaptive() {
-      let clientH = document.documentElement.clientHeight;
-      this.tableHeight = clientH - 64 - 140; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
-    },
     // 字段宽度设置
     fieldWidth(dom, len){
       let theadWidth = document.querySelector(dom).offsetWidth + 240 - 97;
@@ -1059,6 +1082,14 @@ export default {
           });
         }
       }
+    },
+    // 高度自适应
+    heightAdaptive() {
+      let clientH = document.documentElement.clientHeight;
+      this.clientW = document.documentElement.clientWidth;
+      this.contentH =  clientH - 65 +'px';
+      this.contentbodyH = clientH - 138 + 'px';
+      this.tableHeight = clientH - 222; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
     },
   },
   computed: {}

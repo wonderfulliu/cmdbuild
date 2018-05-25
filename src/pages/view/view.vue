@@ -8,7 +8,7 @@
             <template slot="title">
               查询配置信息列表
             </template>
-            <MenuItem :key="index" 
+            <MenuItem :key="index"
                       :name="'1-' + index + 1"
                       style="padding-left: 25px"
                       :class="{'ivu-menu-item-active':menuActive&&index==0}"
@@ -20,7 +20,7 @@
         </Menu>
       </Sider>
       <!-- 内容区域 -->
-      <Layout class="miniWindow" :style="{height:contentbodyH}">
+      <Layout class="miniWindow" :style="{height:contentH}" style="overflow: hidden">
         <Header class="layout-header-bar">
           <Row>
             <Col span="1">
@@ -58,46 +58,48 @@
             </Col>
           </Row>
         </Header>
-        <Content>
-          <Table
-            stripe
-            border
-            size="small"
-            @on-sort-change="sorting"
-            :height="tableHeight"
-            :loading='loading'
-            :columns="columns"
-            :data="data"
-            ref="table"></Table>
-          <div style="line-height: 64px;height:auto;">
-            <Row>
-              <Col span="14" offset="1" style="text-align: left">
-                <ButtonGroup>
-                  <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
-                </ButtonGroup>
-              </Col>
-              <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:8}" :lg="{span:8}" style="text-align: right">
-                <Row>
-                  <Col span="6">
-                    共 {{ totalBar }} 条
-                  </Col>
-                  <Col span="2">
-                    <Button type="text" icon="chevron-left" @click="pageFirst" :disabled="firstCl" title="首页"></Button>
-                  </Col>
-                  <Col span="14" style="width: 190px;text-align: center">
-                    <Page simple
-                          show-total
-                          :page-size="20"
-                          :current="pageNum"
-                          :total="totalBar"
-                          @on-change="pageChange"></Page>
-                  </Col>
-                  <Col span="2">
-                    <Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button>
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
+        <Content :style="{height:contentbodyH}">
+          <div class="contentBody">
+            <Table
+              stripe
+              border
+              size="small"
+              @on-sort-change="sorting"
+              :height="tableHeight"
+              :loading='loading'
+              :columns="columns"
+              :data="data"
+              ref="table"></Table>
+            <div style="line-height: 64px;height: 64px; overflow: hidden">
+              <Row>
+                <Col :xs="{span:4,offset:1}" :sm="{span:4,offset:1}" :md="{span:13,offset:1}" :lg="{span:14,offset:1}" style="text-align: left">
+                  <ButtonGroup>
+                    <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
+                  </ButtonGroup>
+                </Col>
+                <Col :xs="{span:18}" :sm="{span:18}" :md="{span:10}" :lg="{span:9}" style="text-align: right">
+                  <Row>
+                    <Col span="6">
+                      共 {{ totalBar }} 条
+                    </Col>
+                    <Col span="2">
+                      <Button type="text" icon="chevron-left" @click="pageFirst" :disabled="firstCl" title="首页"></Button>
+                    </Col>
+                    <Col span="14" style="width: 190px;text-align: center">
+                      <Page simple
+                            show-total
+                            :page-size="20"
+                            :current="pageNum"
+                            :total="totalBar"
+                            @on-change="pageChange"></Page>
+                    </Col>
+                    <Col span="2">
+                      <Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </div>
           </div>
         </Content>
       </Layout>
@@ -127,9 +129,10 @@ export default {
       pageNum: 1,     //当前页
       totalBar: 0,    //条数
       totalPage: null,  //总页数
-      //样式
-      contentbodyH: '',//内容区域高度
-      tableHeight: '', //表格高度区域
+      //配置高度
+      contentH: "",
+      contentbodyH: "", //内容区域高度
+      tableHeight: "", //表格高度
       //设置
       menuActive: true, //侧栏默认选中
       isCollapsed: false,
@@ -440,8 +443,9 @@ export default {
     // 高度自适应
     heightAdaptive(){
       let clientH = document.documentElement.clientHeight;
-      this.contentbodyH = (clientH - 64) + 'px';
-      this.tableHeight = clientH - 64 - 160;//133包括按钮区域, margin-top, 分页所在区域
+      this.contentH =  clientH - 65 +'px';
+      this.contentbodyH = clientH - 139 + 'px';
+      this.tableHeight = clientH - 223; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
     },
     //字段排序
     sorting(s){

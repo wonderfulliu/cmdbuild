@@ -140,8 +140,7 @@
       #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content {
         background: #fff;
         margin-top: 10px;
-        min-height: 260px;
-        overflow-y: auto; }
+        min-height: 260px; }
         #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .formContainer {
           width: 500px;
           padding: 20px 0;
@@ -292,5 +291,9 @@ tr.ivu-table-row-highlight.ivu-table-row-hover td {
 
 .ivu-page-simple .ivu-page-simple-pager input {
   width: 50px; }
+
+.fieldSearch .ivu-select-dropdown ul.ivu-dropdown-menu {
+  overflow-y: auto;
+  max-height: 400px; }
 
 /*# sourceMappingURL=base.css.map */
