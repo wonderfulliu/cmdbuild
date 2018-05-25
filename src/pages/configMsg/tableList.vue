@@ -119,9 +119,9 @@
 export default {
   props: {
     tableName: {
-  type: String,
-    required: true
-},
+      type: String,
+      required: true
+    },
     tableCname: {
       type: String,
       required: true
@@ -409,7 +409,7 @@ export default {
       _this.loading = false; //加载完成时
     },
     getTableData() {//表格数据获取
-      this.pageNum = this.pageNums;
+      // this.pageNum = this.pageNums;
       let _this = this;
       _this.loading = true; //加载中
       if (_this.tableType == "view" || _this.tableType == "dashboard") {
@@ -941,43 +941,92 @@ export default {
         let data = 'tableName=' + this.tableName + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=' + this.pageSize;
         // console.log(data);
         this.$http.post('/cardController/attribubtesFuzzyQuery', data).then(info => {
-          // console.log(info);
-          if (info.data.list.length != 0) {
-            //获取表头数据：
-            let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
-            let arrObj = [];
-            arrA.forEach((v, i) => {
-              let oTemp = {};
-              let markName = this.attributeCName(v);
-              let cname;
-              if (markName != null) {
-                cname = markName.cname;
-                oTemp.title = cname;
-                oTemp.key = v;
-                oTemp.position = markName.position;
-                oTemp.ellipsis = true;
-                oTemp.sortable = true;
-                arrObj.push(oTemp);
+          if (info.data.totalPage < info.data.pageNum) {
+            this.pageNum = 1;
+            this.pageDisabled();
+            data = 'tableName=' + this.tableName + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=' + this.pageSize;
+            // 重新发送请求, 并且处理数据
+            this.$http.post('/cardController/attribubtesFuzzyQuery', data).then(info => {
+              // 正常处理数据
+              if (info.data.list.length != 0) {
+                //获取表头数据：
+                let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
+                let arrObj = [];
+                arrA.forEach((v, i) => {
+                  let oTemp = {};
+                  let markName = this.attributeCName(v);
+                  let cname;
+                  if (markName != null) {
+                    cname = markName.cname;
+                    oTemp.title = cname;
+                    oTemp.key = v;
+                    oTemp.position = markName.position;
+                    oTemp.ellipsis = true;
+                    oTemp.sortable = true;
+                    arrObj.push(oTemp);
+                  }
+                });
+                let len = arrObj.length; //记录表头数量
+                let width = this.fieldWidth(".contentBody .ivu-table-header", len);
+                arrObj.forEach((v, i) => {
+                  v.width = width;
+                });
+
+                // 表头字段排序
+                arrObj.sort(function(a, b) {
+                  return Number(a.position) - Number(b.position);
+                });
+
+                let newArr = arrObj;
+                this.ConfigThead = newArr;
+                this.initTableColumn(this.ConfigThead);
+                this.tableDataProce(info);
+              } else {
+                // 这个表示没查到数据
+                this.ConfigTdata = [];
+                this.loading = false;
               }
-            });
-            let len = arrObj.length; //记录表头数量
-            let width = this.fieldWidth(".contentBody .ivu-table-header", len);
-            arrObj.forEach((v, i) => {
-              v.width = width;
-            });
-
-            // 表头字段排序
-            arrObj.sort(function(a, b) {
-              return Number(a.position) - Number(b.position);
-            });
-
-            let newArr = arrObj;
-            this.ConfigThead = newArr;
-            this.initTableColumn(this.ConfigThead);
-            this.tableDataProce(info);
+            })
           } else {
-            this.ConfigTdata = [];
-            this.loading = false;
+            // 正常处理数据
+            if (info.data.list.length != 0) {
+              //获取表头数据：
+              let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
+              let arrObj = [];
+              arrA.forEach((v, i) => {
+                let oTemp = {};
+                let markName = this.attributeCName(v);
+                let cname;
+                if (markName != null) {
+                  cname = markName.cname;
+                  oTemp.title = cname;
+                  oTemp.key = v;
+                  oTemp.position = markName.position;
+                  oTemp.ellipsis = true;
+                  oTemp.sortable = true;
+                  arrObj.push(oTemp);
+                }
+              });
+              let len = arrObj.length; //记录表头数量
+              let width = this.fieldWidth(".contentBody .ivu-table-header", len);
+              arrObj.forEach((v, i) => {
+                v.width = width;
+              });
+
+              // 表头字段排序
+              arrObj.sort(function(a, b) {
+                return Number(a.position) - Number(b.position);
+              });
+
+              let newArr = arrObj;
+              this.ConfigThead = newArr;
+              this.initTableColumn(this.ConfigThead);
+              this.tableDataProce(info);
+            } else {
+              // 这个表示没查到数据
+              this.ConfigTdata = [];
+              this.loading = false;
+            }
           }
 
         })

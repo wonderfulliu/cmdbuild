@@ -83,7 +83,7 @@ export default {
       flags: false,
       tOrf: true,//使侧边栏搜索到的内容在上面显示, 而不是被覆盖在下面
       relationMsg: '',
-      pageNums: 1,
+      pageNums: 1,//关系定位用的
       Id: null,
     };
   },
