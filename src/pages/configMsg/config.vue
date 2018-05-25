@@ -50,7 +50,8 @@
                      :dashboardName="dashboardName"
                      @sTof="getMfs"
                      :pageNums="pageNums"
-                     :Id="Id">
+                     :Id="Id"
+                     :ConfigTreeData="ConfigTreeData">
         </router-view>
       </transition>
 

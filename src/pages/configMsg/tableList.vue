@@ -158,7 +158,7 @@ export default {
     },
     Mode: {
       type: String,
-      required: true
+      // required: true
     },
     funcionName: {
       type: String,

@@ -44,6 +44,7 @@ export default {
       tableName: '',// 原表表名
       // now的关系表名
       relationTable: '',
+      relationTableCname: '',//关系表中文名
       // 下拉框数据
       selectNow: "",
       selectFuture: "",
@@ -107,9 +108,13 @@ export default {
           }
         }
       ],
-      data: []
+      data: [],
+      isExist: false,//判断该关系表是否存在
     };
   },
+  props: [
+    'ConfigTreeData'
+  ],
   created() {
     this.getMsg();
     this.getDomainList();
@@ -175,7 +180,7 @@ export default {
     // 获取now select框数据
     getnowSelectdata(){
       let data = this.relationMsg;
-      // console.log(data);
+      console.log(data);
       let now = [];
       for (let k in data.relationMsg) {
         let obj = {};
@@ -210,13 +215,17 @@ export default {
     },
     // 查看下拉框变化时触发
     selectN(value){
-      // console.log(value);
-      // console.log(this.domainListMsg);
       this.domainListMsg.forEach((v, i) => {
         if (v.domainname == value) {
           this.relationTable = v.relationTable;
         }
       })
+      // 获取关系表的中文名
+      for(let k in this.CEtableMsg) {
+        if (k == this.relationTable) {
+          this.relationCtable = this.CEtableMsg[k];
+        }
+      }
       this.getTabledata(value);
     },
     // 添加数据下拉框变化的时候
@@ -341,6 +350,11 @@ export default {
     },
     // 关系记录跳转到对应表的所在的位置
     relationJump(value){
+      this.gettableEname(this.ConfigTreeData, this.relationCtable);
+      if (!this.isExist) {
+        this.$Message.warning('您暂无权限查看该表');
+        return false;//如果表不存在, 那么不进行跳转
+      }
       let relationCtable = '';
       let pageNum = 1;
       let jiluId = value.row.Id;
@@ -365,9 +379,19 @@ export default {
           this.$router.push({ path: "/config/tableList" });
         }
       })
-      
-      
-      
+    },
+    // 获取对应表的英文名
+    gettableEname(tableMenu, tableCname){
+      tableMenu.forEach((v, i) => {
+        if (v.children && v.children.length > 0) {
+          this.gettableEname(v.children, tableCname);
+        } else {
+          if (v.title == tableCname) {
+            // 找到了
+            this.isExist = true;
+          }
+        }
+      })
     },
   }
 };
