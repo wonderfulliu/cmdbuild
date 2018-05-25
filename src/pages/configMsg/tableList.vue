@@ -457,6 +457,7 @@ export default {
           .then((info) => {
             _this.getViewTableHead(info);
             _this.viewDataProce(info);
+            this.pageDisabled();//解决搜索->不搜索时尾页禁用问题
           });
       } else {
         _this.$http
@@ -475,6 +476,7 @@ export default {
           .then((info) => {
             _this.getTableHead(info);
             _this.tableDataProce(info);
+            this.pageDisabled();//解决搜索->不搜索时尾页禁用问题
           });
       }
     },
@@ -967,7 +969,6 @@ export default {
       this.fielddataObj = dataObj;
       if (JSON.stringify(dataObj) != "{}") {
         let data = 'tableName=' + this.tableName + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=' + this.pageSize;
-        // console.log(data);
         this.$http.post('/cardController/attribubtesFuzzyQuery', data).then(info => {
           if (info.data.totalPage < info.data.pageNum) {
             this.pageNum = 1;
