@@ -66,22 +66,34 @@
                 </Button>
                 <DropdownMenu slot="list">
                   <DropdownItem :disabled='isdisable'>
-                    <div @click="ctrlEdit">编辑</div>
+                    <div style="text-align: center" @click="ctrlEdit">
+                      <icon type="ios-compose-outline"></icon> 编辑
+                    </div>
                   </DropdownItem>
                   <DropdownItem :disabled='isdisable'>
-                    <div @click="configAdd">新增</div>
+                    <div style="text-align: center" @click="configAdd">
+                      <icon type="ios-plus-empty"></icon> 新增
+                    </div>
                   </DropdownItem>
                   <DropdownItem :disabled='isdisable'>
-                    <div @click="ctrlDele">删除</div>
+                    <div style="text-align: center" @click="ctrlDele">
+                      <icon type="ios-trash-outline"></icon> 删除
+                    </div>
                   </DropdownItem>
                   <DropdownItem>
-                    <div @click="ctrlHistory">历史</div>
+                    <div style="text-align: center" @click="ctrlHistory">
+                      <icon type="ios-paper-outline"></icon> 历史
+                    </div>
                   </DropdownItem>
                   <DropdownItem>
-                    <div @click="ctrlRelete">关系</div>
+                    <div style="text-align: center" @click="ctrlRelete">
+                      <icon type="ios-infinite"></icon> 关系
+                    </div>
                   </DropdownItem>
                   <DropdownItem>
-                    <div @click="configDownload">下载</div>
+                    <div style="text-align: center" @click="configDownload">
+                      <icon type="ios-download-outline"></icon> 下载
+                    </div>
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>

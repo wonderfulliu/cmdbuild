@@ -26,12 +26,12 @@
                   视图
                 </MenuItem>
               </router-link>
-              <!-- <router-link to="/workFlow" active-class>
+               <router-link to="/workFlow" active-class>
                 <MenuItem name="4">
                   <Icon type="pin"></Icon>
                   工作流
                 </MenuItem>
-              </router-link> -->
+              </router-link>
               <router-link to="/chart/dashboard" active-class>
                 <MenuItem name="5">
                   <Icon type="stats-bars"></Icon>

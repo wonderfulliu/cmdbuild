@@ -108,7 +108,7 @@
       .ivu-menu-vertical{
         .ivu-menu-submenu{
           .ivu-menu{
-            max-height: 480px;
+            max-height: 460px;
             overflow-y: auto;
           }
         }
@@ -135,7 +135,7 @@
                 }
                 .ivu-menu{
                   .treeContent {
-                    overflow-y: auto;
+                    overflow-y: scroll;
                     height: 400px;
                     // height: 250px;
 
