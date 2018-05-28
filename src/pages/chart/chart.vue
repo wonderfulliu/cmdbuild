@@ -69,7 +69,7 @@ export default {
     getSelectMenuData(item){
       this.sideMenu.active = false;
       this.sideMenu.currentItem = item;
-      console.log(item)
+      // console.log(item)
       this.$router.push({ path: "/chart/dashboard" });
     },
     // 高度自适应
