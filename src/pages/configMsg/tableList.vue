@@ -19,7 +19,7 @@
                           <Icon type="ios-arrow-right"></Icon>
                         </DropdownItem>
                         <DropdownMenu slot="list" style="padding-left: 10px;padding-right: 10px;">
-                          <Input size="small" v-model="item.value"></Input>
+                          <Input size="small" v-model.trim="item.value"></Input>
                         </DropdownMenu>
                     </Dropdown>
                   </div>
