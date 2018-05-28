@@ -43,7 +43,7 @@
                               <Icon type="ios-arrow-right"></Icon>
                             </DropdownItem>
                             <DropdownMenu slot="list">
-                              <Input v-model="item.value"></Input>
+                              <Input v-model.trim="item.value"></Input>
                             </DropdownMenu>
                         </Dropdown>
                       </div>
@@ -332,7 +332,7 @@ export default {
       if (this.searchMsg != '') {
         this.search();
       }else if (JSON.stringify(this.fielddataObj) != "{}") {
-        this.fieldSearch();
+        this.fieldSearch(page);
       } else {
         this.gettableMsg();
       }
@@ -357,7 +357,7 @@ export default {
       if (this.searchMsg != '') {
         this.search();
       }else if (JSON.stringify(this.fielddataObj) != "{}") {
-        this.fieldSearch();
+        this.fieldSearch(this.pageNum);
       } else {
         this.gettableMsg();
       }
@@ -370,7 +370,7 @@ export default {
       if (this.searchMsg != '') {
         this.search();
       }else if (JSON.stringify(this.fielddataObj) != "{}") {
-        this.fieldSearch();
+        this.fieldSearch(this.pageNum);
       } else {
         this.gettableMsg();
       }
@@ -455,8 +455,11 @@ export default {
       this.gettableMsg();
     },
     // 字段搜索
-    fieldSearch(flag){
-      this.pageNum = 1;
+    fieldSearch(page){
+      // 搜索后点击分页, 页数正常显示的原因是如果传入页数, 就不在设置 this.page = 1, 而是传入的页数
+      if (!page) {
+        this.pageNum = 1;
+      }
       this.loading = true;
       let dataObj = {};
       // 选择出: 处于选中状态 && 搜索内容不为空 的内容发送给后台
@@ -466,7 +469,6 @@ export default {
           dataObj[v.cName] = v.value;
         }
       })
-      // console.log(dataObj);
       this.fielddataObj = dataObj;
       if (JSON.stringify(dataObj) != "{}") {
         let data = 'functionName=' + this.tableName + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=20';
