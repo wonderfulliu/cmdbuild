@@ -131,7 +131,7 @@ export default {
             );
           }
           let objTree = this.objFunc(oData); //将得到的数据转换成需要的格式
-          this.ConfigTreeData = this.getEnter(objTree);
+          this.ConfigTreeData = this.getEnter(objTree); //设置选中或者展开状态
           this.ConfigTreeData = this.newTreeFunc(objTree); //打开侧栏第一个选项
         });
     },
@@ -340,7 +340,7 @@ export default {
         this.tableCname = v.title;
       }
     },
-    // 找最内层
+    // 找最内层, 设置选中或者展开状态
     getEnter(obj){
       obj.forEach((v, i) => {
         if (v.children && v.children.length > 0) {

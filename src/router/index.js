@@ -32,6 +32,9 @@ import dashboard from '@/pages/chart/dashboard'
 import view from '@/pages/view/view'
 // 工作流
 import workflow from '@/pages/workFlow/workFlow'
+import operate from '@/pages/workFlow/operate'
+import byself from '@/pages/workFlow/ways/byself'
+import byexcel from '@/pages/workFlow/ways/byexcel'
 // search
 import search from '@/pages/search/search'
 import result from '@/pages/search/result'
@@ -148,6 +151,23 @@ export default new Router({
           path: '/workflow',
           name: 'workFlow',
           component: workflow
+        },
+        {
+          path: '/workflow/operate',
+          name: 'operate',
+          component: operate,
+          children: [
+            {
+              path: 'byself',
+              name: 'byself',
+              component: byself
+            },
+            {
+              path: 'byexcel',
+              name: 'byexcel',
+              component: byexcel
+            },
+          ]
         },
         {
           path: '/search',
