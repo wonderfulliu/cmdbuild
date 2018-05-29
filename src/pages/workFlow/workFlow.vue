@@ -271,6 +271,7 @@ export default {
       //单选框组的值   this.sceneGroup
       //当前行的标识
       //传值并跳转页面
+      this.$router.push({path: 'workflow/operate/byself'});
     },
     chooseSceneCancel(){
       //清空单选框组的值
