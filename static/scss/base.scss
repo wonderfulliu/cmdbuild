@@ -439,4 +439,13 @@ tr.ivu-table-row-highlight.ivu-table-row-hover{
   }
 }
 
+//modal
+.ivu-modal{
+  .modalBody{
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+}
+
 
