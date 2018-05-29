@@ -2,7 +2,7 @@
   <Layout>
     <Layout>
       <Content>
-        <h1 style="text-align: left;font-family: 'Microsoft JhengHei';padding-left: 15px;">任务列表</h1>
+        <h1 style="text-align: left;font-family: 'Microsoft JhengHei';padding-left: 15px;">任务列表<button @click="$router.push({path: '/workflow/operate/byself'})">跳转</button></h1>
         <Table border
                stripe
                size="small"

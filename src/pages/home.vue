@@ -26,7 +26,7 @@
                   视图
                 </MenuItem>
               </router-link>
-              <router-link to="/workFlow" active-class>
+              <router-link to="/workflow" active-class>
                 <MenuItem name="4">
                   <Icon type="pin"></Icon>
                   工作流
