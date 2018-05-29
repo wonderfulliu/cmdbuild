@@ -144,6 +144,7 @@ export default {
               };
               thead.push(end);
               this.wfColumns = thead;
+              this.initTableColumn(this.wfColumns);
             }
             this.getTableData(info.data);
           });
@@ -248,6 +249,7 @@ export default {
         sessionStorage.setItem("Modify_thead",JSON.stringify(arrObj));
         newArr.push(end);
         this.wfColumns = newArr;
+        this.initTableColumn(this.wfColumns);
       }
     },
     //获取表格数据
@@ -270,6 +272,7 @@ export default {
       //单选框组的值   this.sceneGroup
       //当前行的标识
       //传值并跳转页面
+      this.$router.push({path: 'workflow/operate/byself'});
     },
     chooseSceneCancel(){
       //清空单选框组的值
@@ -318,6 +321,17 @@ export default {
       let clientH = document.documentElement.clientHeight;
       this.contentbodyH = clientH - 140 + 'px';
       this.tableHeight = clientH - 215; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
+    },
+    // 获取当前行详细信息
+    initTableColumn(columnName){
+      for(let i = 0; i < columnName.length; i++){
+        if(!columnName[i].render) {
+          this.$set(columnName[i], 'ellipsis', true);
+          this.$set(columnName[i], 'render', (h, params) => {
+            return h('span', {attrs: {title: params.row[params.column.key]}}, params.row[params.column.key]);
+          });
+        }
+      }
     },
   }
 }
