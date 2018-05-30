@@ -40,7 +40,7 @@
 export default {
   data() {
     return {
-      current: 0, //到第几步了
+      current: 1, //到第几步了
       way: "byself" //录入的方式
     };
   },

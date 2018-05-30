@@ -112,7 +112,7 @@ export default {
           .get('/cardController/getCardList?table=Modify&pageNum='+
                   this.pageNum+'&pageSize='+this.pageSize)
           .then(info =>{
-            console.log(info.data);
+            // console.log(info.data);
             this.totalPage = info.data.totalPage;
             this.totalRecord = info.data.totalRecord;
             let thead = JSON.parse(sessionStorage.getItem("Modify_thead"));
@@ -135,7 +135,7 @@ export default {
                       style: {},
                       on: {
                         click: () => {
-                          console.log(params.row);
+                          // console.log(params.row);
                           this.modalScene = true;
                         }
                       }
@@ -212,7 +212,8 @@ export default {
                         style: {},
                         on: {
                           click: () => {
-                            console.log(params.row);
+                            // console.log(params.row);
+                            this.modalScene = true;
                           }
                         }
                       },"详情")
