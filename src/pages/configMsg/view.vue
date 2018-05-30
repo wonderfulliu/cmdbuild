@@ -151,14 +151,13 @@ export default {
   },
   created() {
     this.getasideMsg();
-    this.heightAdaptive();
+    this.heightAdaptive();//高度自适应
   },
   mounted () {
     let _this = this;
     window.onresize = () => {
       _this.heightAdaptive();
     }
-    // this.initTableColumn(this.columns);
   },
   computed: {
     rotateIcon() {
@@ -177,20 +176,16 @@ export default {
     // 获取侧边栏数据
     getasideMsg() {
       let groupName = JSON.parse(sessionStorage.getItem('groupInfo')).Description;
-      // console.log(JSON.parse(sessionStorage.getItem('groupInfo')));
       let data = '?groupName=' + groupName;
       this.$http.get("/viewController/getViewList" + data).then(
         info => {
           if (info.status == 200) {
             this.sideMenuData = info.data;//侧栏全部数据并赋值
-            // console.log(this.sideMenuData);
             //如果tableName为空, 则默认显示第一个
             if (this.tableName == "") {
               this.tableName = this.sideMenuData[0].SourceFunction;
             }
-            // console.log(this.$refs.submenu1);
             this.gettableMsg();
-            // console.log(this.$refs.submenu1);
           }
         },
         function(info) {
