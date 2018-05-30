@@ -59,10 +59,7 @@
             <Radio label="ydhl">印度黑羚</Radio>
           </RadioGroup>
         </div>
-
       </Modal>
-
-
     </Layout>
   </Layout>
 </template>

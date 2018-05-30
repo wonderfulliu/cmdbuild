@@ -16,6 +16,7 @@
         <Card style="margin:15px">
           <div>
             <Chart :chartdata="clv"></Chart>
+
           </div>
         </Card>
         </Col>
@@ -38,6 +39,17 @@
   </Layout>
 </template>
 
+<style>
+
+  .spinLoading{
+    animation: ani-demo-spin 1s linear infinite;
+  }
+  @keyframes ani-demo-spin {
+    from { transform: rotate(0deg);}
+    50%  { transform: rotate(180deg);}
+    to   { transform: rotate(360deg);}
+  }
+</style>
 <script>
   export default {
     props: {
