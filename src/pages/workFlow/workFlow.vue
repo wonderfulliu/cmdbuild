@@ -3,7 +3,7 @@
     <Layout class="miniWindow">
       <Header ref="conBhead" :style="{padding: 0}" class="layout-header-bar">
         <Row>
-          <Col span="3" offset="1">
+          <Col span="8" offset="1">
             <h1 style="text-align: left;font-family: 'Microsoft JhengHei';">任务列表</h1>
           </Col>
         </Row>
@@ -21,7 +21,7 @@
           </Table>
           <div style="line-height: 64px; height: 64px;" id="pagerCont">
             <Row>
-              <Col :xs="{span:18}" :sm="{span:13}" :md="{span:10}" :lg="{span:8}" style="text-align: right">
+              <Col :xs="{span:20,offset:4}" :sm="{span:13,offset:11}" :md="{span:10,offset:14}" :lg="{span:8,offset:16}" style="text-align: right">
               <Row>
                 <Col span="6">
                 共 {{ totalRecord }} 条
@@ -59,10 +59,7 @@
             <Radio label="ydhl">印度黑羚</Radio>
           </RadioGroup>
         </div>
-
       </Modal>
-
-
     </Layout>
   </Layout>
 </template>
@@ -112,7 +109,6 @@ export default {
           .get('/cardController/getCardList?table=Modify&pageNum='+
                   this.pageNum+'&pageSize='+this.pageSize)
           .then(info =>{
-            // console.log(info.data);
             this.totalPage = info.data.totalPage;
             this.totalRecord = info.data.totalRecord;
             let thead = JSON.parse(sessionStorage.getItem("Modify_thead"));

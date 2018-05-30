@@ -87,7 +87,12 @@ const store = new Vuex.Store({
 
 Vue.component('Chart',{
   name: 'Chart',
-  template: `<div :id="'chart'+random1+'a'+random2" style="height:320px"></div>`,
+  template: `<div :id="'chart'+random1+'a'+random2" style="height:320px">
+            <Spin fix v-show="spinShow">
+              <Icon type="load-a" size=18 class="spinLoading"></Icon>
+              <div>Loading</div>
+            </Spin>
+              </div>`,
   props: {
     chartdata: {
       type: Object,
@@ -96,6 +101,7 @@ Vue.component('Chart',{
   },
   data: function () {
     return {
+      spinShow: false,
       random1: Math.floor(Math.random()*100000),
       random2: Math.floor(Math.random()*100000)
     }
@@ -113,6 +119,7 @@ Vue.component('Chart',{
   methods: {
     //获取图表数据
     getChartsMsg(msg){
+      this.spinShow = true;
       this.$http
         .get('/dashboardController/getData?xField=' + msg.chartAttr.xField +
           '&yField=' + msg.chartAttr.yField +
@@ -264,6 +271,7 @@ Vue.component('Chart',{
       }
       mChart.clear();//清空画布，防止缓存
       mChart.setOption(option);
+      this.spinShow = false;
       //mChart.hideLoading();
 
     }
