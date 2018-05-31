@@ -421,5 +421,14 @@ export default {
     text-align: left;
     margin-left: 20px;
   }
+  .ivu-form-item-label{
+    padding: 10px 0 10px 10px;
+    margin-left: 5px;
+    width: 50px !important;
+    text-align: left;
+  }
+  .ivu-form-item-content{
+    margin-left: 55px !important;
+  }
 }
 </style>

@@ -47,7 +47,9 @@
                   :page-size='20'
                   :current="pageNum"
                   :total="totalRecord"
-                  @on-change="pageChange"></Page>
+                  @on-change="pageChange"
+                  simple>
+            </Page>
           </div>
         </div>
       </Content>
