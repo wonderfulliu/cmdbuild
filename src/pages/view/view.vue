@@ -24,9 +24,7 @@
         <Header class="layout-header-bar">
           <Row>
             <Col span="1">
-              <div>
-                <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
-              </div>
+              <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
             </Col>
 
             <Col span="3">

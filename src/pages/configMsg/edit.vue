@@ -3,6 +3,9 @@
     <div id="editContainer">
       <Header class="layout-header-bar">
         <Row>
+          <Col span="1">
+            <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
+          </Col>
           <Col span="9" offset="1" style="text-align: left">
             <Breadcrumb>
               <BreadcrumbItem to="/config/tableList">配置信息</BreadcrumbItem>
@@ -10,7 +13,7 @@
               <BreadcrumbItem>编辑</BreadcrumbItem>
             </Breadcrumb>
           </Col>
-          <Col span="9" offset="5">
+          <Col span="9" offset="4">
           <div class="floatRight">
             <Button type="primary" style="margin-right: 8px" @click="cancel">取消</Button>
             <Button type="success" @click="submit">提交</Button>
@@ -49,6 +52,16 @@
 </template>
 <script>
 export default {
+  props: {
+    collapsedSider: {
+      type: Function,
+      default: null
+    },
+    rotateIcon: {
+      type: Array,
+      default: null
+    }
+  },
   data() {
     return {
       editMsg: "",//用于渲染的数据
