@@ -846,14 +846,11 @@ export default {
                 tableName: this.tableName, //表名
                 Id: this.recordId, //记录Id
                 relationMsg: info.data, //与该记录有关系的表与表中的记录
-                disabled: this.isdisable,//权限也要传递过去
+                disabled: this.isdisable,//登录人员对该关系的权限也要传递过去
               };
               this.$store.commit("getrelationMsg", data);
               this.$router.push({ path: "/config/relation" });
-            } else if (
-              info.status == 200 &&
-              Object.keys(info.data).length == 0
-            ) {
+            } else if (info.status == 200 && Object.keys(info.data).length == 0 ) {
               this.$Message.error({
                 content: "该记录尚未与其他记录关联, 查询关系不存在"
               });
@@ -862,7 +859,7 @@ export default {
       } else {
         this.$Message.error("您未选中行！");
       }
-    },
+    }, 
     configDele() {
       let _this = this;
       _this.deleLoading = true;

@@ -76,6 +76,10 @@ export default {
       addData: '',//要添加的数据
       tableHeight: '',//表格的高度
       contentbodyH: '', //内容区域的高度
+      // 回显添加后的关系数据时使用
+      tableName: '',//原表名
+      recordId: '', //原表的纪录
+      isdisable: '', //是否禁用
     };
   },
   created() {
@@ -93,6 +97,9 @@ export default {
       this.NorOne = refMsg.NorOne;
       this.tableId = refMsg.tableId;
       this.dataProcess(this.reftitleMsg, this.reftableMsg);
+      this.tableName = this.$store.state.relationMsg.tableName;
+      this.recordId = this.$store.state.relationMsg.Id;
+      this.isdisable = this.$store.state.relationMsg.disabled;
     },
     //刚进入该页面时表格数据的处理
     dataProcess(titleMsg, tableMsg) {
@@ -344,6 +351,22 @@ export default {
       // console.log(data);
       this.addData = data;
     },
+    // 如果要动态渲染数据, 就需要每次操作成功后, 再次发送请求新的数据, 但是每次请求返回的都是多个关系表, 并不是单个的
+    getNewdata(){
+      let data = { table: this.tableName, Id: this.recordId };
+      this.$http.post("/relationController/getRelationList", data).then(info => {
+        if (info.status == 200 && Object.keys(info.data).length != 0) {
+          let data = {
+            tableName: this.tableName, //表名
+            Id: this.recordId, //记录Id
+            relationMsg: info.data, //与该记录有关系的表与表中的记录
+            disabled: this.isdisable,//登录人员对该关系的权限也要传递过去
+          };
+          this.$store.commit("getrelationMsg", data);
+          this.$router.push({ path: "/config/relation" });
+        }
+      });
+    },
     // 确认按钮
     confirm() {
       this.$http.post('/relationController/relation', this.addData).then(info => {
@@ -351,17 +374,16 @@ export default {
           if (info.data == 'ok') {
             this.$Message.success({
               content: '关系添加成功'
-            })
-            this.$router.go(-1);
+            });
+            this.getNewdata();
+            // this.$router.go(-1);
           } else {
             this.$Message.error({
               content: '关系添加失败'
             })
-            // this.$router.go(-1);
           }
         }
       })
-      // this.$router.go(-1);
     },
     // 取消按钮
     cancel() {
@@ -379,7 +401,9 @@ export default {
 </script>
 
 <style lang="scss">
-#relationTableContainer {
-
+#relationTableContainer{
+  .ivu-checkbox-wrapper{
+    margin-right: 0;
+  }
 }
 </style>

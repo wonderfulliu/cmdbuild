@@ -63,6 +63,7 @@ export default {
           let arra = v;
           arra.user = _this.formInline.user;
           _this.getAuthority(arra.Description); //将获取到的权限信息推送到公共仓库
+          _this.gettableName();
           sessionStorage.setItem("groupInfo", JSON.stringify(arra)); //分组信息存入session
         }
       });
@@ -121,7 +122,17 @@ export default {
           sessionStorage.setItem("Mode", JSON.stringify(info.data));
         }
       });
-    }
+    },
+    // 获取所有表的中文名
+    gettableName() {
+      this.$http.get("/cardController/getTableList").then(info => {
+        if (info.status == 200) {
+          this.tableMsg = info.data;
+          this.$store.commit('gettableMsg', this.tableMsg);//把tableMsg放置到公共数据仓库
+          sessionStorage.setItem("gettableMsg", JSON.stringify(info.data));
+        }
+      });
+    },
   }
 };
 </script>

@@ -25,7 +25,6 @@ export default {
     };
   },
   created() {
-    this.gettableName();
     this.$store.commit('getIndex', 0);//清空result时存的点击的侧边栏的序列
   },
   methods: {
@@ -74,15 +73,6 @@ export default {
           // 失败的回调
         }
       );
-    },
-    // 获取所有表的中文名
-    gettableName() {
-      this.$http.get("/cardController/getTableList").then(info => {
-        if (info.status == 200) {
-          this.tableMsg = info.data;
-          this.$store.commit('gettableMsg', this.tableMsg);//把tableMsg放置到公共数据仓库
-        }
-      });
     },
     //提示信息
     alertMsg() {

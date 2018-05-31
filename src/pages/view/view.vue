@@ -270,17 +270,18 @@ export default {
         fieldArr.push(field);
       }
       // 如果this.fieldData.length > 0 && this.field中对象的属性与dataArr[0]的属性相同, 说明不需要更新fieldData
-      let flag = false;//用来判断是否需要更新this.field的值
+      let flag = true;//用来判断是否需要更新this.field的值
       if (this.fieldData.length > 0) {
         Object.keys(dataArr[0]).forEach((v, i) => {
           this.fieldData.forEach((val, j) => {
-            if (val.cName == v && i == j) {
-              flag = true;
+            if (i == j && val.cName != v) {
+              flag = false;
             }
           })
         })
         if (!flag) {
-          this.fieldData = fieldArr;//将获取到的数据给字段搜索渲染
+          // 如果不一样, 说明表头有更新, 需要更新表头
+          this.fieldData = fieldArr;
         }
       } else {
         this.fieldData = fieldArr;//将获取到的数据给字段搜索渲染

@@ -196,6 +196,7 @@ export default {
           }else if (select[0].type == "view") {
             this.funcionName = select[0].funcionName; //viewfuncionName
             this.$router.push({path: '/config/cview'});
+            // console.log(this.funcionName);
           }else if(select[0].type == "dashboard"){
             this.dashboardName = select[0].title; //获取表中文名
             this.$router.push({path: '/config/cDashboard'});

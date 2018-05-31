@@ -1,35 +1,44 @@
 <template>
   <Layout>
-  <div id="relationContainer">
-    <Header style="padding: 0" class="layout-header-bar">
-      <Form :label-width="80">
-        <Row>
-          <Col span="10">
-            <FormItem label="查看:">
-              <Select @on-change="selectN" v-model="selectNow" clearable filterable>
-                <Option v-for="(item, index) in now" :value="item.value" :key="index">{{ item.label }} </Option>
-              </Select>
-            </FormItem>
-          </Col>
-          <Col span="10" offset="1">
-            <FormItem label="新增:">
-              <Select @on-change="selectF" label-in-value v-model="selectFuture" clearable filterable>
-                <Option v-for="(item, index) in future" :value="item.value" :key="index">{{ item.label }}</Option>
-              </Select>
-            </FormItem> 
-          </Col>
-          <Col span="2" offset="1">
-            <Button type="ghost" title="返回" icon="reply" @click="back"></Button>
-          </Col>
-        </Row>
-      </Form>
-    </Header>
-    <Content class="contentTable">
-      <div class="contentBody">
-        <Table height="400" :columns="columns" :data="data" no-data-text="请选择要查看的数据"></Table>
-      </div>
-    </Content>
-  </div>
+    <div id="relationContainer">
+      <Header style="padding: 0" class="layout-header-bar">
+        <Form :label-width="80">
+          <Row>
+            <Col class="bread" span="7">
+              <Breadcrumb>
+                <BreadcrumbItem to="/config/tableList">配置信息</BreadcrumbItem>
+                <!-- 原表名 -->
+                <BreadcrumbItem to="">{{tableName}}</BreadcrumbItem>
+                <!-- 关系表名 -->
+                <BreadcrumbItem v-if="relationTable">{{relationTable}}</BreadcrumbItem>
+              </Breadcrumb>
+            </Col>
+            <Col span="8">
+              <FormItem label="查看:">
+                <Select @on-change="selectN" v-model="selectNow" clearable filterable>
+                  <Option v-for="(item, index) in now" :value="item.value" :key="index">{{ item.label }} </Option>
+                </Select>
+              </FormItem>
+            </Col>
+            <Col span="8">
+              <FormItem label="新增:">
+                <Select @on-change="selectF" label-in-value v-model="selectFuture" clearable filterable>
+                  <Option v-for="(item, index) in future" :value="item.value" :key="index">{{ item.label }}</Option>
+                </Select>
+              </FormItem> 
+            </Col>
+            <Col span="1">
+              <Button type="ghost" title="返回" icon="reply" @click="back"></Button>
+            </Col>
+          </Row>
+        </Form>
+      </Header>
+      <Content class="contentTable">
+        <div class="contentBody">
+          <Table height="400" :columns="columns" :data="data" no-data-text="请选择要查看的数据"></Table>
+        </div>
+      </Content>
+    </div>
   </Layout>
 </template>
 
@@ -122,13 +131,13 @@ export default {
   methods: {
     // 获取到公共仓库的数据: 表Id 表名 关系表表名与内容
     getMsg() {
-      this.CEtableMsg = this.$store.state.tableMsg; //获取中英文对照表名
+      this.CEtableMsg = JSON.parse(sessionStorage.getItem("gettableMsg")); //获取中英文对照表名
       this.relationMsg = this.$store.state.relationMsg; //获取到待渲染的关系数据
       this.tableName = this.relationMsg.tableName;//原表表名
       this.tableId = this.relationMsg.Id;//原表的纪录的Id
       this.isdisable = this.relationMsg.disabled;//关系的权限状态
     },
-    // 一进入页面, 就请求表的关系表的数据
+    // 一进入页面, 就请求表的关系表的数据, 获取到的是中间表, 需要处理数据获取到关系表
     getDomainList() {
       let data = "?table=" + this.tableName;
       this.$http.get("/relationController/getDomainList" + data).then(info => {
@@ -138,7 +147,7 @@ export default {
           let relationArr = [];//用来存储与该表的该条纪录有关系的表(多)
           info.data.forEach((v, i) => {
             let obj = {};//用来存储与该表的该条纪录有关系的表(单)
-            let NandOne = v.domaincardinality.split(":");
+            let NandOne = v.domaincardinality.split(":"); //这是个数组, 存储的是表与关系表的 N:N 关系
             if (this.tableName == v.domainclass2) {
               obj.relationTable = v.domainclass1;//关系表名
               obj.crelationTable = this.EtoC(this.CEtableMsg, v.domainclass1, v.domainname);//关系表中文名, 用于渲染
@@ -166,7 +175,6 @@ export default {
     // 获取future select数据
     getfutureSelectdata(){
       let data = this.domainListMsg;
-      // console.log(data);
       let future = [];
       data.forEach((v, i) => {
         let obj = {};
@@ -175,12 +183,10 @@ export default {
         future.push(obj);
       })
       this.future = future;
-      // console.log(this.future);
     },
     // 获取now select框数据
     getnowSelectdata(){
       let data = this.relationMsg;
-      console.log(data);
       let now = [];
       for (let k in data.relationMsg) {
         let obj = {};
@@ -319,6 +325,7 @@ export default {
                 this.relationMsg.relationMsg[k].forEach((v, i) => {
                   if (v.Id == thisId) {
                     this.relationMsg.relationMsg[k].splice(i, 1);
+                    this.selectNow = ''; //删除后, 清空已选中的关系表的名字
                     this.getTabledata(tableName);
                   }
                 });
@@ -335,14 +342,15 @@ export default {
         }
       })
     },
-    // 拼接中英文名字
+    // 拼接中英文名字, 返回的是中间表英文名与关系表的中文名
     EtoC(CEtable, ename, domainname) {
+      let cEname;
       for (let k in CEtable) {
         if (ename == k) {
-          ename = domainname + `(` + CEtable[k] + `)`;
+          cEname = domainname + `(` + CEtable[k] + `)`;
         }
       }
-      return ename;
+      return cEname;
     },
     // 返回按钮
     back() {
@@ -397,7 +405,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #relationContainer {
   .ivu-layout-header{
     .ivu-form{
@@ -408,6 +416,10 @@ export default {
         }
       }
     }
+  }
+  .ivu-breadcrumb{
+    text-align: left;
+    margin-left: 20px;
   }
 }
 </style>

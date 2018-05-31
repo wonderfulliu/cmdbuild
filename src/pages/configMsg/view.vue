@@ -1,126 +1,96 @@
 <template>
-  <div id="viewContainer">
-    <Layout>
-      <!-- 侧边栏 -->
-      <Sider ref="side1" hide-trigger collapsible width="240" :collapsed-width="0" v-model="isCollapsed">
-        <Menu theme="dark" width="auto" :open-names="['1']" :class="menuitemClasses" :active-name="'1-' + [clickWhichone + 1]" accordion>
-          <Submenu name="1" ref="submenu1">
-            <template slot="title">
-              查询配置信息列表
-            </template>
-            <MenuItem :key="index"
-                      :name="'1-' + index + 1"
-                      style="padding-left: 25px"
-                      :class="{'ivu-menu-item-active':menuActive&&index==0}"
-                      v-for="(item, index) in sideMenuData"
-                      @click.native="menuSelected(item, index)">
-              {{item.Description}}
-            </MenuItem>
-          </Submenu>
-        </Menu>
-      </Sider>
-      <!-- 内容区域 -->
-      <Layout class="miniWindow" :style="{height:contentH}" style="overflow: hidden">
-        <Header class="layout-header-bar">
+  <!-- 内容区域 -->
+  <Layout class="miniWindow" :style="{height:contentH}" style="overflow: hidden">
+    <Header class="layout-header-bar">
+      <Row>
+        <Col span="1">
+          <div>
+            <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
+          </div>
+        </Col>
+
+        <Col span="3">
+          <Dropdown class="fieldSearch" trigger="click" placement="bottom-start">
+              <Button type="primary">
+                字段筛选 
+                <Icon type="arrow-down-b"></Icon>
+              </Button>
+              <DropdownMenu slot="list">
+                  <div id="field">
+                    <Dropdown trigger="click" placement="right" v-for="(item, index) in fieldData" :key="index" >
+                        <DropdownItem>
+                          <Checkbox v-model="item.flag" @on-change="fieldSearch"></Checkbox>{{item.cName}}
+                          <Icon type="ios-arrow-right"></Icon>
+                        </DropdownItem>
+                        <DropdownMenu slot="list">
+                          <Input v-model.trim="item.value"></Input>
+                        </DropdownMenu>
+                    </Dropdown>
+                  </div>
+              </DropdownMenu>
+          </Dropdown>
+        </Col>
+
+        <Col span="12" offset="3">
+          <Input v-model="searchMsg" placeholder="Enter something...">
+            <Button slot="append" type="info" icon="ios-search" @click="search">搜索</Button>
+          </Input>
+        </Col>
+      </Row>
+    </Header>
+    <Content :style="{height:contentbodyH}">
+      <div class="contentBody">
+        <Table
+          stripe
+          border
+          size="small"
+          @on-sort-change="sorting"
+          :height="tableHeight"
+          :loading='loading'
+          :columns="columns"
+          :data="data"
+          ref="table">
+        </Table>
+        <div style="line-height: 64px;height: 64px; overflow: hidden">
           <Row>
-            <Col span="1">
-              <div>
-                <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
-              </div>
+            <Col :xs="{span:4,offset:1}" :sm="{span:4,offset:1}" :md="{span:13,offset:1}" :lg="{span:14,offset:1}" style="text-align: left">
+              <ButtonGroup>
+                <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
+              </ButtonGroup>
             </Col>
-
-            <Col span="3">
-              <Dropdown class="fieldSearch" trigger="click" placement="bottom-start">
-                  <Button type="primary">
-                    字段筛选 
-                    <Icon type="arrow-down-b"></Icon>
-                  </Button>
-                  <DropdownMenu slot="list">
-                      <div id="field">
-                        <Dropdown trigger="click" placement="right" v-for="(item, index) in fieldData" :key="index" >
-                            <DropdownItem>
-                              <Checkbox v-model="item.flag" @on-change="fieldSearch"></Checkbox>{{item.cName}}
-                              <Icon type="ios-arrow-right"></Icon>
-                            </DropdownItem>
-                            <DropdownMenu slot="list">
-                              <Input v-model.trim="item.value"></Input>
-                            </DropdownMenu>
-                        </Dropdown>
-                      </div>
-                  </DropdownMenu>
-              </Dropdown>
-            </Col>
-
-            <Col span="12" offset="3">
-              <Input v-model="searchMsg" placeholder="Enter something...">
-                <Button slot="append" type="info" icon="ios-search" @click="search">搜索</Button>
-              </Input>
-            </Col>
-          </Row>
-        </Header>
-        <Content :style="{height:contentbodyH}">
-          <div class="contentBody">
-            <Table
-              stripe
-              border
-              size="small"
-              @on-sort-change="sorting"
-              :height="tableHeight"
-              :loading='loading'
-              :columns="columns"
-              :data="data"
-              ref="table"></Table>
-            <div style="line-height: 64px;height: 64px; overflow: hidden">
+            <Col :xs="{span:18}" :sm="{span:18}" :md="{span:10}" :lg="{span:9}" style="text-align: right">
               <Row>
-                <Col :xs="{span:4,offset:1}" :sm="{span:4,offset:1}" :md="{span:13,offset:1}" :lg="{span:14,offset:1}" style="text-align: left">
-                  <ButtonGroup>
-                    <Button type="ghost" title="下载" icon="ios-download-outline" @click="exportData"></Button>
-                  </ButtonGroup>
+                <Col span="6">
+                  共 {{ totalBar }} 条
                 </Col>
-                <Col :xs="{span:18}" :sm="{span:18}" :md="{span:10}" :lg="{span:9}" style="text-align: right">
-                  <Row>
-                    <Col span="6">
-                      共 {{ totalBar }} 条
-                    </Col>
-                    <Col span="2">
-                      <Button type="text" icon="chevron-left" @click="pageFirst" :disabled="firstCl" title="首页"></Button>
-                    </Col>
-                    <Col span="14" style="width: 190px;text-align: center">
-                      <Page simple
-                            show-total
-                            :page-size="20"
-                            :current="pageNum"
-                            :total="totalBar"
-                            @on-change="pageChange"></Page>
-                    </Col>
-                    <Col span="2">
-                      <Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button>
-                    </Col>
-                  </Row>
+                <Col span="2">
+                  <Button type="text" icon="chevron-left" @click="pageFirst" :disabled="firstCl" title="首页"></Button>
+                </Col>
+                <Col span="14" style="width: 190px;text-align: center">
+                  <Page simple
+                        show-total
+                        :page-size="20"
+                        :current="pageNum"
+                        :total="totalBar"
+                        @on-change="pageChange"></Page>
+                </Col>
+                <Col span="2">
+                  <Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button>
                 </Col>
               </Row>
-            </div>
-          </div>
-        </Content>
-      </Layout>
-    </Layout>
-  </div>
+            </Col>
+          </Row>
+        </div>
+      </div>
+    </Content>
+  </Layout>
 </template>
 <script>
 export default {
   data() {
     return {
-      asideMsg: [
-        {
-          title: "查询配置信息列表",
-          expand: true,
-          children: []
-        }
-      ],
       //数据
-      tableName: "",  //表名
       searchMsg: "",
-      sideMenuData: [],//侧栏菜单全部数据
       //表格配置
       data: [],
       columns: [],
@@ -134,75 +104,74 @@ export default {
       contentbodyH: "", //内容区域高度
       tableHeight: "", //表格高度
       //设置
-      menuActive: true, //侧栏默认选中
-      isCollapsed: false,
       searched: false,
       firstCl: true,//首页是否禁用
       lastCl: false,//尾页是否禁用
       // 字段排序
       sortAttribute: '', //排序的字段
       sort: '', //排序的方式
-      // 点击侧边栏哪个表格
-      clickWhichone: 0,
       // 字段搜索相关
       fieldData: [],//待渲染字段数据(表头所有字段)
       fielddataObj: {},//存储字段搜索的条件, 判断是否为空
     };
   },
+  props: {
+    // 接收变化的表名
+    funcionName: {
+      type: String,
+      required: true
+    },
+    // 下面是侧边栏合起来与旋转
+    collapsedSider: {
+      type: Function,
+      default: null
+    },
+    rotateIcon: {
+      type: Array,
+      default: null
+    },
+  },
   created() {
-    this.getasideMsg();
-    this.heightAdaptive();//高度自适应
+    this.gettableMsg();
+    this.heightAdaptive();
   },
   mounted () {
     let _this = this;
     window.onresize = () => {
       _this.heightAdaptive();
     }
-  },
-  computed: {
-    rotateIcon() {
-      return ["menu-icon", this.isCollapsed ? "rotate-icon" : ""];
-    },
-    menuitemClasses() {
-      return ["menu-item", this.isCollapsed ? "collapsed-menu" : ""];
-    },
+    // this.initTableColumn(this.columns);
   },
   watch: {
     searchMsg: function (val) {//对input中的数据进行监听, 有变化会触发
       this.searched = false;
+    },
+    'funcionName': function () {
+      this.gettableMsg();
     }
   },
   methods: {
-    // 获取侧边栏数据
-    getasideMsg() {
-      let groupName = JSON.parse(sessionStorage.getItem('groupInfo')).Description;
-      let data = '?groupName=' + groupName;
-      this.$http.get("/viewController/getViewList" + data).then(
-        info => {
-          if (info.status == 200) {
-            this.sideMenuData = info.data;//侧栏全部数据并赋值
-            //如果tableName为空, 则默认显示第一个
-            if (this.tableName == "") {
-              this.tableName = this.sideMenuData[0].SourceFunction;
+    // 获取表格数据
+    gettableMsg() {
+      this.loading = true;
+      let data = { funcionName: this.funcionName, pageNum: this.pageNum, sortAttribute: this.sortAttribute, sort: this.sort};
+      this.$http
+        .post("/viewController/getViewCardList", this.$qs.stringify(data))
+        .then(
+          info => {
+            // 成功的回调
+            if (info.status == 200) {
+              // console.log(info.data);
+              this.dataProcess(info);
             }
-            this.gettableMsg();
+          },
+          info => {
+            // 失败的回调
           }
-        },
-        function(info) {
-          alert(info);
-        }
-      );
-    },
-    //点击侧栏获取表信息
-    menuSelected(msg, index){
-      this.menuActive = false;
-      //console.log(msg.Description);//获取中文表名
-      //console.log(msg.SourceFunction);//获取英文表名
-      // 把点击的表的序列存入公共仓库(此处没有编辑等操作, 不必存入公共仓库等操作)
-      // this.$store.commit('getIndex', index);
-      this.searchMsg = '';
-      this.tableName = msg.SourceFunction;
-      this.gettableMsg();
+        )
+        .catch(error => {
+          console.log(error);
+        });
     },
     //表格数据的处理
     dataProcess(info) {
@@ -246,7 +215,7 @@ export default {
         len ++;
       }
       // 设置表头每个td的宽度--77是action的宽度
-      let theadWidth = document.querySelector('.ivu-layout-content .ivu-table-header').offsetWidth - 97 + 240;
+      let theadWidth = document.querySelector('.contentBody .ivu-table-header').offsetWidth - 97 + 240;
       width = theadWidth / len > 150 ? theadWidth / len : 150;
       //获取表头
       let fieldArr = [];//表头字段搜索
@@ -265,17 +234,18 @@ export default {
         fieldArr.push(field);
       }
       // 如果this.fieldData.length > 0 && this.field中对象的属性与dataArr[0]的属性相同, 说明不需要更新fieldData
-      let flag = false;//用来判断是否需要更新this.field的值
+      let flag = true;//用来判断是否需要更新this.field的值
       if (this.fieldData.length > 0) {
         Object.keys(dataArr[0]).forEach((v, i) => {
           this.fieldData.forEach((val, j) => {
-            if (val.cName == v && i == j) {
-              flag = true;
+            if (i == j && val.cName != v) {
+              flag = false;
             }
           })
         })
         if (!flag) {
-          this.fieldData = fieldArr;//将获取到的数据给字段搜索渲染
+          // 如果不一样, 说明表头有更新, 需要更新表头
+          this.fieldData = fieldArr;
         }
       } else {
         this.fieldData = fieldArr;//将获取到的数据给字段搜索渲染
@@ -297,28 +267,6 @@ export default {
       });
       this.data = newcontentArr;
       this.loading = false;
-    },
-    // 获取表格数据
-    gettableMsg() {
-      this.loading = true;
-      let data = { funcionName: this.tableName, pageNum: this.pageNum, sortAttribute: this.sortAttribute, sort: this.sort};
-      this.$http
-        .post("/viewController/getViewCardList", this.$qs.stringify(data))
-        .then(
-          info => {
-            // 成功的回调
-            if (info.status == 200) {
-              // console.log(info.data);
-              this.dataProcess(info);
-            }
-          },
-          info => {
-            // 失败的回调
-          }
-        )
-        .catch(error => {
-          console.log(error);
-        });
     },
     // 页面跳转
     pageChange(page) {
@@ -372,12 +320,9 @@ export default {
     },
     // 搜索
     search() {
-      // if (this.searchMsg == '') {
-      //   return false;
-      // }
       this.searched = true;
       this.loading = true;
-      let data = { functionName: this.tableName, pageNum: this.pageNum, condition: this.searchMsg };
+      let data = { functionName: this.funcionName, pageNum: this.pageNum, condition: this.searchMsg };
       this.$http
         .post("/viewController/fuzzyQuery", this.$qs.stringify(data))
         .then(
@@ -391,10 +336,6 @@ export default {
             console.log(info);
           }
         );
-    },
-    // 侧边栏收起功能
-    collapsedSider() {
-      this.$refs.side1.toggleCollapse();
     },
     // 表详情展示
     show(index) {
@@ -417,9 +358,9 @@ export default {
     // 下载功能
     exportData() {
       if (this.searchMsg && this.searched) {
-        var data = '?functionName='+ this.tableName + '&condition=' + this.searchMsg;
+        var data = '?functionName='+ this.funcionName + '&condition=' + this.searchMsg;
       } else {
-        var data = '?functionName='+ this.tableName;
+        var data = '?functionName='+ this.funcionName;
       }
 
       this.$http.get('/viewController/downLoadViewExcel' + data).then(info => {
@@ -466,7 +407,7 @@ export default {
       })
       this.fielddataObj = dataObj;
       if (JSON.stringify(dataObj) != "{}") {
-        let data = 'functionName=' + this.tableName + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=20';
+        let data = 'functionName=' + this.funcionName + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=20';
         // console.log(data);
         this.$http.post('/viewController/attribubtesFuzzyQuery', data).then(info => {
           // console.log(info);
@@ -498,8 +439,9 @@ export default {
 };
 </script>
 <style lang="scss">
-#viewContainer {
+.miniWindow {
   height: 100%;
+  width: 100%;
   margin-left: -1px;
   .fieldSearch{
     line-height: 0;
