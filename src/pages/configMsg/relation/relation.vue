@@ -8,9 +8,10 @@
               <Breadcrumb>
                 <BreadcrumbItem to="/config/tableList">配置信息</BreadcrumbItem>
                 <!-- 原表名 -->
-                <BreadcrumbItem to="">{{tableName}}</BreadcrumbItem>
+                <BreadcrumbItem to="">{{tableCname}}</BreadcrumbItem>
                 <!-- 关系表名 -->
-                <BreadcrumbItem v-if="relationTable">{{relationTable}}</BreadcrumbItem>
+                <BreadcrumbItem v-if="relationTable && relationTableCname">{{relationTableCname}}</BreadcrumbItem>
+                <BreadcrumbItem v-else-if="relationTable && !relationTableCname">{{relationTable}}</BreadcrumbItem>
               </Breadcrumb>
             </Col>
             <Col span="8">
@@ -51,6 +52,7 @@ export default {
       domainListMsg: "", //待渲染的中间表数据
       tableId: "",//表的Id, 注意这个不是关系表的Id, 而是原表的Id
       tableName: '',// 原表表名
+      tableCname: '', //原表中文名
       // now的关系表名
       relationTable: '',
       relationTableCname: '',//关系表中文名
@@ -134,6 +136,7 @@ export default {
       this.CEtableMsg = JSON.parse(sessionStorage.getItem("gettableMsg")); //获取中英文对照表名
       this.relationMsg = this.$store.state.relationMsg; //获取到待渲染的关系数据
       this.tableName = this.relationMsg.tableName;//原表表名
+      this.tableCname = this.EtoC(this.CEtableMsg, this.tableName);
       this.tableId = this.relationMsg.Id;//原表的纪录的Id
       this.isdisable = this.relationMsg.disabled;//关系的权限状态
     },
@@ -233,6 +236,7 @@ export default {
         }
       }
       this.getTabledata(value);
+      this.relationTableCname = this.EtoC(this.CEtableMsg, this.relationTable);
     },
     // 添加数据下拉框变化的时候
     selectF(value){
@@ -347,7 +351,11 @@ export default {
       let cEname;
       for (let k in CEtable) {
         if (ename == k) {
-          cEname = domainname + `(` + CEtable[k] + `)`;
+          if (domainname) {
+            cEname = domainname + `(` + CEtable[k] + `)`;
+          } else {
+            cEname = CEtable[k];
+          }
         }
       }
       return cEname;
