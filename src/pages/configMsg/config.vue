@@ -375,7 +375,7 @@ export default {
     },
     sideMenuHeight(){
       let clientH = document.documentElement.clientHeight;
-      this.treeContentH = clientH - 212+'px';
+      this.treeContentH = clientH - 65-24-41*2+'px';
     }
   }
 };

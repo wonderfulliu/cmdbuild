@@ -84,7 +84,6 @@
       #homeContainer .layout .ivu-layout .layout-header-bar .ivu-icon {
         cursor: pointer; }
       #homeContainer .layout .ivu-layout .ivu-menu-vertical .ivu-menu-submenu .ivu-menu {
-        max-height: 460px;
         overflow-y: auto; }
       #homeContainer .layout .ivu-layout .ivu-menu-vertical .ivu-menu-item {
         padding: 10px 25px;
