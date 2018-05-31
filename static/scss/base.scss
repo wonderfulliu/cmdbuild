@@ -39,6 +39,40 @@
     border-color: #285e8d;
   }
 }
+//分页组件中首尾页图标
+.pageBtn{
+  margin: 0;
+  border: 0;
+  height: 24px;
+  line-height: 24px;
+  font-size: 18px;
+  display: inline-block;
+  vertical-align: middle;
+  min-width: 32px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.disableBtn{
+  cursor: not-allowed;
+}
+
+.zIcon{
+  width: 7px;
+  height: 13px;
+  display: inline-block;
+
+}
+.firstPage{
+  background: url("../../src/img/icons/pageIcon.png") no-repeat 0px 2px;
+  background-size: 13px 10px;
+}
+.lastPage{
+  background: url("../../src/img/icons/pageIcon.png") no-repeat -7px 2px;
+  background-size: 13px 10px;
+}
+
+
 .floatRight {
   float: right;
   margin-right: 15px;
