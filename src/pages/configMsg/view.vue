@@ -23,7 +23,7 @@
                           <Icon type="ios-arrow-right"></Icon>
                         </DropdownItem>
                         <DropdownMenu slot="list">
-                          <Input v-model.trim="item.value"></Input>
+                          <Input size="small" v-model.trim="item.value" @on-enter="fsInput(item.flag)"></Input>
                         </DropdownMenu>
                     </Dropdown>
                   </div>
@@ -35,7 +35,7 @@
           <Input v-model="searchMsg" placeholder="Enter something...">
             <Button slot="append" type="info" icon="ios-search" @click="search">搜索</Button>
           </Input>
-        </Col>
+        </Col> 
       </Row>
     </Header>
     <Content :style="{height:contentbodyH}">
@@ -422,6 +422,12 @@ export default {
         })
       } else {
         this.gettableMsg();
+      }
+    },
+    //字段搜索，当输入框点击回车时
+    fsInput(flag){
+      if(flag){
+        this.fieldSearch();
       }
     },
     // 获取当前行详细信息
