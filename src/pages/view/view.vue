@@ -8,14 +8,16 @@
             <template slot="title">
               查询配置信息列表
             </template>
-            <MenuItem :key="index"
-                      :name="'1-' + index + 1"
-                      style="padding-left: 25px"
-                      :class="{'ivu-menu-item-active':menuActive&&index==0}"
-                      v-for="(item, index) in sideMenuData"
-                      @click.native="menuSelected(item, index)">
-              {{item.Description}}
-            </MenuItem>
+            <div :style="{height:menuContentH}">
+              <MenuItem :key="index"
+                        :name="'1-' + index + 1"
+                        style="padding-left: 25px"
+                        :class="{'ivu-menu-item-active':menuActive&&index==0}"
+                        v-for="(item, index) in sideMenuData"
+                        @click.native="menuSelected(item, index)">
+                {{item.Description}}
+              </MenuItem>
+            </div>
           </Submenu>
         </Menu>
       </Sider>
@@ -40,8 +42,10 @@
                               <Checkbox v-model="item.flag" @on-change="fieldSearch"></Checkbox>{{item.cName}}
                               <Icon type="ios-arrow-right"></Icon>
                             </DropdownItem>
-                            <DropdownMenu slot="list">
-                              <Input v-model.trim="item.value"></Input>
+                            <DropdownMenu slot="list" style="padding-left: 10px;padding-right: 10px;">
+                              <Input size="small"
+                                     v-model.trim="item.value"
+                                     @on-enter="fsInput(item.flag)"></Input>
                             </DropdownMenu>
                         </Dropdown>
                       </div>
@@ -131,6 +135,7 @@ export default {
       contentH: "",
       contentbodyH: "", //内容区域高度
       tableHeight: "", //表格高度
+      menuContentH: "",
       //设置
       menuActive: true, //侧栏默认选中
       isCollapsed: false,
@@ -445,6 +450,7 @@ export default {
       this.contentH =  clientH - 65 +'px';
       this.contentbodyH = clientH - 139 + 'px';
       this.tableHeight = clientH - 223; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
+      this.menuContentH = clientH - 65 - 42 + "px";
     },
     //字段排序
     sorting(s){
@@ -452,6 +458,12 @@ export default {
       this.sortAttribute = s.column.title;
       this.sort = s.order;
       this.gettableMsg();
+    },
+    //字段搜索，当输入框点击回车时
+    fsInput(flag){
+      if(flag){
+        this.fieldSearch();
+      }
     },
     // 字段搜索
     fieldSearch(page){
