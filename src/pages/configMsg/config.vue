@@ -8,7 +8,7 @@
             <template slot="title">
               配置信息列表
             </template>
-            <div class="treeContent">
+            <div class="treeContent" :style="{height:treeContentH}">
               <!--树状菜单-->
               <Tree :data="ConfigTreeData"
                     @on-select-change="getTreeNodes"></Tree>
@@ -18,27 +18,30 @@
             <template slot="title">
               应用组件
             </template>
-            <router-link to="/config/password">
-              <MenuItem name="2-5">修改账户密码</MenuItem>
-            </router-link>
-            <router-link to="/config/exportXLS">
-              <MenuItem name="2-2">导出XLS文件</MenuItem>
-            </router-link>
-            <router-link to="/config/importXLS">
-              <MenuItem name="2-1">导入XLS文件</MenuItem>
-            </router-link>
-            <router-link to="/config/exportRelate">
-              <MenuItem name="2-4">导出关系文件</MenuItem>
-            </router-link>
-            <router-link to="/config/importRelate">
-              <MenuItem name="2-3">导入关系文件</MenuItem>
-            </router-link>
+            <div :style="{height:treeContentH}">
+              <router-link to="/config/password">
+                <MenuItem name="2-5">修改账户密码</MenuItem>
+              </router-link>
+              <router-link to="/config/exportXLS">
+                <MenuItem name="2-2">导出XLS文件</MenuItem>
+              </router-link>
+              <router-link to="/config/importXLS">
+                <MenuItem name="2-1">导入XLS文件</MenuItem>
+              </router-link>
+              <router-link to="/config/exportRelate">
+                <MenuItem name="2-4">导出关系文件</MenuItem>
+              </router-link>
+              <router-link to="/config/importRelate">
+                <MenuItem name="2-3">导入关系文件</MenuItem>
+              </router-link>
+            </div>
+
           </Submenu>
           <Submenu name="3">
             <template slot="title">
               数据表
             </template>
-            <div class="treeContent">
+            <div class="treeContent" :style="{height:treeContentH}">
               <!--所有表格数据菜单-->
               <Tree :data="ConfigTreeData" @on-select-change="getTreeNodes"></Tree>
             </div>
@@ -92,6 +95,8 @@ export default {
       relationMsg: '',
       pageNums: 1,//关系定位用的
       Id: null,
+      //侧栏高度
+      treeContentH: '410px'
     };
   },
   created: function() {
@@ -104,6 +109,13 @@ export default {
     },
     rotateIcon() {
       return ["menu-icon", this.isCollapsed ? "rotate-icon" : ""];
+    }
+  },
+  mounted () {
+    let _this = this;
+    _this.sideMenuHeight();
+    window.onresize = () => {
+      _this.sideMenuHeight();
     }
   },
   watch:{
@@ -360,6 +372,10 @@ export default {
       this.Id = data.jiluId;
       this.searchedMsg = data.relationCtable;
     },
+    sideMenuHeight(){
+      let clientH = document.documentElement.clientHeight;
+      this.treeContentH = clientH - 212+'px';
+    }
   }
 };
 </script>

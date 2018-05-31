@@ -116,7 +116,7 @@ export default {
               this.getTHeadData(info.data);
             }else {
               let end = {
-                title: "Action",
+                title: "操作",
                 key: "action",
                 fixed: "right",
                 width: 80,
@@ -135,7 +135,7 @@ export default {
                           this.modalScene = true;
                         }
                       }
-                    },"详情")
+                    },"场景")
                   ]);
                 }
               };
@@ -148,7 +148,6 @@ export default {
       }else {
         //获取到搜索条件this.searchCondition
       }
-
     },
     //获取表头字段详细信息
     getAttributeList(){
