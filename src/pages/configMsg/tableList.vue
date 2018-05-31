@@ -19,9 +19,7 @@
                           <Icon type="ios-arrow-right"></Icon>
                         </DropdownItem>
                         <DropdownMenu slot="list" style="padding-left: 10px;padding-right: 10px;">
-                          <Input size="small"
-                                 v-model.trim="item.value"
-                                 @on-enter="fsInput(item.flag)"></Input>
+                          <Input size="small" v-model.trim="item.value" @on-enter="fsInput(item.flag)"></Input>
                         </DropdownMenu>
                     </Dropdown>
                   </div>
@@ -345,6 +343,10 @@ export default {
       if (!thead) {
         let _this = this;
         //获取表头数据：
+        if (info.data.list.length === 0) {
+          this.ConfigThead = []
+          return false;
+        }
         let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
         let arrObj = [];
         let fieldArr = [];//表头字段搜索
