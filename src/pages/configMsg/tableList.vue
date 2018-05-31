@@ -19,7 +19,9 @@
                           <Icon type="ios-arrow-right"></Icon>
                         </DropdownItem>
                         <DropdownMenu slot="list" style="padding-left: 10px;padding-right: 10px;">
-                          <Input size="small" v-model.trim="item.value"></Input>
+                          <Input size="small"
+                                 v-model.trim="item.value"
+                                 @on-enter="fsInput(item.flag)"></Input>
                         </DropdownMenu>
                     </Dropdown>
                   </div>
@@ -962,6 +964,12 @@ export default {
             });
           }
         });
+    },
+    //字段搜索，当输入框点击回车时
+    fsInput(flag){
+      if(flag){
+        this.fieldSearch();
+      }
     },
     // 字段搜索
     fieldSearch(flag){
