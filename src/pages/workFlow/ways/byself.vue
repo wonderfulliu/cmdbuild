@@ -14,7 +14,7 @@ export default {
       columns: [], //表头数据
       data: [], //表格数据
     }
-  }
+  } 
 };
 </script>
  

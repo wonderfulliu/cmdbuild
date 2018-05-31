@@ -6,16 +6,16 @@
         <Step title="数据库"></Step>
         <Step title="应用系统"></Step>
         <Step title="确认"></Step>
-      </Steps>
+      </Steps> 
     </div>
-    <div class="way">
+    <div class="way" v-show="isshow">
       <h2>请选择录入方式: </h2>
       <Select v-model="way" style="width:200px">
         <Option value="byself"><router-link to="/workflow/operate/byself">手动新增/修改CI内容</router-link></Option>
         <Option value="byexcel"><router-link to="/workflow/operate/byexcel">Excel批量新增/修改CI内容</router-link></Option>
       </Select>
     </div>
-    <div class="content">
+    <div class="content" v-show="isshow">
       <!-- 放置上传下载组件或者手动录入组件 -->
       <router-view></router-view>
     </div>
@@ -40,8 +40,9 @@
 export default {
   data() {
     return {
-      current: 0, //到第几步了
-      way: "byself" //录入的方式
+      current: 1, //到第几步了
+      way: "byself", //录入的方式
+      isshow: true, //是否显示录入方式
     };
   },
   watch: {
@@ -59,15 +60,25 @@ export default {
     step(value) {
       if (value == "next") {
         if (this.current == 3) {
+          this.isshow = false;
           return false;
         } else {
+          this.isshow = true;
           this.current += 1;
+          if (this.current == 3) {
+            this.isshow = false;
+          }
         }
       } else {
         if (this.current == 0) {
+          this.isshow = false;
           return false;
         } else {
+          this.isshow = true;
           this.current -= 1;
+          if (this.current == 0) {
+            this.isshow = false;
+          }
         }
       }
     },

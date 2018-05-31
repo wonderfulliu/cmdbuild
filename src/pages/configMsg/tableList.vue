@@ -253,7 +253,6 @@ export default {
     },
     'funcionName': function(newValue, oldValue){
       this.clearSort();
-      this.getTableAttribute();
       this.getTableData();
       this.getlookup();
       this.ischangetableName();
@@ -383,7 +382,7 @@ export default {
           this.clickRow = false;
           this.fieldData = JSON.parse(fieldArr);
         }
-      }
+      } 
     },
     // 判断是否切换表名, 切换, 则调用getTableHead的时候执行最下面函数, 否则不执行
     ischangetableName(){
@@ -452,7 +451,7 @@ export default {
       // this.pageNum = this.pageNums;
       let _this = this;
       _this.loading = true; //加载中
-      if (_this.tableType == "view" || _this.tableType == "dashboard") {
+      if (_this.tableType == "view") {
         _this.$http
           .post(
             "/viewController/getViewCardList?funcionName=" +

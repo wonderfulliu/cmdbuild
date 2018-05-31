@@ -131,7 +131,7 @@ export default {
                       style: {},
                       on: {
                         click: () => {
-                          console.log(params.row);
+                          // console.log(params.row);
                           this.modalScene = true;
                         }
                       }
@@ -207,7 +207,8 @@ export default {
                         style: {},
                         on: {
                           click: () => {
-                            console.log(params.row);
+                            // console.log(params.row);
+                            this.modalScene = true;
                           }
                         }
                       },"详情")

@@ -10,6 +10,7 @@ import home from '@/pages/home'
 import config from '@/pages/configMsg/config'
 import tableList from '@/pages/configMsg/tableList'
 import cDashboard from '@/pages/configMsg/dashboard'
+import cview from '@/pages/configMsg/view'
 import historyRecord from '@/pages/configMsg/history/history'
   // 添加, 编辑
 import cadd from '@/pages/configMsg/add'
@@ -72,6 +73,11 @@ export default new Router({
               path: 'cDashboard',
               name: 'cDashboard',
               component: cDashboard
+            },
+            {
+              path: 'cview',
+              name: 'cview',
+              component: cview
             },
             {
               path: 'historyRecord',  //历史记录

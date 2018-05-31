@@ -207,7 +207,7 @@ export default {
             this.$router.push({path: '/config/tableList'});
           }else if (select[0].type == "view") {
             this.funcionName = select[0].funcionName; //viewfuncionName
-            this.$router.push({path: '/config/tableList'});
+            this.$router.push({path: '/config/cview'});
           }else if(select[0].type == "dashboard"){
             this.dashboardName = select[0].title; //获取表中文名
             this.$router.push({path: '/config/cDashboard'});
