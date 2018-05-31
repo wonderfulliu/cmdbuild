@@ -37,15 +37,15 @@
             </div>
 
           </Submenu>
-          <Submenu name="3">
+          <!-- 放置所有数据表格 -->
+          <!-- <Submenu name="3">
             <template slot="title">
               数据表
             </template>
             <div class="treeContent" :style="{height:treeContentH}">
-              <!--所有表格数据菜单-->
               <Tree :data="ConfigTreeData" @on-select-change="getTreeNodes"></Tree>
             </div>
-          </Submenu>
+          </Submenu> -->
         </Menu>
       </Sider>
 
