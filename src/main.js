@@ -10,6 +10,7 @@ import querystring from 'querystring'
 import Vuex from 'vuex'
 import echarts from "echarts"
 import '../static/scss/base.css'   //公共样式
+import util from "./assets/common/util" //公共 js
 
 Vue.config.productionTip = false
 Vue.use(iView)
@@ -17,7 +18,7 @@ Vue.use(Vuex)
 Vue.prototype.$http = axios
 
 Vue.prototype.$qs = querystring;
-
+Vue.prototype.util = util
 //公共仓库存储数据
 const store = new Vuex.Store({
   state: {//里面放数据
