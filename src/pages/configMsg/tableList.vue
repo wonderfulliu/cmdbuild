@@ -49,7 +49,7 @@
         </Table>
         <div style="line-height: 64px; height: 64px;" id="pagerCont">
           <Row>
-            <Col :xs="{span:4,offset:1}" :sm="{span:10,offset:1}" :md="{span:13,offset:1}" :lg="{span:15,offset:1}" style="text-align: left">
+            <Col :xs="{span:4,offset:1}" :sm="{span:9,offset:1}" :md="{span:12,offset:1}" :lg="{span:15,offset:1}" style="text-align: left">
               <ButtonGroup v-if="clientW>=1102">
                 <!--<Button type="ghost" title="" icon="ios-eye" @click="ctrlView">查看</Button>-->
                 <Button type="ghost" title="" icon="ios-compose-outline" @click="ctrlEdit" :disabled='isdisable'>编辑</Button>
@@ -98,7 +98,7 @@
                 </DropdownMenu>
               </Dropdown>
             </Col>
-            <Col :xs="{span:18}" :sm="{span:13}" :md="{span:10}" :lg="{span:8}" style="text-align: right">
+            <Col :xs="{span:18}" :sm="{span:14}" :md="{span:11}" :lg="{span:8}" style="text-align: right">
               <Row>
                 <Col span="6">
                 共 {{ totalBar }} 条
@@ -159,7 +159,10 @@
         <span>查看记录</span>
       </p>
       <div class="modalListUl">
-        <ul>
+        <ul v-if="configViewData.lengh >= '20'">
+          <li>超过20条</li>
+        </ul>
+        <ul v-if="configViewData.lengh < '20'">
           <li v-for="(val, key ,index) in configViewData" :key="index">{{ key }} : {{ val }}</li>
         </ul>
       </div>
@@ -172,6 +175,14 @@
 <script>
 export default {
   props: {
+    clientH:{
+      type: Number,
+      default: 0
+    },
+    clientW:{
+      type: Number,
+      default: 0
+    },
     tableName: {
       type: String,
       required: true
@@ -228,7 +239,6 @@ export default {
       loading: true,
       highlight: true,
       clickRow: false,
-      clientW: "",
       //配置高度
       contentH: "",
       contentbodyH: "", //内容区域高度
@@ -252,13 +262,6 @@ export default {
     this.heightAdaptive();
     this.isgetTablename();
   },
-  mounted () {
-    let _this = this;
-    _this.heightAdaptive();
-    window.onresize = () => {
-      _this.heightAdaptive();
-    }
-  },
   watch:{
     'tableName': function(newValue, oldValue){
       this.clearSort();
@@ -275,7 +278,13 @@ export default {
     },
     'pageNums': function(newValue, oldValue){
       this.pageNum = this.pageNums;
-    }
+    },
+    'clientH': function (newValue, oldValue) {
+      this.heightAdaptive();
+    },
+    'clientW': function (newValue, oldValue) {
+      this.heightAdaptive();
+    },
   },
   methods: {
     // 切换表的时候清空排序的字段名和排序的规则
@@ -718,55 +727,41 @@ export default {
     },
     ctrlView(recordId) {
       let _this = this;
-        _this.$http
-          .get(
-            "/cardController/card?table=" +
-            _this.tableName +
-            "&Id=" +
-            recordId
-          )
-          .then(function(info) {
-            let newArr = [];
-            Object.keys(info.data).forEach(function(v, i) {
-              let newObj = {};
-              if (_this.attributeCName(v)) {
-                let attr = _this.attributeCName(v).cname;
-                let position = _this.attributeCName(v).position;
-                if (typeof info.data[v] == "object" && info.data[v] != null) {
-                  newObj[attr] = info.data[v].Description;
-                  newObj.position = position;
-                } else {
-                  newObj[attr] = info.data[v];
-                  newObj.position = position;
-                }
-                newArr.push(newObj);
+      _this.configViewModal = true;
+      _this.$http
+        .get(
+          "/cardController/card?table=" +
+          _this.tableName +
+          "&Id=" +
+          recordId
+        )
+        .then(function(info) {
+          let newArr = [];
+          Object.keys(info.data).forEach(function(v, i) {
+            let newObj = {};
+            if (_this.attributeCName(v)) {
+              let attr = _this.attributeCName(v).cname;
+              let position = _this.attributeCName(v).position;
+              if (typeof info.data[v] == "object" && info.data[v] != null) {
+                newObj[attr] = info.data[v].Description;
+                newObj.position = position;
+              } else {
+                newObj[attr] = info.data[v];
+                newObj.position = position;
               }
-            });
-            // 排序
-            newArr.sort(function(a, b) {
-              return Number(a.position) - Number(b.position);
-            });
-            // console.log(newArr);
-            let content = '';
-            newArr.forEach((v, i) => {
-              for(let k in v){
-              if (k != 'position') {
-                content += k + ': ' + v[k] + '<br>';
-              }
+              newArr.push(newObj);
             }
-          })
-            content = content.split('null').join('');//详情为null的显示为空
-            // console.log(content);
-            _this.$Modal.info({
-              title: "详细信息",
-              content: content
-            });
-            // _this.configViewData = newObj;
-          })
-          .catch(function(error) {
-            //  console.log(error);
           });
-        // _this.configViewModal = true;
+          // 排序
+          newArr.sort(function(a, b) {
+            return Number(a.position) - Number(b.position);
+          });
+           console.log(newArr);
+           _this.configViewData = newArr;
+        })
+        .catch(function(error) {
+          //  console.log(error);
+        });
     },
     /*ctrlView() {
       let _this = this;
@@ -1120,11 +1115,9 @@ export default {
     },
     // 高度自适应
     heightAdaptive() {
-      let clientH = document.documentElement.clientHeight;
-      this.clientW = document.documentElement.clientWidth;
-      this.contentH =  clientH - 65 +'px';
-      this.contentbodyH = clientH - 138 + 'px';
-      this.tableHeight = clientH - 222; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
+      this.contentH =  this.clientH - 65 +'px';
+      this.contentbodyH = this.clientH - 138 + 'px';
+      this.tableHeight = this.clientH - 222; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
     },
   },
   computed: {}
