@@ -50,7 +50,9 @@
       </Sider>
 
       <transition name="fade" mode="out-in">
-        <router-view :tableName="tableName"
+        <router-view :clientH="clientH"
+                     :clientW="clientW"
+                     :tableName="tableName"
                      :collapsedSider="collapsedSider"
                      :rotateIcon="rotateIcon"
                      @transferRecord="getRecordId"
@@ -96,6 +98,8 @@ export default {
       pageNums: 1,//关系定位用的
       Id: null,
       //侧栏高度
+      clientH: 0,//屏高
+      clientW: 0,//屏宽
       treeContentH: '410px'
     };
   },
@@ -374,8 +378,9 @@ export default {
       this.searchedMsg = data.relationCtable;
     },
     sideMenuHeight(){
-      let clientH = document.documentElement.clientHeight;
-      this.treeContentH = clientH - 65-24-41*2+'px';
+      this.clientH = document.documentElement.clientHeight;
+      this.clientW = document.documentElement.clientWidth;
+      this.treeContentH = this.clientH - 65-24-41*2+'px';
     }
   }
 };
