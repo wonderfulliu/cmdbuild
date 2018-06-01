@@ -361,6 +361,7 @@ export default {
     // 页面跳转
     pageChange(page) {
       this.pageNum = page;
+      this.pageDisabled();
       this.gettableMsg();
     },
     pageDisabled(){

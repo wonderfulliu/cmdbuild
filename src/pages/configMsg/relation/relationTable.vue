@@ -95,9 +95,10 @@ export default {
       this.relationTable = refMsg.relationTable;
       this.reftitleMsg = refMsg.reftitleMsg;
       this.reftableMsg = refMsg.reftableMsg;
-      this.domainlistMsg = this.$store.state.domainlistMsg;
       this.NorOne = refMsg.NorOne;
       this.tableId = refMsg.tableId;
+
+      this.domainlistMsg = this.$store.state.domainlistMsg;
       this.dataProcess(this.reftitleMsg, this.reftableMsg);
       this.tableName = this.$store.state.relationMsg.tableName;
       this.recordId = this.$store.state.relationMsg.Id;
@@ -129,7 +130,7 @@ export default {
       // 设置每个td的宽度(写在此处)
       let width = 150;
       //判断返回的表格数据是否有Id
-      let flag = this.hasId(dataArr[0]);
+      // let flag = this.hasId(dataArr[0]);
       //获取表头
       let newtitleArr = []; //存储最终要给columns的表头数据
       newtitleArr.push(start);
@@ -150,14 +151,14 @@ export default {
         v.width = width;
       });
       
-      if (flag) {
-        var Id = {
-          title: "Id",
-          key: "Id",
-          width: 100
-        };
-        newtitleArr.push(Id);
-      }
+      // if (flag) {
+      //   var Id = {
+      //     title: "Id",
+      //     key: "Id",
+      //     width: 100
+      //   };
+      //   newtitleArr.push(Id);
+      // }
       this.columns = newtitleArr;
 
       // 渲染表格数据

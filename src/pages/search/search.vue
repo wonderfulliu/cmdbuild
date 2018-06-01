@@ -26,7 +26,7 @@ export default {
   },
   created() {
     this.$store.commit('getIndex', 0);//清空result时存的点击的侧边栏的序列
-    this.tableMsg = this.$store.state.tableMsg;
+    this.tableMsg = JSON.parse(sessionStorage.getItem('gettableMsg')) || this.$store.state.tableMsg;
   },
   methods: {
     // 根据搜索的内容查询所有符合的表与记录
