@@ -61,7 +61,10 @@
                       共 {{ totalBar }} 条
                     </Col>
                     <Col span="2">
-                      <Button type="text" icon="chevron-left" @click="pageFirst" :disabled="firstCl" title="首页"></Button>
+                      <!--<Button type="text" icon="chevron-left" @click="pageFirst" :disabled="firstCl" title="首页"></Button>-->
+                      <button title="首页" type="button" class="pageBtn" :class="{'disableBtn':firstCl}" :disabled="firstCl" @click="pageFirst">
+                        <i class="zIcon firstPage"></i>
+                      </button>
                     </Col>
                     <Col span="14" style="width: 190px;text-align: center">
                     <Page simple
@@ -72,7 +75,10 @@
                           @on-change="pageChange"></Page>
                     </Col>
                     <Col span="2">
-                      <Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button>
+                      <!--<Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button>-->
+                      <button title="尾页" type="button" class="pageBtn" :class="{'disableBtn':lastCl}" :disabled="lastCl" @click="pageLast">
+                        <i class="zIcon lastPage"></i>
+                      </button>
                     </Col>
                   </Row>
                 </Col>
@@ -626,7 +632,7 @@ export default {
       let clientH = document.documentElement.clientHeight;
       this.contentbodyH = clientH - 65 + "px";
       this.tableHeight = clientH - 65 - 145; //133包括按钮区域, margin-top, 分页所在区域
-      this.treeContentH = clientH - 65 - 24 - 41 + 'px';
+      this.treeContentH = clientH - 65 - 41 + 'px';
     },
     // 获取当前行详细信息
     initTableColumn(columnName){
