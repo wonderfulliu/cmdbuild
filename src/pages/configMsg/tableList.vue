@@ -541,6 +541,9 @@ export default {
         }
       });
       // return false;
+      console.log(attr);
+      console.log(relatedt);
+      console.log(this.tableName);
       attr.forEach((v, i) => {
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
@@ -584,7 +587,7 @@ export default {
       addData.tableCname = this.tableCname;
       addData.titleMsg = attr;
       addData.Id = this.recordId;
-      // console.log(addData);
+      console.log(addData);
       this.$store.commit("getaddMsg", addData);
     },
     attributeCName(eName) {

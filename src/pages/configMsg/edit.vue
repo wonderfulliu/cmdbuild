@@ -89,7 +89,7 @@ export default {
     // 获取公共仓库的要渲染的数据
     getaddMsg(){
       this.editMsg = this.$store.state.addMsg.titleMsg;//待渲染的数据
-      // console.log(this.editMsg);
+      console.log(this.editMsg);
       this.jiluId = this.$store.state.addMsg.Id;//获取记录id
       this.tableName = this.$store.state.addMsg.tableName;//表名
       this.tableCname = this.$store.state.addMsg.tableCname;//表中文名
@@ -104,6 +104,7 @@ export default {
     },
     // 获取reference表头中文名数据
     getrefctMsg(relationTable){
+      console.log(relationTable);
       let data = { table: relationTable };
       this.$http.post('/cardController/getAttributeList', data).then(info => {
         if (info.status == 200) {
@@ -122,6 +123,7 @@ export default {
     },
     // 获取reference表格数据
     getrefMsg(relationTable){
+      console.log(relationTable);
       let data = "?table=" + relationTable + "&pageNum=" + 1;
       this.$http.get("/cardController/getCardList" + data).then(info => {
         if (info.status == 200) {
