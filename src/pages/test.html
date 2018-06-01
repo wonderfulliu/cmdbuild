@@ -1,189 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    .fa{
+      width: 500px;
+      height: 500px;
+      background-color: #ccc;
+      border: 1px solid #000;
+      position: relative;
+      margin-top: 100px;
+      margin-left: 50px;
+    }
+    .son{
+      width: 100px;
+      height: 100px;
+      background-color: red;
+      border: 1px solid #000;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+  </style>
 </head>
-
 <body>
-  <div id="app">
-    <button @click="gettableEname">查找</button>
+  <div class="fa">
+    <div class="son"></div>
   </div>
 </body>
 <script>
-  var app = new Vue({
-    el: '#app',
-    data() {
-      return {
-        data: [
-          {
-            name: "tab-1",
-            selected: false,
-            children: [
-              {
-                name: "hehe",
-                id: "tab-1-hehe-1",
-                selected: false,
-                children: [
-                  {
-                    name: "haha",
-                    id: "1",
-                    selected: false
-                  },
-                  {
-                    name: "haha1",
-                    selected: false
-                  },
-                  {
-                    name: "haha2",
-                    selected: false
-                  }
-                ]
-              },
-              {
-                name: "hehe2",
-                id: "tab-1-hehe2-1",
-                selected: false,
-                children: [
-                  {
-                    name: "haha",
-                    id: "2",
-                    selected: false
-                  },
-                  {
-                    name: "haha3",
-                    selected: false
-                  },
-                  {
-                    name: "haha4",
-                    selected: false
-                  }
-                ]
-              },
-              {
-                name: "hehe3",
-                selected: false,
-                children: [
-                  {
-                    name: "haha5",
-                    selected: false
-                  },
-                  {
-                    name: "haha6",
-                    selected: false
-                  },
-                  {
-                    name: "haha27",
-                    selected: false
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            name: "tab-2",
-            selected: false,
-            children: [
-              {
-                name: "hehe4",
-                selected: false,
-                children: [
-                  {
-                    name: "haha33",
-                    selected: false
-                  },
-                  {
-                    name: "haha64",
-                    selected: false
-                  },
-                  {
-                    name: "haha28",
-                    selected: false
-                  }
-                ]
-              },
-              {
-                name: "hehe244",
-                selected: false,
-                children: [
-                  {
-                    name: "haha666",
-                    selected: false
-                  },
-                  {
-                    name: "haha00",
-                    selected: false
-                  },
-                  {
-                    name: "haha42",
-                    selected: false
-                  }
-                ]
-              },
-              {
-                name: "hehe345",
-                id: "tab-2-hehe345-3",
-                selected: false,
-                children: [
-                  {
-                    name: "haha22233",
-                    selected: false
-                  },
-                  {
-                    name: "haha",
-                    id: "3",
-                    selected: false
-                  },
-                  {
-                    name: "haha33443",
-                    selected: false
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        flag: true,
-        tableDetailmsg: [],
-      }
-    },
-    methods: {
-      search() {
-        this.flag = true;
-        this.tableDetailmsg = [];
-        this.gettableEname(this.data, 'haha666');
-        console.log(this.tableDetailmsg);
-      },
-      gettableEname(data, name) {
-        let thisone;
-        let flag = true;
-        data.forEach((v, i) => {
-          if (!flag) {
-            return false;
-          }
-          if (!this.flag) {
-            this.tableDetailmsg.push(thisone);
-            flag = false;
-          }
-          thisone = v;
-          if (v.children && v.children.length > 0) {
-            this.gettableEname(v.children, name);
-          } else {
-            if (!this.flag) {
-              return false;
-            }
-            if (v.name == name) {
-              this.tableDetailmsg.push(v);
-              this.flag = false;
-            }
-          }
-        })
-      }
-    }
-  })
+  let fa = document.querySelector('.fa');
+  let son = document.querySelector('.son');
+  console.log(fa.scrollHeight);
+  console.log(fa.offsetHeight);
+  console.log(fa.clientHeight);
+  console.log(fa.scrollWidth);
+  console.log(fa.offsetWidth);
+  console.log(fa.clientWidth);
+  console.log('=============');
+  console.log(son.scrollHeight);
+  console.log(son.offsetHeight);
+  console.log(son.clientHeight);
+  console.log(son.scrollWidth);
+  console.log(son.offsetWidth);
+  console.log(son.clientWidth);
+  console.log('=============');
+  console.log(fa.scrolltop);
+  console.log(fa.offsettop);
+  console.log(fa.clienttop);
+  console.log(fa.scrollleft);
+  console.log(fa.offsetleft);
+  console.log(fa.clientleft);
+  console.log('=============');
 </script>
-
 </html>

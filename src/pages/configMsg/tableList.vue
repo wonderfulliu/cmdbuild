@@ -344,7 +344,7 @@ export default {
         let _this = this;
         //获取表头数据：
         if (info.data.list.length === 0) {
-          this.ConfigThead = []
+          this.ConfigThead = [];
           return false;
         }
         let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
