@@ -159,12 +159,26 @@
         <span>查看记录</span>
       </p>
       <div class="modalListUl">
-        <ul v-if="configViewData.lengh >= '20'">
-          <li>超过20条</li>
-        </ul>
-        <ul v-if="configViewData.lengh < '20'">
-          <li v-for="(val, key ,index) in configViewData" :key="index">{{ key }} : {{ val }}</li>
-        </ul>
+        <Row v-if="configViewData.length >= 20">
+          <Col span="12">
+          <ul>
+            <li v-if="index%2==0" v-for="(item ,index) in configViewData" :key="index">{{ item.Description }} : {{ item.value }}</li>
+          </ul>
+          </Col>
+          <Col span="12">
+          <ul>
+            <li v-if="index%2!=0" v-for="(item ,index) in configViewData" :key="index">{{ item.Description }} : {{ item.value }}</li>
+          </ul>
+          </Col>
+        </Row>
+        <Row v-if="configViewData.length < 20">
+          <Col span="24">
+            <ul>
+              <li v-for="(item ,index) in configViewData" :key="index">{{ item.Description }} : {{ item.value }}</li>
+            </ul>
+          </Col>
+        </Row>
+
       </div>
       <div slot="footer">
       </div>
@@ -743,10 +757,12 @@ export default {
               let attr = _this.attributeCName(v).cname;
               let position = _this.attributeCName(v).position;
               if (typeof info.data[v] == "object" && info.data[v] != null) {
-                newObj[attr] = info.data[v].Description;
+                newObj.Description = attr;
+                newObj.value = info.data[v].Description;
                 newObj.position = position;
               } else {
-                newObj[attr] = info.data[v];
+                newObj.Description = attr;
+                newObj.value= info.data[v];
                 newObj.position = position;
               }
               newArr.push(newObj);
@@ -756,8 +772,8 @@ export default {
           newArr.sort(function(a, b) {
             return Number(a.position) - Number(b.position);
           });
-           console.log(newArr);
            _this.configViewData = newArr;
+          console.log(_this.configViewData);
         })
         .catch(function(error) {
           //  console.log(error);
