@@ -332,4 +332,15 @@ tr.ivu-table-row-highlight.ivu-table-row-hover td {
   max-height: 300px;
   overflow-y: auto; }
 
+.spinLoading {
+  animation: ani-demo-spin 1s linear infinite; }
+
+@keyframes ani-demo-spin {
+  from {
+    transform: rotate(0deg); }
+  50% {
+    transform: rotate(180deg); }
+  to {
+    transform: rotate(360deg); } }
+
 /*# sourceMappingURL=base.css.map */

@@ -8,13 +8,16 @@
             <template slot="title">
               查询配置信息列表
             </template>
-            <MenuItem :key="index"
-                      :name="['1-']+[index+1]"
-                      style="padding-left: 25px"
-                      v-for="(item, index) in sideMenuData"
-                      @click.native="menuSelected(item, index)">
-              {{item.Description}}
-            </MenuItem>
+            <div :style="{height:treeContentH}">
+              <MenuItem :key="index"
+                        :name="['1-']+[index+1]"
+                        style="padding-left: 25px"
+                        v-for="(item, index) in sideMenuData"
+                        @click.native="menuSelected(item, index)">
+                {{item.Description}}
+              </MenuItem>
+            </div>
+
           </Submenu>
         </Menu>
       </Sider>
@@ -133,6 +136,8 @@ export default {
       lastCl: false,//尾页是否禁用
       // 点击侧边栏哪个表格
       clickWhichone: 0,
+      //侧栏高度
+      treeContentH: ""
     };
   },
   created() {
@@ -157,6 +162,8 @@ export default {
   methods: {
     //点击侧栏获取表信息
     menuSelected(msg, index){
+      console.log(msg);
+      console.log(1);
       //console.log(msg.Description);//获取中文表名
       //console.log(msg.idElementClass);//获取英文表名
       // 把点击的表的序列存入公共仓库
@@ -251,15 +258,14 @@ export default {
       this.sideMenuData = this.$store.state.searchMsg
         ? this.$store.state.searchMsg
         : JSON.parse(sessionStorage.getItem("searchMsg"));
-      // console.log(this.sideMenuData);
       // 刚进来, 先获取公共仓库的存储的数据, 判断选中哪一个表(是方便编辑等操作返回时还在原来的表上)
       this.clickWhichone = this.$store.state.clickWhichone;
-      // console.log(this.sideMenuData);
       this.sideMenuData.forEach((v, i) => {
-        if (i == this.clickWhichone) {
+      if (i == this.clickWhichone) {
           this.tableCname = v.Description;
           this.tableName = v.idElementClass.replace(/\"/g, "");
           this.ids = v.recordIdes;
+
           // 刚进来的时候也要获取一下权限, 因为没有点击侧边栏
           this.Authority.forEach((v, i) => {
             if (v.table_name == this.tableName) {
@@ -620,8 +626,9 @@ export default {
     // 高度自适应
     heightAdaptive(){
       let clientH = document.documentElement.clientHeight;
-      this.contentbodyH = clientH - 64 + "px";
-      this.tableHeight = clientH - 64 - 145; //133包括按钮区域, margin-top, 分页所在区域
+      this.contentbodyH = clientH - 65 + "px";
+      this.tableHeight = clientH - 65 - 145; //133包括按钮区域, margin-top, 分页所在区域
+      this.treeContentH = clientH - 65 - 24 - 41 + 'px';
     },
     // 获取当前行详细信息
     initTableColumn(columnName){
