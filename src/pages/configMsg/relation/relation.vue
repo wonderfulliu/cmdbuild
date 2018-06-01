@@ -8,7 +8,7 @@
               <Breadcrumb>
                 <BreadcrumbItem to="/config/tableList">配置信息</BreadcrumbItem>
                 <!-- 原表名 -->
-                <BreadcrumbItem to="">{{tableCname}}</BreadcrumbItem>
+                <BreadcrumbItem v-if="tableCname" to="">{{tableCname}}</BreadcrumbItem>
                 <!-- 关系表名 -->
                 <BreadcrumbItem v-if="relationTable && relationTableCname">{{relationTableCname}}</BreadcrumbItem>
                 <BreadcrumbItem v-else-if="relationTable && !relationTableCname">{{relationTable}}</BreadcrumbItem>
@@ -16,7 +16,7 @@
             </Col>
             <Col span="8">
               <FormItem label="查看:">
-                <Select @on-change="selectN" v-model="selectNow" clearable filterable>
+                <Select @on-change="selectN" :placeholder="placeholder" v-model="selectNow" clearable filterable not-found-text>
                   <Option v-for="(item, index) in now" :value="item.value" :key="index">{{ item.label }} </Option>
                 </Select>
               </FormItem>
@@ -63,6 +63,7 @@ export default {
       domainnamen: '', //selectN的某个中间表
       zhongjianbiao: '',//纯中间表
       now: [],
+      placeholder: '请选择', //当 now 为空的时候, 显示的内容
       future: [],
       isdisable: '', //权限
       // 表格数据
@@ -191,17 +192,22 @@ export default {
     getnowSelectdata(){
       let data = this.relationMsg;
       let now = [];
-      for (let k in data.relationMsg) {
-        let obj = {};
-        this.domainListMsg.forEach((v, i) => {
-          if (v.domainname == k.split('Map_')[1]) {
-            obj.value = k.split('Map_')[1];
-            obj.label = v.crelationTable;
-          }
-        })
-        now.push(obj);
+      // 因为没有关系时也能跳转过来, 所以传来的数据可能为空
+      if (Object.keys(data.relationMsg).length != 0) {
+        for (let k in data.relationMsg) {
+          let obj = {};
+          this.domainListMsg.forEach((v, i) => {
+            if (v.domainname == k.split('Map_')[1]) {
+              obj.value = k.split('Map_')[1];
+              obj.label = v.crelationTable;
+            }
+          })
+          now.push(obj);
+        }
+        this.now = now;
+      } else {
+        this.placeholder = '暂无数据';
       }
-      this.now = now;
     },
     // 获取查看表格数据
     getTabledata(tableName) {
@@ -362,7 +368,7 @@ export default {
     },
     // 返回按钮
     back() {
-      this.$router.go(-1);
+      this.$router.push({path: '/config/tableList'});
     },
     // 关系记录跳转到对应表的所在的位置
     relationJump(value){

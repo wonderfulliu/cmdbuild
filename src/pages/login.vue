@@ -112,7 +112,7 @@ export default {
       let _this = this;
       _this.groupInfo = "";
     },
-    // 获取权限
+    // 获取权限 
     getAuthority(groupName) {
       let data = "?groupName=" + groupName;
       this.$http.post("/authorityController/getGroup" + data).then(info => {

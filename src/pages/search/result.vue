@@ -62,7 +62,7 @@
                     </Col>
                     <Col span="2">
                       <Button type="text" icon="chevron-left" @click="pageFirst" :disabled="firstCl" title="首页"></Button>
-                    </Col>
+                    </Col> 
                     <Col span="14" style="width: 190px;text-align: center">
                     <Page simple
                           show-total
@@ -355,6 +355,7 @@ export default {
     // 页面跳转
     pageChange(page) {
       this.pageNum = page;
+      this.pageDisabled();
       this.gettableMsg();
     },
     pageDisabled(){
