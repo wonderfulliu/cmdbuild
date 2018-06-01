@@ -100,10 +100,6 @@
             </Col>
             <Col :xs="{span:18}" :sm="{span:13}" :md="{span:10}" :lg="{span:8}" style="text-align: right">
               <Row>
-                <!--<Col span="6">
-                  <i class="zIcon firstPage"></i>
-                  <i class="zIcon lastPage"></i>
-                </Col>-->
                 <Col span="6">
                 共 {{ totalBar }} 条
                 </Col>
