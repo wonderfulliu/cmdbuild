@@ -162,8 +162,6 @@ export default {
   methods: {
     //点击侧栏获取表信息
     menuSelected(msg, index){
-      console.log(msg);
-      console.log(1);
       //console.log(msg.Description);//获取中文表名
       //console.log(msg.idElementClass);//获取英文表名
       // 把点击的表的序列存入公共仓库
@@ -644,8 +642,6 @@ export default {
   }
 };
 </script>
-
-
 <style lang="scss">
 #searchforContainer {
   height: 100%;
