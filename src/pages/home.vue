@@ -8,31 +8,31 @@
               <a id="logo" href="#/search"><img src="../../static/logo.png" alt="LOGO"></a>
             </div>
             <div class="layout-nav">
-              <router-link to="/search" active-class>
+              <router-link to="/search">
                 <MenuItem name="1" >
                   <Icon type="search"></Icon>
                   全局搜索
                 </MenuItem>
               </router-link>
-              <router-link to="/config/tableList" active-class>
+              <router-link to="/config/tableList">
                 <MenuItem name="2">
                   <Icon type="home"></Icon>
                   配置信息
                 </MenuItem>
               </router-link>
-              <router-link to="/view" active-class>
+              <router-link to="/view">
                 <MenuItem name="3">
                   <Icon type="map"></Icon>
                   视图
                 </MenuItem>
               </router-link>
-              <router-link to="/workflow" active-class>
+              <router-link to="/workflow" exact>
                 <MenuItem name="4">
                   <Icon type="pin"></Icon>
                   工作流
                 </MenuItem>
               </router-link>
-              <router-link to="/chart/dashboard" active-class>
+              <router-link to="/chart/dashboard">
                 <MenuItem name="5">
                   <Icon type="stats-bars"></Icon>
                   Charts

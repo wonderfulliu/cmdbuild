@@ -102,6 +102,9 @@
           #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav a.router-link-exact-active .ivu-menu-item {
             color: #fff;
             background-color: #122f4c; }
+          #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav a.router-link-active .ivu-menu-item {
+            color: #fff;
+            background-color: #122f4c; }
           #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav .ivu-menu-item a {
             color: #e3e3e3; }
             #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav .ivu-menu-item a:hover {

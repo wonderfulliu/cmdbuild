@@ -119,6 +119,12 @@
               background-color: #122f4c;
             }
           }
+          a.router-link-active{
+            .ivu-menu-item{
+              color: #fff;
+              background-color: #122f4c;
+            }
+          }
           .ivu-menu-item{
             a {
               color: #e3e3e3;
