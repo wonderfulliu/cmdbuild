@@ -26,12 +26,12 @@
                   视图
                 </MenuItem>
               </router-link>
-              <router-link to="/workflow" exact>
+              <!-- <router-link to="/workflow" exact>
                 <MenuItem name="4">
                   <Icon type="pin"></Icon>
                   工作流
                 </MenuItem>
-              </router-link>
+              </router-link> -->
               <router-link to="/chart/dashboard">
                 <MenuItem name="5">
                   <Icon type="stats-bars"></Icon>
