@@ -40,7 +40,7 @@
                  :data="data"
                  :columns="columns"
                  @on-select="selectN"></Table>
-          <div class="pageContainer clearfix floatRight">
+          <div class="pageContainer clearfix floatRight"> 
             <Page sclass="floatLeft"
                   how-elevator
                   show-total

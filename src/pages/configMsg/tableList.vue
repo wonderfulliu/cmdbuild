@@ -567,6 +567,7 @@ export default {
       console.log(attr);
       console.log(relatedt);
       console.log(this.tableName);
+      // return false;
       attr.forEach((v, i) => {
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];

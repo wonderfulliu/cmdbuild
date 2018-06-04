@@ -21,7 +21,7 @@
         </Col>
       </Row>
     </Header>
-    <Content ref="conBbody"  class="contentForm" :style="{height:contHeight}">
+    <Content ref="conBbody"  class="contentForm" :style="{height:contHeight}" style="overflow-y: auto">
       <Form :label-width="100" class="formContainer">
         <FormItem :label="item.cname" v-for="(item, index) in addMsg" :key="index" v-if="item.title != 'Id'">
           <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
@@ -64,6 +64,22 @@ export default {
     rotateIcon: {
       type: Array,
       default: null
+    },
+    clientH:{
+      type: Number,
+      default: 0
+    },
+    clientW:{
+      type: Number,
+      default: 0
+    },
+  },
+  watch: {
+    'clientH': function (newValue, oldValue) {
+      this.getHeight();
+    },
+    'clientW': function (newValue, oldValue) {
+      this.getHeight();
     },
   },
   data() {
@@ -203,8 +219,7 @@ export default {
     },
     // 获取高度
     getHeight(){
-      let clientH = document.documentElement.clientHeight;
-      this.contHeight = (clientH - 64 - 74) + 'px';
+      this.contHeight = (this.clientH - 64 - 74) + 'px';
 //      this.height = document.querySelector('#addContainer').offsetHeight - 74 + 'px';
     },
   }

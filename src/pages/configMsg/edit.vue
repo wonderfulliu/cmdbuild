@@ -21,7 +21,7 @@
           </Col>
         </Row>
       </Header>
-      <Content class="contentForm" :style="{height:contHeight}">
+      <Content class="contentForm" :style="{height:contHeight}" style="overflow-y: auto">
         <Form :label-width="100" class="formContainer">
           <FormItem :label="item.cname" v-for="(item, index) in editMsg" :key="index" v-if="item.title != 'Id'">
             <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
