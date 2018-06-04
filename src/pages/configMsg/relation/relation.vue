@@ -270,7 +270,8 @@ export default {
               reftableMsg: this.reftableMsg,
               relationTable: relationTable,
               NorOne: num,
-              tableId: this.tableId
+              tableId: this.tableId,
+              domainname: this.domainname
             };
             this.$store.commit("getrefMsg", refMsg); //不论哪个函数先执行, 都会只执行一次
             this.$router.push({ path: "/config/relationTable" }); //两个数据都拿到之后再推送
@@ -290,7 +291,8 @@ export default {
               reftableMsg: this.reftableMsg,
               relationTable: relationTable,
               NorOne: num,
-              tableId: this.tableId
+              tableId: this.tableId,
+              domainname: this.domainname
             };
             this.$store.commit("getrefMsg", refMsg); //不论哪个函数先执行, 都只会执行一次
             this.$router.push({ path: "/config/relationTable" }); //两个数据都拿到之后再推送

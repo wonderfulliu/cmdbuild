@@ -120,7 +120,8 @@
                       :page-size=20
                       :total="totalBar"
                       :current="pageNum"
-                      @on-change="pageChange"></Page>
+                      @on-change="pageChange">
+                </Page>
                 </Col>
                 <Col span="2">
                 <!--<Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button>-->
