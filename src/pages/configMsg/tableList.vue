@@ -565,9 +565,9 @@ export default {
         }
       });
       // return false;
-      console.log(attr);
-      console.log(relatedt);
-      console.log(this.tableName);
+      // console.log(attr);
+      // console.log(relatedt);
+      // console.log(this.tableName);
       // return false;
       attr.forEach((v, i) => {
         if (v.type == "lookup") {
@@ -612,7 +612,6 @@ export default {
       addData.tableCname = this.tableCname;
       addData.titleMsg = attr;
       addData.Id = this.recordId;
-      console.log(addData);
       this.$store.commit("getaddMsg", addData);
     },
     attributeCName(eName) {
@@ -871,21 +870,14 @@ export default {
     },
     ctrlRelete() {
       if (this.clickRow == true) {
-        //将跳转到关系页面  表名 记录id 已获取, 获取和选中记录有关系表的表和表中有关系的记录
-        let data = { table: this.tableName, Id: this.recordId };
-        this.$http
-          .post("/relationController/getRelationList", data)
-          .then(info => {
-            // console.log(info);
-            let data = {
-              tableName: this.tableName, //表名
-              Id: this.recordId, //记录Id
-              relationMsg: info.data, //与该记录有关系的表与表中的记录
-              disabled: this.isdisable,//登录人员对该关系的权限也要传递过去
-            }; 
-            this.$store.commit("getrelationMsg", data);
-            this.$router.push({ path: "/config/relation" });
-          });
+        //将跳转到关系页面  表名 记录id 已获取, 传递到下一个页面发送请求数据
+        let data = {
+          tableName: this.tableName, //表名
+          Id: this.recordId, //记录Id
+          disabled: this.isdisable,//登录人员对该关系的权限也要传递过去
+        }; 
+        this.$store.commit("getrelationMsg", data);
+        this.$router.push({ path: "/config/relation" });
       } else {
         this.$Message.error("您未选中行！");
       }
