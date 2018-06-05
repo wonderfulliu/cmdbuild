@@ -154,8 +154,8 @@
         <Button type="error" size="large" long :loading="deleLoading" @click="configDele">删除</Button>
       </div>
     </Modal>
-    <!-- 显示详情, 暂时用不到 -->
-    <Modal v-model="configViewModal">
+    <!-- 显示详情 -->
+    <Modal v-model="configViewModal" :closable="false">
       <p slot="header">
         <span>查看记录</span>
       </p>
@@ -179,9 +179,9 @@
             </ul>
           </Col>
         </Row>
-
       </div>
       <div slot="footer">
+        <Button type="primary" @click="ViewModalCancel">关闭</Button>
       </div>
     </Modal>
   </Layout>
@@ -565,9 +565,9 @@ export default {
         }
       });
       // return false;
-      console.log(attr);
-      console.log(relatedt);
-      console.log(this.tableName);
+//      console.log(attr);
+//      console.log(relatedt);
+//      console.log(this.tableName);
       // return false;
       attr.forEach((v, i) => {
         if (v.type == "lookup") {
@@ -612,7 +612,6 @@ export default {
       addData.tableCname = this.tableCname;
       addData.titleMsg = attr;
       addData.Id = this.recordId;
-      console.log(addData);
       this.$store.commit("getaddMsg", addData);
     },
     attributeCName(eName) {
@@ -783,6 +782,10 @@ export default {
         .catch(function(error) {
           //  console.log(error);
         });
+    },
+    ViewModalCancel() {
+      this.configViewModal = false;
+      this.configViewData = '';
     },
     /*ctrlView() {
       let _this = this;

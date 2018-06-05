@@ -3,22 +3,18 @@
     <Layout>
       <!-- 侧边栏 -->
       <Sider ref="side1" hide-trigger collapsible width="240" :collapsed-width="0" v-model="isCollapsed">
-        <Menu theme="dark" width="auto" :open-names="['1']" :class="menuitemClasses" :active-name="'1-' + [clickWhichone + 1]" accordion>
-          <Submenu name="1" ref="submenu1">
-            <template slot="title">
-              查询配置信息列表
-            </template>
-            <div :style="{height:menuContentH}">
-              <MenuItem :key="index"
-                        :name="'1-' + index + 1"
-                        style="padding-left: 25px"
-                        :class="{'ivu-menu-item-active':menuActive&&index==0}"
-                        v-for="(item, index) in sideMenuData"
-                        @click.native="menuSelected(item, index)">
-                {{item.Description}}
-              </MenuItem>
-            </div>
-          </Submenu>
+        <Menu theme="dark"
+              width="auto"
+              :class="menuitemClasses"
+              :style="{height:menuContentH,overflowY:'auto'}">
+          <MenuItem :key="index"
+                    :name="'1-' + index + 1"
+                    style="padding-left: 25px"
+                    :class="{'ivu-menu-item-active':menuActive&&index==0}"
+                    v-for="(item, index) in sideMenuData"
+                    @click.native="menuSelected(item, index)">
+            {{item.Description}}
+          </MenuItem>
         </Menu>
       </Sider>
       <!-- 内容区域 -->
@@ -120,6 +116,37 @@
             </div>
           </div>
         </Content>
+        <!--模态框-->
+        <!-- 显示详情 -->
+        <Modal v-model="viewViewModal" :closable="false">
+          <p slot="header">
+            <span>查看记录</span>
+          </p>
+          <div class="modalBody">
+            <Row v-if="viewViewData.length >= 20">
+              <Col span="12">
+              <ul>
+                <li v-if="index%2==0" v-for="(item ,index) in viewViewData" :key="index">{{ item.Description }} : {{ item.value }}</li>
+              </ul>
+              </Col>
+              <Col span="12">
+              <ul>
+                <li v-if="index%2!=0" v-for="(item ,index) in viewViewData" :key="index">{{ item.Description }} : {{ item.value }}</li>
+              </ul>
+              </Col>
+            </Row>
+            <Row v-if="viewViewData.length < 20">
+              <Col span="24">
+              <ul>
+                <li v-for="(item ,index) in viewViewData" :key="index">{{ item.Description }} : {{ item.value }}</li>
+              </ul>
+              </Col>
+            </Row>
+          </div>
+          <div slot="footer">
+            <Button type="primary" @click="ViewModalCancel">关闭</Button>
+          </div>
+        </Modal>
       </Layout>
     </Layout>
   </div>
@@ -166,6 +193,9 @@ export default {
       // 字段搜索相关
       fieldData: [],//待渲染字段数据(表头所有字段)
       fielddataObj: {},//存储字段搜索的条件, 判断是否为空
+      //模态框
+      viewViewModal: false,
+      viewViewData: [],//记录详情
     };
   },
   created() {
@@ -253,6 +283,7 @@ export default {
                 on: {
                   click: () => {
                     this.show(params.index);
+                    //this.show(params.index);
                   }
                 }
               },
@@ -333,7 +364,6 @@ export default {
           info => {
             // 成功的回调
             if (info.status == 200) {
-              // console.log(info.data);
               this.dataProcess(info);
             }
           },
@@ -423,6 +453,21 @@ export default {
     },
     // 表详情展示
     show(index) {
+      let newArrb = [];
+      for (let i = 0; i < this.columns.length - 1; i++) {
+        let newObjb = {};
+        newObjb.Description = this.columns[i].title;
+        newObjb.value = this.data[index][i + 1];
+        newArrb.push(newObjb);
+      }
+      this.viewViewData = newArrb;
+      this.viewViewModal = true;
+    },
+    ViewModalCancel(){
+      this.viewViewModal = false;
+      this.viewViewData = '';
+    },
+    /*show(index) {
       // console.log(this.columns);
       let content = "";
       for (let i = 0; i < this.columns.length - 1; i++) {
@@ -434,7 +479,7 @@ export default {
         title: "详细信息",
         content: content
       });
-    },
+    },*/
     // 删除功能
     remove(index) {
       this.data.splice(index, 1);
@@ -466,7 +511,7 @@ export default {
       this.contentH =  clientH - 65 +'px';
       this.contentbodyH = clientH - 139 + 'px';
       this.tableHeight = clientH - 223; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
-      this.menuContentH = clientH - 65 - 42 + "px";
+      this.menuContentH = clientH - 65 + "px";
     },
     //字段排序
     sorting(s){
