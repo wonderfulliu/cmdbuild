@@ -154,12 +154,12 @@
         <Button type="error" size="large" long :loading="deleLoading" @click="configDele">删除</Button>
       </div>
     </Modal>
-    <!-- 显示详情, 暂时用不到 -->
-    <Modal v-model="configViewModal">
+    <!-- 显示详情 -->
+    <Modal v-model="configViewModal" :closable="false">
       <p slot="header">
         <span>查看记录</span>
       </p>
-      <div class="modalListUl">
+      <div class="modalBody">
         <Row v-if="configViewData.length >= 20">
           <Col span="12">
           <ul>
@@ -179,9 +179,9 @@
             </ul>
           </Col>
         </Row>
-
       </div>
       <div slot="footer">
+        <Button type="primary" @click="ViewModalCancel">关闭</Button>
       </div>
     </Modal>
   </Layout>
@@ -567,10 +567,6 @@ export default {
         }
       });
       // return false;
-      // console.log(attr);
-      // console.log(relatedt);
-      // console.log(this.tableName);
-      // return false;
       attr.forEach((v, i) => {
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
@@ -784,6 +780,10 @@ export default {
         .catch(function(error) {
           //  console.log(error);
         });
+    },
+    ViewModalCancel() {
+      this.configViewModal = false;
+      this.configViewData = '';
     },
     /*ctrlView() {
       let _this = this;

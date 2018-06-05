@@ -3,8 +3,31 @@
     <Layout class="miniWindow">
       <Header ref="conBhead" :style="{padding: 0}" class="layout-header-bar">
         <Row>
-          <Col span="8" offset="1">
-            <h1 style="text-align: left;font-family: 'Microsoft JhengHei';">任务列表</h1>
+          <!--<Col span="2" offset="1">
+            <Dropdown class="fieldSearch" trigger="click" placement="bottom-start">
+              <Button type="primary">
+                字段筛选
+                <Icon type="arrow-down-b"></Icon>
+              </Button>
+              <DropdownMenu slot="list">
+                <div id="field">
+                  <Dropdown trigger="click" placement="right" v-for="(item, index) in fieldData" :key="index" >
+                    <DropdownItem>
+                      <Checkbox v-model="item.flag" @on-change="fieldSearch"></Checkbox>{{item.cName}}
+                      <Icon type="ios-arrow-right"></Icon>
+                    </DropdownItem>
+                    <DropdownMenu slot="list" style="padding-left: 10px;padding-right: 10px;">
+                      <Input size="small" v-model.trim="item.value" @on-enter="fsInput(item.flag)"></Input>
+                    </DropdownMenu>
+                  </Dropdown>
+                </div>
+              </DropdownMenu>
+            </Dropdown>
+          </Col>-->
+          <Col span="12" offset="6">
+            <Input v-model="searchCondition" placeholder="Enter something..." @on-enter="getDataList">
+              <Button slot="append" type="info" icon="ios-search" @click="getDataList">搜索</Button>
+            </Input>
           </Col>
         </Row>
       </Header>
@@ -13,15 +36,47 @@
           <Table border
                  stripe
                  size="small"
+                 :loading="tLoading"
                  :height="tableHeight"
                  :highlight-row="highlight"
-                 :loading="tLoading"
-                 :columns="wfColumns"
-                 :data="wfData">
+                 :data="wfData"
+                 @on-row-click="getRecordId"
+                 :columns="wfColumns">
           </Table>
           <div style="line-height: 64px; height: 64px;" id="pagerCont">
             <Row>
-              <Col :xs="{span:20,offset:4}" :sm="{span:13,offset:11}" :md="{span:10,offset:14}" :lg="{span:8,offset:16}" style="text-align: right">
+              <Col :xs="{span:4,offset:1}" :sm="{span:9,offset:1}" :md="{span:12,offset:1}" :lg="{span:15,offset:1}" style="text-align: left">
+                <ButtonGroup v-if="clientW>=1102">
+                  <!--<Button type="ghost" title="" icon="ios-eye" @click="ctrlView">查看</Button>-->
+                  <Button type="ghost" icon="ios-paper-outline" @click="ctrlHistory">历史</Button>
+                  <Button type="ghost" icon="ios-infinite" @click="ctrlRelete">关系</Button>
+                  <Button type="ghost" icon="ios-download-outline" @click="ctrlDownload">下载</Button>
+                </ButtonGroup>
+                <Dropdown style="margin-left: 20px" v-if="clientW<1102" placement="top" trigger="click">
+                  <Button type="ghost">
+                    操作
+                    <Icon type="arrow-down-b"></Icon>
+                  </Button>
+                  <DropdownMenu slot="list">
+                    <DropdownItem>
+                      <div style="text-align: center" @click="ctrlHistory">
+                        <icon type="ios-paper-outline"></icon> 历史
+                      </div>
+                    </DropdownItem>
+                    <DropdownItem>
+                      <div style="text-align: center" @click="ctrlRelete">
+                        <icon type="ios-infinite"></icon> 关系
+                      </div>
+                    </DropdownItem>
+                    <DropdownItem>
+                      <div style="text-align: center" @click="ctrlDownload">
+                        <icon type="ios-download-outline"></icon> 下载
+                      </div>
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </Col>
+              <Col :xs="{span:19}" :sm="{span:14}" :md="{span:11}" :lg="{span:8}" style="text-align: right">
               <Row>
                 <Col span="6">
                 共 {{ totalRecord }} 条
@@ -85,8 +140,9 @@ export default {
   data() {
     return {
       //表格数据
-      wfColumns: [],
-      wfData: [],
+      wfColumns: [],//变更表表头
+      wfData: [],   //变更表数据
+      recordId: '',//记录id
       //表格配置
       pageNum: 1,   //当前页
       pageSize: 20, //每页条数
@@ -102,7 +158,9 @@ export default {
       searchCondition: '', //搜索条件
       //模态框
       modalScene: false,
-      sceneGroup: ''  //单选按钮组v-model值
+      sceneGroup: '',  //单选按钮组v-model值
+      //页面设置
+      clientW: '',
     }
   },
   created() {
@@ -147,7 +205,8 @@ export default {
                       style: {},
                       on: {
                         click: () => {
-                          // console.log(params.row);
+                          console.log(params.row.Id);
+                          this.recordId = params.row.Id;
                           this.modalScene = true;
                         }
                       }
@@ -163,6 +222,48 @@ export default {
           });
       }else {
         //获取到搜索条件this.searchCondition
+        this.$http
+            .post('/cardController/fuzzyQuery?tableName=Modify&condition=' + this.searchCondition +
+                '&pageNum=' + this.pageNum +
+                '&pageSize=' + this.pageSize)
+            .then(info => {
+              this.totalPage = info.data.totalPage;
+              this.totalRecord = info.data.totalRecord;
+              let thead = JSON.parse(sessionStorage.getItem("Modify_thead"));
+              if(!thead){
+                this.getTHeadData(info.data);
+              }else {
+                let end = {
+                  title: "操作",
+                  key: "action",
+                  fixed: "right",
+                  width: 80,
+                  align: 'center',
+                  render: (h, params) => {
+                    return h("div", [
+                      h("Button",{
+                        props: {
+                          type: "primary",
+                          size: "small"
+                        },
+                        style: {},
+                        on: {
+                          click: () => {
+                            console.log(params.row);
+                            this.recordId = params.row.Id;
+                            this.modalScene = true;
+                          }
+                        }
+                      },"场景")
+                    ]);
+                  }
+                };
+                thead.push(end);
+                this.wfColumns = thead;
+                this.initTableColumn(this.wfColumns);
+              }
+              this.getTableData(info.data);
+            });
       }
     },
     //获取表头字段详细信息
@@ -291,6 +392,33 @@ export default {
       //清空单选框组的值
       this.sceneGroup = '';
       //清空当前行的标识信息
+      this.recordId = '';
+    },
+    getRecordId(res){
+      this.recordId = res.Id;
+    },
+    ctrlHistory(){
+      if(this.recordId == ''){
+        this.$Message.error("请选择一条记录！");
+      }else{
+        console.log('ctrlHistory');
+      }
+    },
+
+    ctrlRelete(){
+      if(this.recordId == ''){
+        this.$Message.error("请选择一条记录！");
+      }else{
+        console.log('ctrlRelete');
+      }
+    },
+
+    ctrlDownload(){
+      if(this.recordId == ''){
+        this.$Message.error("请选择一条记录！");
+      }else{
+        console.log('ctrlDownload');
+      }
     },
 
     // 分页
@@ -332,6 +460,7 @@ export default {
     // 高度自适应
     heightAdaptive() {
       let clientH = document.documentElement.clientHeight;
+      this.clientW = document.documentElement.clientWidth;
       this.contentbodyH = clientH - 140 + 'px';
       this.tableHeight = clientH - 215; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
     },
