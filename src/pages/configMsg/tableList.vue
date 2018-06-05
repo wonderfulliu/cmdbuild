@@ -276,6 +276,7 @@ export default {
   created() {
     this.heightAdaptive();
     this.isgetTablename();
+    this.pageNum = this.$store.state.searchRelation.pageNum;
   },
   watch:{
     'tableName': function(newValue, oldValue){
@@ -433,6 +434,7 @@ export default {
       this.changetableName = true;
     },
     tableDataProce(info) {//================================================
+    // console.log(info);
       let _this = this;
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
@@ -868,7 +870,7 @@ export default {
         this.$Message.error("您未选中行！");
       }
     },
-    ctrlRelete() {
+    ctrlRelete() { 
       if (this.clickRow == true) {
         //将跳转到关系页面  表名 记录id 已获取, 传递到下一个页面发送请求数据
         let data = {

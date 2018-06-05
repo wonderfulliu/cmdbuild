@@ -14,7 +14,7 @@
                 <BreadcrumbItem v-else-if="relationTable && !relationTableCname">{{relationTable}}</BreadcrumbItem>
               </Breadcrumb>
             </Col>
-            <Col span="2">
+            <Col span="3">
               <!-- <FormItem label="查看:">
                 <Select @on-change="selectN" :placeholder="placeholder" v-model="selectNow" clearable filterable not-found-text>
                   <Option v-for="(item, index) in now" :value="item.value" :key="index">{{ item.label }} </Option>
@@ -30,7 +30,7 @@
                   </DropdownMenu>
               </Dropdown>
             </Col>
-            <Col span="2">
+            <Col span="3" offset="1">
               <!-- <FormItem label="新增:">
                 <Select @on-change="selectF" label-in-value v-model="selectFuture" clearable filterable>
                   <Option v-for="(item, index) in future" :value="item.value" :key="index">{{ item.label }}</Option>
@@ -46,7 +46,7 @@
                   </DropdownMenu>
               </Dropdown>
             </Col>
-            <Col span="3"  offset="10">
+            <Col span="3" offset="7">
               <Button type="ghost" title="返回" icon="reply" @click="back"></Button>
             </Col>
           </Row>
@@ -392,14 +392,16 @@ export default {
     },
     // 关系记录跳转到对应表的所在的位置
     relationJump(value){
+      // 参数是为了获取记录的 id
+      // 先查看是否能看到这张表
       this.gettableEname(this.ConfigTreeData, this.relationCtable);
       if (!this.isExist) {
         this.$Message.warning('您暂无权限查看该表');
         return false;//如果表不存在, 那么不进行跳转
       }
-      let relationCtable = '';
-      let pageNum = 1;
-      let jiluId = value.row.Id;
+      let relationCtable = '';//存储中文表名
+      let pageNum = 1;//存储记录所在的页数
+      let jiluId = value.row.Id;//最终定位该条记录的位置
       //1.根据英文表名, 获取中文表名, 方便跳转后侧边栏的搜索
       for(let k in this.CEtableMsg){
         if (k == this.relationTable) {
@@ -422,6 +424,7 @@ export default {
         }
       })
     },
+    // 工具函数
     // 拼接中英文名字, 返回的是中间表英文名与关系表的中文名
     EtoC(CEtable, ename, domainname) {
       let cEname;
