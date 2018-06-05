@@ -40,17 +40,51 @@
                  :data="data"
                  :columns="columns"
                  @on-select="selectN"></Table>
-          <div class="pageContainer clearfix floatRight">
-            <Page sclass="floatLeft"
-                  how-elevator
-                  show-total
-                  :page-size='20'
-                  :current="pageNum"
-                  :total="totalRecord"
-                  @on-change="pageChange"
-                  simple>
-            </Page>
-          </div>
+          
+          <div style="line-height: 64px; height: 64px; text-align: right" id="pagerCont"  >
+          <Row>
+            <Col :xs="{span:4,offset:1}" :sm="{span:9,offset:1}" :md="{span:12,offset:1}" :lg="{span:15,offset:1}" style="text-align: left">
+            
+            </Col>
+            <Col :xs="{span:18}" :sm="{span:14}" :md="{span:11}" :lg="{span:8}" style="text-align: right; float: right">
+              <Row>
+                <Col span="6">
+                共 {{ totalBar }} 条
+                </Col>
+                <Col span="2">
+                  <button title="首页"
+                          type="button"
+                          class="pageBtn"
+                          :class="{'disableBtn':firstCl}"
+                          :disabled="firstCl"
+                          @click="pageFirst">
+                    <i class="zIcon firstPage"></i>
+                  </button>
+                </Col>
+                <Col span="14" style="width: 190px;text-align: center">
+                <Page simple
+                      show-total
+                      :page-size=20
+                      :total="totalBar"
+                      :current="pageNum"
+                      @on-change="pageChange">
+                </Page>
+                </Col>
+                <Col span="2">
+                <button title="尾页"
+                        type="button"
+                        class="pageBtn"
+                        :class="{'disableBtn':lastCl}"
+                        :disabled="lastCl"
+                        @click="pageLast">
+                  <i class="zIcon lastPage"></i>
+                </button>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </div>
+
         </div>
       </Content>
     </div>
@@ -63,7 +97,6 @@ export default {
     return {
       columns: [], //表格数据渲染{highlightRow: isOne}
       data: [],
-      totalRecord: 0, //分页
       pageNum: 1,
       relationTable: "", //上一页传来的信息
       tableId: "",
@@ -82,6 +115,11 @@ export default {
       tableName: '',//原表名
       recordId: '', //原表的纪录
       isdisable: '', //是否禁用
+      firstCl: true,//首页是否禁用
+      lastCl: false,//尾页是否禁用
+      totalBar: 0, //总条数
+      totalPage: null, //总页数
+      domainname: '',
     };
   },
   created() {
@@ -97,6 +135,7 @@ export default {
       this.reftableMsg = refMsg.reftableMsg;
       this.NorOne = refMsg.NorOne;
       this.tableId = refMsg.tableId;
+      this.domainname = refMsg.domainname;
 
       this.domainlistMsg = this.$store.state.domainlistMsg;
       this.dataProcess(this.reftitleMsg, this.reftableMsg);
@@ -106,7 +145,9 @@ export default {
     },
     //刚进入该页面时表格数据的处理
     dataProcess(titleMsg, tableMsg) {
-      this.totalRecord = tableMsg.totalRecord;
+      this.totalBar = tableMsg.totalRecord;// 总条数
+      this.totalPage = tableMsg.totalPage; //总页数
+      this.pageDisabled();
       let dataArr = tableMsg.list; //要处理和渲染的表格数据
       if (this.NorOne == '1') {
         this.isOne = true;
@@ -202,16 +243,10 @@ export default {
       return flag;
     },
     // --------------------------------------
-    // 点击分页切换分页
-    pageChange(page) {
-      this.pageNum = page;
-      this.loading = true;
-      this.getreferenceData();
-    },
     // 获取模态框中的reference数据
     getreferenceData() {
-      let data = "?table=" + this.relationTable + "&pageNum=" + this.pageNum;
-      this.$http.get("/cardController/getCardList" + data).then(info => {
+      let data = "?table=" + this.relationTable + '&domain=' + this.domainname + "&pageNum=" + this.pageNum;
+      this.$http.get("/cardController/getRelationCardList" + data).then(info => {
         if (info.status == 200) {
           this.contentdataProcess(info);
         }
@@ -245,6 +280,7 @@ export default {
     //搜索与分页表格数据的处理
     contentdataProcess(info) {
       this.totalBar = info.data.totalRecord;
+      this.totalPage = info.data.totalPage;
       let dataArr = info.data.list; //要处理和渲染的表格数据
       // 设置开头多选
       let start = {
@@ -398,7 +434,42 @@ export default {
       // console.log(clientH);
       this.contentbodyH = clientH - 64 + "px";
       this.tableHeight = clientH - 64 - 128; //133包括按钮区域, margin-top, 分页所在区域
-    }
+    },
+    // 点击分页切换分页
+    pageChange(page) {
+      this.pageNum = page;
+      this.pageDisabled();
+      this.loading = true;
+      this.getreferenceData();
+    },
+    // 首页尾页禁用于否
+    pageDisabled(){
+      if (this.pageNum == 1 && this.totalPage == 1) {
+        this.firstCl = true;
+        this.lastCl = true;
+      } else if (this.pageNum == 1 && this.totalPage != 1) {
+        this.firstCl = true;
+        this.lastCl = false;
+      } else if (this.pageNum == this.totalPage && this.totalPage != 1) {
+        this.firstCl = false;
+        this.lastCl = true;
+      } else {
+        this.firstCl = false;
+        this.lastCl = false;
+      }
+    },
+    pageFirst() {
+      this.pageNum = 1;
+      this.pageDisabled();
+      this.loading = true;
+      this.getreferenceData();
+    },
+    pageLast() {
+      this.pageNum = this.totalPage;
+      this.pageDisabled();
+      this.loading = true;
+      this.getreferenceData();
+    },
   }
 };
 </script>

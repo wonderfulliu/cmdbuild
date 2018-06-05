@@ -120,7 +120,8 @@
                       :page-size=20
                       :total="totalBar"
                       :current="pageNum"
-                      @on-change="pageChange"></Page>
+                      @on-change="pageChange">
+                </Page>
                 </Col>
                 <Col span="2">
                 <!--<Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button>-->
@@ -564,6 +565,10 @@ export default {
         }
       });
       // return false;
+      console.log(attr);
+      console.log(relatedt);
+      console.log(this.tableName);
+      // return false;
       attr.forEach((v, i) => {
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
@@ -607,7 +612,7 @@ export default {
       addData.tableCname = this.tableCname;
       addData.titleMsg = attr;
       addData.Id = this.recordId;
-      // console.log(addData);
+      console.log(addData);
       this.$store.commit("getaddMsg", addData);
     },
     attributeCName(eName) {

@@ -19,7 +19,7 @@
           </Col>
         </Row>
       </Header>
-      <Content class="contentForm" :style="{height: height}">
+      <Content class="contentForm" :style="{height: height}" style="overflow-y: auto">
         <Form :label-width="100" class="formContainer">
           <FormItem :label="item.title" v-for="(item, index) in addMsg" :key="index" v-if="item.title != 'Id'">
             <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
