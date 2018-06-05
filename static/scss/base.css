@@ -178,18 +178,6 @@
           #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .formContainer .ivu-select {
             text-align: left; }
 
-.ivu-modal .ivu-modal-body .modalListUl ul {
-  list-style: none; }
-  .ivu-modal .ivu-modal-body .modalListUl ul li {
-    background-color: #f5f5f5;
-    padding: 3px;
-    margin-bottom: 3px; }
-    .ivu-modal .ivu-modal-body .modalListUl ul li:hover {
-      background-color: #f0f0f0; }
-  .ivu-modal .ivu-modal-body .modalListUl ul li.active {
-    background-color: #e7ffe5;
-    color: #465845; }
-
 .ivu-menu-dark {
   background: #2a3f54; }
 
@@ -330,10 +318,19 @@ tr.ivu-table-row-highlight.ivu-table-row-hover td {
   margin: 4px 20px;
   line-height: 2; }
 
-.ivu-modal .modalBody {
-  width: 100%;
-  max-height: 300px;
-  overflow-y: auto; }
+.ivu-modal .ivu-modal-body {
+  padding: 0; }
+  .ivu-modal .ivu-modal-body .modalBody {
+    padding: 10px 15px; }
+    .ivu-modal .ivu-modal-body .modalBody ul {
+      list-style: none; }
+      .ivu-modal .ivu-modal-body .modalBody ul li {
+        padding: 2px;
+        margin-bottom: 2px; }
+        .ivu-modal .ivu-modal-body .modalBody ul li:hover {
+          background-color: #f4f4f4; }
+      .ivu-modal .ivu-modal-body .modalBody ul li.active {
+        color: #2a6b21; }
 
 .spinLoading {
   animation: ani-demo-spin 1s linear infinite; }

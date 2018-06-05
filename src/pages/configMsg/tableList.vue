@@ -158,7 +158,7 @@
       <p slot="header">
         <span>查看记录</span>
       </p>
-      <div class="modalListUl">
+      <div class="modalBody">
         <Row v-if="configViewData.length >= 20">
           <Col span="12">
           <ul>
