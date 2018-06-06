@@ -116,8 +116,6 @@ Vue.component('Chart',{
       this.getChartsMsg(this.chartdata);
     }
   },
-  created(){
-  },
   mounted(){
     this.getChartsMsg(this.chartdata);
   },

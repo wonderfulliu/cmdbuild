@@ -3,22 +3,17 @@
     <Layout>
       <!-- 侧边栏 -->
       <Sider ref="side1" hide-trigger collapsible width="240" :collapsed-width="0" v-model="isCollapsed">
-        <Menu theme="dark" width="auto" :open-names="['1']" :class="menuitemClasses" accordion :active-name="['1-']+[clickWhichone + 1]">
-          <Submenu name="1">
-            <template slot="title">
-              查询配置信息列表
-            </template>
-            <div :style="{height:treeContentH}">
-              <MenuItem :key="index"
-                        :name="['1-']+[index+1]"
-                        style="padding-left: 25px"
-                        v-for="(item, index) in sideMenuData"
-                        @click.native="menuSelected(item, index)">
-                {{item.Description}}
-              </MenuItem>
-            </div>
-
-          </Submenu>
+        <Menu theme="dark"
+              width="auto"
+              :class="menuitemClasses"
+              :style="{height:menuContentH,overflowY:'auto'}">
+            <MenuItem :key="index"
+                      :name="['1-']+[index+1]"
+                      style="padding-left: 25px"
+                      v-for="(item, index) in sideMenuData"
+                      @click.native="menuSelected(item, index)">
+              {{item.Description}}
+            </MenuItem>
         </Menu>
       </Sider>
       <!-- 内容区域 -->
@@ -31,17 +26,21 @@
           </Row>
         </Header>
         <Content>
-          <div class="contentBody">
+          <div class="contentBody" style="position: relative;">
             <Table border
                    stripe
                    ref="table"
                    size="small"
+                   no-data-text=""
                    @on-row-click="getrowMsg"
                    :height="tableHeight"
                    :highlight-row="highlight"
-                   :loading='loading'
                    :columns="columns"
                    :data="data"></Table>
+            <Spin fix v-show="loading">
+              <Icon type="load-a" size=18 class="spinLoading"></Icon>
+              <div>Loading</div>
+            </Spin>
             <div style="line-height: 64px;height:auto;">
               <Row>
                 <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:12,offset:1}" :lg="{span:14,offset:1}" style="text-align: left">
@@ -102,6 +101,36 @@
         <Button type="error" size="large" long @click="del()">删除</Button>
       </div>
     </Modal>
+    <!-- 显示详情 -->
+    <Modal v-model="resultViewModal" :closable="false">
+      <p slot="header">
+        <span>查看记录</span>
+      </p>
+      <div class="modalBody" :style="{maxHeight:modalMaxHeight}">
+        <Row v-if="resultViewData.length >= 20">
+          <Col span="12">
+          <ul>
+            <li v-if="index%2==0" v-for="(item ,index) in resultViewData" :key="index">{{ item.Description }} : {{ item.value }}</li>
+          </ul>
+          </Col>
+          <Col span="12">
+          <ul>
+            <li v-if="index%2!=0" v-for="(item ,index) in resultViewData" :key="index">{{ item.Description }} : {{ item.value }}</li>
+          </ul>
+          </Col>
+        </Row>
+        <Row v-if="resultViewData.length < 20">
+          <Col span="24">
+          <ul>
+            <li v-for="(item ,index) in resultViewData" :key="index">{{ item.Description }} : {{ item.value }}</li>
+          </ul>
+          </Col>
+        </Row>
+      </div>
+      <div slot="footer">
+        <Button type="primary" @click="ViewModalCancel">关闭</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 <script>
@@ -125,11 +154,6 @@ export default {
       lookupMsg: "",
       loading: true,
       cnameTitle: "", // 存储表头中英文对照信息
-      modal: false,
-      delData: {
-        delData: "",
-        index: ""
-      }, //删除的数据
       relationTable: "",
       Mode: "", //权限
       Authority: "", //权限表
@@ -143,8 +167,16 @@ export default {
       lastCl: false,//尾页是否禁用
       // 点击侧边栏哪个表格
       clickWhichone: 0,
-      //侧栏高度
-      treeContentH: "",
+      menuContentH: "",//侧栏高度
+      modalMaxHeight: "",//模态框内容高度
+      //modal
+      resultViewModal: false,//详情模态框是否显示
+      resultViewData: [],   //记录详情
+      modal: false,
+      delData: {
+        delData: "",
+        index: ""
+      }, //删除的数据
       isExist: false,//判断该关系表是否存在
       recordId: '', // 被点击的记录的 id, 用于跳转
     };
@@ -402,21 +434,25 @@ export default {
     // 表详情展示
     show() {
       if (this.isClick == true) {
-        console.log(this.data);
-        let content = "";
+        let newArrc = [];
+//        console.log(this.data);
         for (let i = 0; i < this.columns.length; i++) {
-          content += this.columns[i].title + `: ${this.data[this.index][i + 1]}<br>`;
+          let newObjc = {};
+          newObjc.Description = this.columns[i].title;
+          newObjc.value = this.data[this.index][i + 1];
+          newArrc.push(newObjc);
         }
-        content = content.split("null").join(""); //null为空
-        this.$Modal.info({
-          title: "详细信息",
-          content: content
-        });
+        this.resultViewData = newArrc;
+        this.resultViewModal = true;
       } else {
         this.$Message.error({
           content: "您未选中行！"
         });
       }
+    },
+    ViewModalCancel(){
+      this.resultViewModal = false;
+      this.resultViewData = '';
     },
     // 删除提示
     remove() {
@@ -490,7 +526,6 @@ export default {
           }
         });
     },
-
     // 下载功能
     exportData() {
       let data = "?ids=" + this.ids + "&table=" + this.tableName;
@@ -506,7 +541,6 @@ export default {
         }
       );
     },
-
     // 编辑功能
     edit() {
       if (this.isClick == true) {
@@ -575,7 +609,6 @@ export default {
         })
       }
     },
-
     // 点击添加的时候调用的函数
     add() {
       // 添加时表头数据处理:
@@ -618,7 +651,6 @@ export default {
       this.$store.commit("getaddMsg", data); //将整合好的数据推至公共仓库
       this.$router.push({ path: "/add" }); //跳转至新增页面
     },
-  
     // 关系记录跳转到对应表的所在的位置
     relationJump(){
       if (this.isClick == true) {
@@ -645,8 +677,6 @@ export default {
         })
       }
     },
-
-    
     // 获取对应表的英文名
     gettableEname(tableMenu, tableCname){
       tableMenu.forEach((v, i) => {
@@ -678,7 +708,8 @@ export default {
       let clientH = document.documentElement.clientHeight;
       this.contentbodyH = clientH - 65 + "px";
       this.tableHeight = clientH - 65 - 145; //133包括按钮区域, margin-top, 分页所在区域
-      this.treeContentH = clientH - 65 - 41 + 'px';
+      this.menuContentH = clientH - 65 + 'px';
+      this.modalMaxHeight = clientH - 300 + 'px';
     },
     // 获取当前行详细信息
     initTableColumn(columnName){

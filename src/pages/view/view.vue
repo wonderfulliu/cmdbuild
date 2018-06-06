@@ -57,17 +57,21 @@
           </Row>
         </Header>
         <Content :style="{height:contentbodyH}">
-          <div class="contentBody">
+          <div class="contentBody" style="position: relative;">
             <Table
               stripe
               border
               size="small"
+              no-data-text=""
               @on-sort-change="sorting"
               :height="tableHeight"
-              :loading='loading'
               :columns="columns"
               :data="data"
               ref="table"></Table>
+            <Spin fix v-show="loading">
+              <Icon type="load-a" size=18 class="spinLoading"></Icon>
+              <div>Loading</div>
+            </Spin>
             <div style="line-height: 64px;height: 64px; overflow: hidden">
               <Row>
                 <Col :xs="{span:4,offset:1}" :sm="{span:4,offset:1}" :md="{span:13,offset:1}" :lg="{span:14,offset:1}" style="text-align: left">
@@ -122,7 +126,7 @@
           <p slot="header">
             <span>查看记录</span>
           </p>
-          <div class="modalBody">
+          <div class="modalBody" :style="{maxHeight:modalMaxHeight}">
             <Row v-if="viewViewData.length >= 20">
               <Col span="12">
               <ul>
@@ -179,6 +183,7 @@ export default {
       contentbodyH: "", //内容区域高度
       tableHeight: "", //表格高度
       menuContentH: "",
+      modalMaxHeight: "",//模态框内容高度
       //设置
       menuActive: true, //侧栏默认选中
       isCollapsed: false,
@@ -512,6 +517,7 @@ export default {
       this.contentbodyH = clientH - 139 + 'px';
       this.tableHeight = clientH - 223; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
       this.menuContentH = clientH - 65 + "px";
+      this.modalMaxHeight = clientH - 300 + 'px';
     },
     //字段排序
     sorting(s){
