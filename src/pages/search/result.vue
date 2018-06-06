@@ -26,7 +26,7 @@
           </Row>
         </Header>
         <Content>
-          <div class="contentBody">
+          <div class="contentBody" style="position: relative;">
             <Table border
                    stripe
                    ref="table"
@@ -35,9 +35,12 @@
                    @on-row-click="getrowMsg"
                    :height="tableHeight"
                    :highlight-row="highlight"
-                   :loading='loading'
                    :columns="columns"
                    :data="data"></Table>
+            <Spin fix v-show="loading">
+              <Icon type="load-a" size=18 class="spinLoading"></Icon>
+              <div>Loading</div>
+            </Spin>
             <div style="line-height: 64px;height:auto;">
               <Row>
                 <Col :xs="{span:23,offset:1}" :sm="{span:23,offset:1}" :md="{span:12,offset:1}" :lg="{span:14,offset:1}" style="text-align: left">
@@ -47,6 +50,7 @@
                     <Button type="ghost" title="" icon="ios-plus-empty" @click="add" :disabled='isdisable'>新增</Button>
                     <Button type="ghost" title="" icon="ios-trash-outline" @click="remove" :disabled='isdisable'>删除</Button>
                     <Button type="ghost" title="" icon="ios-download-outline" @click="exportData">下载</Button>
+                    <Button type="ghost" title="" icon="location" @click="relationJump">跳转</Button>
                     <!-- <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
                     <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete"></Button> -->
                   </ButtonGroup>
@@ -173,6 +177,8 @@ export default {
         delData: "",
         index: ""
       }, //删除的数据
+      isExist: false,//判断该关系表是否存在
+      recordId: '', // 被点击的记录的 id, 用于跳转
     };
   },
   created() {
@@ -421,6 +427,7 @@ export default {
     },
     // 点击表格每一行获取一些信息
     getrowMsg(value, index) {
+      this.recordId = value.Id;
       this.isClick = true;
       this.index = index;
     },
@@ -643,6 +650,45 @@ export default {
       //console.log(data);
       this.$store.commit("getaddMsg", data); //将整合好的数据推至公共仓库
       this.$router.push({ path: "/add" }); //跳转至新增页面
+    },
+    // 关系记录跳转到对应表的所在的位置
+    relationJump(){
+      if (this.isClick == true) {
+        let relationCtable = '';
+        let pageNum = 1;
+        let jiluId = this.recordId;
+        
+        let data = '?table=' + this.tableName + '&pageSize=20&id=' + this.recordId;
+        this.$http.get('/cardController/getPageCardByIndex' + data).then(info => {
+          if (info.status == 200) {
+            pageNum = info.data;
+            let msg = {
+              relationCtable: this.tableCname,//侧边栏搜索使用
+              pageNum: pageNum,// 分页跳转使用
+              jiluId: jiluId//最终定位使用
+            }
+            this.$store.commit('getsearchRelation', msg);
+            this.$router.push({ path: "/config/tableList" });
+          }
+        })
+      } else {
+        this.$Message.error({
+          content: '您未选中行!'
+        })
+      }
+    },
+    // 获取对应表的英文名
+    gettableEname(tableMenu, tableCname){
+      tableMenu.forEach((v, i) => {
+        if (v.children && v.children.length > 0) {
+          this.gettableEname(v.children, tableCname);
+        } else {
+          if (v.title == tableCname) {
+            // 找到了
+            this.isExist = true;
+          }
+        }
+      })
     },
     // 一进入该页面, 就获取关系表的表名
     getrelationTable() {

@@ -57,7 +57,7 @@
           </Row>
         </Header>
         <Content :style="{height:contentbodyH}">
-          <div class="contentBody">
+          <div class="contentBody" style="position: relative;">
             <Table
               stripe
               border
@@ -65,10 +65,13 @@
               no-data-text=""
               @on-sort-change="sorting"
               :height="tableHeight"
-              :loading='loading'
               :columns="columns"
               :data="data"
               ref="table"></Table>
+            <Spin fix v-show="loading">
+              <Icon type="load-a" size=18 class="spinLoading"></Icon>
+              <div>Loading</div>
+            </Spin>
             <div style="line-height: 64px;height: 64px; overflow: hidden">
               <Row>
                 <Col :xs="{span:4,offset:1}" :sm="{span:4,offset:1}" :md="{span:13,offset:1}" :lg="{span:14,offset:1}" style="text-align: left">

@@ -149,6 +149,10 @@ export default {
           let objTree = this.objFunc(oData); //将得到的数据转换成需要的格式
           this.ConfigTreeData = this.getEnter(objTree); //设置选中或者展开状态
           this.ConfigTreeData = this.newTreeFunc(objTree); //打开侧栏第一个选项
+          // 如果公共仓库中全局搜索传递过来的定位数据不为空, 那么
+          if (this.$store.state.searchRelation != '') {
+            this.getSearchrelation();
+          }
         });
     },
     //此方法是将拿到的侧边栏数据转换成新的格式，便于渲染树形菜单, 也是在这里将权限放到了每个侧边栏中
@@ -198,8 +202,6 @@ export default {
     },
     // 点击侧边栏的时候表格变化
     getTreeNodes(select) {
-      // console.log(select);
-      // console.log(this.ConfigTreeData);
       if (select.length != 0) {
         //不是空数组
         if (!select[0].children) {
@@ -212,7 +214,6 @@ export default {
           }else if (select[0].type == "view") {
             this.funcionName = select[0].funcionName; //viewfuncionName
             this.$router.push({path: '/config/cview'});
-            // console.log(this.funcionName);
           }else if(select[0].type == "dashboard"){
             this.dashboardName = select[0].title; //获取表中文名
             this.$router.push({path: '/config/cDashboard'});
@@ -368,7 +369,7 @@ export default {
         }
       })
       return obj;
-    },
+    }, 
     // 从relation获取传来的跳转信息
     getMfs(data){
       // console.log(data);
@@ -381,7 +382,16 @@ export default {
       this.clientH = document.documentElement.clientHeight;
       this.clientW = document.documentElement.clientWidth;
       this.treeContentH = this.clientH - 65-24-41*2+'px';
-    }
+    },
+    // 获取全局搜索中跳转过来的关系
+    getSearchrelation(){
+      this.relationMsg = this.$store.state.searchRelation;
+      this.pageNums = this.relationMsg.pageNum;
+      this.Id = this.relationMsg.jiluId;
+      this.searchedMsg = this.relationMsg.relationCtable;
+      // 或取到传过来的数据之后, 清空, 放置每次都获取
+      this.$store.commit('getsearchRelation', '');
+    },
   }
 };
 </script>

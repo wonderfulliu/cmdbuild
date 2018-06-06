@@ -37,6 +37,7 @@ const store = new Vuex.Store({
     domainlistMsg: '',
     // 全局搜索点击的侧边栏的序列
     clickWhichone: 0,
+    searchRelation: '',//全局搜索页面跳转的时候传递的信息
   },
   mutations: {//里面放方法
     getMode(state, val){
@@ -78,6 +79,9 @@ const store = new Vuex.Store({
     },
     getIndex(state, val){
       state.clickWhichone = val;
+    },
+    getsearchRelation(state, val){
+      state.searchRelation = val;
     },
   }
 })

@@ -282,8 +282,15 @@ export default {
   created() {
     this.heightAdaptive();
     this.isgetTablename();
+    // console.log(this.$store.state.searchRelation);
+    if (this.$store.state.searchRelation.pageNum) {
+      this.pageNum = this.$store.state.searchRelation.pageNum;
+    }
   },
   watch:{
+    'pageNums': function(newValue, oldValue){
+      this.pageNum = this.pageNums;
+    },
     'tableName': function(newValue, oldValue){
       this.clearSort();
       this.getTableAttribute();
@@ -296,9 +303,6 @@ export default {
       this.getTableData();
       this.getlookup();
       this.ischangetableName();
-    },
-    'pageNums': function(newValue, oldValue){
-      this.pageNum = this.pageNums;
     },
     'clientH': function (newValue, oldValue) {
       this.heightAdaptive();
@@ -439,6 +443,7 @@ export default {
       this.changetableName = true;
     },
     tableDataProce(info) {//================================================
+      // console.log(info);
       let _this = this;
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
@@ -570,10 +575,6 @@ export default {
           }
         }
       });
-      // return false;
-//      console.log(attr);
-//      console.log(relatedt);
-//      console.log(this.tableName);
       // return false;
       attr.forEach((v, i) => {
         if (v.type == "lookup") {
@@ -877,23 +878,16 @@ export default {
         this.$Message.error("您未选中行！");
       }
     },
-    ctrlRelete() {
+    ctrlRelete() { 
       if (this.clickRow == true) {
-        //将跳转到关系页面  表名 记录id 已获取, 获取和选中记录有关系表的表和表中有关系的记录
-        let data = { table: this.tableName, Id: this.recordId };
-        this.$http
-          .post("/relationController/getRelationList", data)
-          .then(info => {
-            // console.log(info);
-            let data = {
-              tableName: this.tableName, //表名
-              Id: this.recordId, //记录Id
-              relationMsg: info.data, //与该记录有关系的表与表中的记录
-              disabled: this.isdisable,//登录人员对该关系的权限也要传递过去
-            }; 
-            this.$store.commit("getrelationMsg", data);
-            this.$router.push({ path: "/config/relation" });
-          });
+        //将跳转到关系页面  表名 记录id 已获取, 传递到下一个页面发送请求数据
+        let data = {
+          tableName: this.tableName, //表名
+          Id: this.recordId, //记录Id
+          disabled: this.isdisable,//登录人员对该关系的权限也要传递过去
+        }; 
+        this.$store.commit("getrelationMsg", data);
+        this.$router.push({ path: "/config/relation" });
       } else {
         this.$Message.error("您未选中行！");
       }
