@@ -22,13 +22,17 @@
       </Row>
     </Header>
     <Content>
-      <div class="contentBody" :style="{height:contContentH}">
+      <div class="contentBody" :style="{height:contContentH}" style="position: relative;">
         <Table border
                size="small"
+               no-data-text=""
                :height="tableH"
-               :loading="loading"
                :columns="columnData"
                :data="tableData"></Table>
+        <Spin fix v-show="loading">
+          <Icon type="load-a" size=18 class="spinLoading"></Icon>
+          <div>Loading</div>
+        </Spin>
         <div style="line-height: 64px;height:auto;" v-show="ctrlBtnA">
           <Row>
             <Col :xs="{span:24}" :sm="{span:24}" :md="{span:9,offset:15}" :lg="{span:8,offset:15}" style="text-align: right">
@@ -73,11 +77,11 @@
       </div>
     </Content>
 
-    <Modal v-model="HistoryViewModal">
+    <Modal v-model="HistoryViewModal" :closable="false">
       <p slot="header">
         <span>查看历史记录</span>
       </p>
-      <div class="modalListUl">
+      <div class="modalBody" :style="{maxHeight:modalMaxHeight}">
         <ul>
           <li v-for="(val, key ,index) in HistoryViewData" :class="{'active': val.flag}" :key="index">
             {{ key }} : {{ val.value }}
@@ -85,6 +89,7 @@
         </ul>
       </div>
       <div slot="footer">
+        <Button type="primary" @click="ViewModalCancel">关闭</Button>
       </div>
     </Modal>
   </Layout>
@@ -94,7 +99,7 @@
   export default {
     props: {
       //表名
-      'tableName':{
+      tableName:{
         type: String,
         required: true
       },
@@ -103,7 +108,7 @@
         required: true
       },
       //记录id
-      'recordId': {
+      recordId: {
         type: Number,
         required: true
       }
@@ -129,6 +134,7 @@
         loading: true,
         //modal
         HistoryViewModal: false,
+        modalMaxHeight: '',
         hisLoading: true,
         firstCl: true,//首页是否禁用
         lastCl: true,//尾页是否禁用
@@ -317,6 +323,9 @@
           }
           return obj;
       },
+      ViewModalCancel() {
+        this.HistoryViewModal = false;
+      },
       backBtn(){
         this.$router.go(-1);
       },
@@ -360,6 +369,8 @@
         this.contH = (clientH - 64) + 'px';
         this.contContentH = (clientH - 138) + 'px';
         this.tableH = clientH - 222;
+        this.modalMaxHeight = this.clientH - 300 + 'px';
+
       },
     }
     }

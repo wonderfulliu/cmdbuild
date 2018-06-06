@@ -34,19 +34,24 @@
       </Row>
     </Header>
     <Content :style="{height:contentbodyH}">
-      <div class="contentBody">
+      <div class="contentBody" style="position: relative;">
         <Table border
                stripe
                ref="tableCont"
                size="small"
                :height="tableHeight"
+               no-data-text=""
                @on-row-click="getRecordInfo"
                @on-sort-change="sorting"
                :highlight-row="highlight"
-               :loading="loading"
                :columns="ConfigThead"
                :data="ConfigTdata">
+          <!--:loading="loading"-->
         </Table>
+        <Spin fix v-show="loading">
+          <Icon type="load-a" size=18 class="spinLoading"></Icon>
+          <div>Loading</div>
+        </Spin>
         <div style="line-height: 64px; height: 64px;" id="pagerCont">
           <Row>
             <Col :xs="{span:4,offset:1}" :sm="{span:9,offset:1}" :md="{span:12,offset:1}" :lg="{span:15,offset:1}" style="text-align: left">
@@ -159,7 +164,7 @@
       <p slot="header">
         <span>查看记录</span>
       </p>
-      <div class="modalBody">
+      <div class="modalBody" :style="{maxHeight:modalMaxHeight}">
         <Row v-if="configViewData.length >= 20">
           <Col span="12">
           <ul>
@@ -258,6 +263,7 @@ export default {
       contentH: "",
       contentbodyH: "", //内容区域高度
       tableHeight: "", //表格高度
+      modalMaxHeight: "",//模态框最大高度（内容）
       //模态框
       configDeleModal: false, //删除modal
       configViewModal: false, //查看modal, 暂时用不到
@@ -777,7 +783,6 @@ export default {
             return Number(a.position) - Number(b.position);
           });
            _this.configViewData = newArr;
-          console.log(_this.configViewData);
         })
         .catch(function(error) {
           //  console.log(error);
@@ -1136,6 +1141,7 @@ export default {
       this.contentH =  this.clientH - 65 +'px';
       this.contentbodyH = this.clientH - 138 + 'px';
       this.tableHeight = this.clientH - 222; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
+      this.modalMaxHeight = this.clientH - 300 + 'px';
     },
   },
   computed: {}
