@@ -635,9 +635,7 @@ export default {
               pageNum: pageNum,// 分页跳转使用
               jiluId: jiluId//最终定位使用
             }
-            // return false;
             this.$store.commit('getsearchRelation', msg);
-            // this.$emit('sTof', msg);
             this.$router.push({ path: "/config/tableList" });
           }
         })

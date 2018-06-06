@@ -202,8 +202,6 @@ export default {
     },
     // 点击侧边栏的时候表格变化
     getTreeNodes(select) {
-      // console.log(select);
-      // console.log(this.ConfigTreeData);
       if (select.length != 0) {
         //不是空数组
         if (!select[0].children) {
@@ -216,7 +214,6 @@ export default {
           }else if (select[0].type == "view") {
             this.funcionName = select[0].funcionName; //viewfuncionName
             this.$router.push({path: '/config/cview'});
-            // console.log(this.funcionName);
           }else if(select[0].type == "dashboard"){
             this.dashboardName = select[0].title; //获取表中文名
             this.$router.push({path: '/config/cDashboard'});
@@ -392,6 +389,7 @@ export default {
       this.pageNums = this.relationMsg.pageNum;
       this.Id = this.relationMsg.jiluId;
       this.searchedMsg = this.relationMsg.relationCtable;
+      // 或取到传过来的数据之后, 清空, 放置每次都获取
       this.$store.commit('getsearchRelation', '');
     },
   }

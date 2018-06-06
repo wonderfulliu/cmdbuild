@@ -276,9 +276,15 @@ export default {
   created() {
     this.heightAdaptive();
     this.isgetTablename();
-    this.pageNum = this.$store.state.searchRelation.pageNum;
+    // console.log(this.$store.state.searchRelation);
+    if (this.$store.state.searchRelation.pageNum) {
+      this.pageNum = this.$store.state.searchRelation.pageNum;
+    }
   },
   watch:{
+    'pageNums': function(newValue, oldValue){
+      this.pageNum = this.pageNums;
+    },
     'tableName': function(newValue, oldValue){
       this.clearSort();
       this.getTableAttribute();
@@ -291,9 +297,6 @@ export default {
       this.getTableData();
       this.getlookup();
       this.ischangetableName();
-    },
-    'pageNums': function(newValue, oldValue){
-      this.pageNum = this.pageNums;
     },
     'clientH': function (newValue, oldValue) {
       this.heightAdaptive();
@@ -434,7 +437,7 @@ export default {
       this.changetableName = true;
     },
     tableDataProce(info) {//================================================
-    // console.log(info);
+      // console.log(info);
       let _this = this;
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
