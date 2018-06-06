@@ -634,7 +634,9 @@ export default {
     pageChange(page) {
       this.pageNum = page;
       this.pageDisabled();
-      if (JSON.stringify(this.fielddataObj) != "{}") {
+      if (this.searchMsg != '') {
+        this.fuzzy();
+      }else if (JSON.stringify(this.fielddataObj) != "{}") {
         // 说明有字段搜索
         this.fieldSearch();
       } else {
@@ -657,7 +659,9 @@ export default {
     pageFirst() {
       this.pageNum = 1;
       this.pageDisabled();
-      if (JSON.stringify(this.fielddataObj) != "{}") {
+      if (this.searchMsg != '') {
+        this.fuzzy();
+      }else if (JSON.stringify(this.fielddataObj) != "{}") {
         // 说明有字段搜索
         this.fieldSearch();
       } else {
@@ -667,7 +671,9 @@ export default {
     pageLast() {
       this.pageNum = this.totalPage;
       this.pageDisabled();
-      if (JSON.stringify(this.fielddataObj) != "{}") {
+      if (this.searchMsg != '') {
+        this.fuzzy();
+      }else if (JSON.stringify(this.fielddataObj) != "{}") {
         // 说明有字段搜索
         this.fieldSearch();
       } else {
@@ -731,6 +737,8 @@ export default {
         )
         .then(function(info) {
           _this.totalBar = info.data.totalRecord;
+          _this.totalPage = info.data.totalPage;
+          _this.pageDisabled();
           let ConfigTdata = info.data.list;
           ConfigTdata.forEach(function(v, i) {
             for (let i in v) {
@@ -739,7 +747,7 @@ export default {
               }
             }
           });
-          console.log(ConfigTdata);
+          // console.log(ConfigTdata);
           _this.ConfigTdata = ConfigTdata;
           _this.loading = false; //加载完成时
         });
@@ -906,12 +914,19 @@ export default {
           } else if (info.data == 'failed') {
             this.$Message.error('删除失败');
           }
+          console.log(_this.configCondition);
+          if (_this.configCondition) {
+            _this.fuzzy();
+          }
         })
         .catch(function(error) {
           _this.deleLoading = false;
           _this.configDeleModal = false;
           _this.getTableData();
           _this.$Message.error("删除失败");
+          if (_this.configCondition) {
+            _this.fuzzy();
+          }
         });
     },
     configAdd() {
@@ -948,7 +963,7 @@ export default {
     },
     configDownload() {
       //下载中文字段数据
-      console.log(this.fielddataObj);
+      // console.log(this.fielddataObj);
       if (this.configCondition == '' && JSON.stringify(this.fielddataObj) == "{}") {
         window.open(
           "/cardController/downLoadExcel?table=" + this.tableName,
