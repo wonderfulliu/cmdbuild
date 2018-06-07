@@ -13,7 +13,7 @@ module.exports = {
     proxyTable: {
       // 配置反向代理
       '/': {
-        target: 'http://testcmdb.cfets.org',//引号内是接口所在服务器地址
+        target: 'http://192.168.6.80:8083',//引号内是接口所在服务器地址
         changeOrigin: true,
         pathRewrite: {
           '^/': ''

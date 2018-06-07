@@ -25,11 +25,10 @@
         <Form :label-width="100" class="formContainer">
           <FormItem :label="item.cname" v-for="(item, index) in editMsg" :key="index" v-if="item.title != 'Id'">
             <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
-            <!--<Select v-if="item.type == 'lookup'" v-model="item.content">
-              <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>
-            </Select>-->
-            <Cascader v-if="item.type == 'lookup'"
-                      :data="item.lookupMsg" v-model="item.content">
+            <Select v-if="item.attribute == 'Business_Type' && item.type == 'lookup'" multiple filterable v-model="item.content">
+              <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.value">{{attr.label}}</Option>
+            </Select>
+            <Cascader v-if="item.attribute != 'Business_Type' && item.type == 'lookup'" :data="item.lookupMsg" v-model="item.content">
             </Cascader>
             <Row v-if="item.type == 'date'">
               <Col span="11">
@@ -88,8 +87,8 @@ export default {
   methods: {
     // 获取公共仓库的要渲染的数据
     getaddMsg(){
+      // console.log(this.$store.state.addMsg);
       this.editMsg = this.$store.state.addMsg.titleMsg;//待渲染的数据
-      console.log(this.editMsg);
       this.jiluId = this.$store.state.addMsg.Id;//获取记录id
       this.tableName = this.$store.state.addMsg.tableName;//表名
       this.tableCname = this.$store.state.addMsg.tableCname;//表中文名
@@ -140,25 +139,43 @@ export default {
         }
       });
     },
-
     // 当从editTable页面跳回时传来的数据
     getchooseMsg(){
       this.chooseMsg = this.$store.state.chooseMsg;
     },
-
     // 模态框控制函数
     submit() {
       let data = {};
       data.table = this.tableName;
       data.Id = this.jiluId;
       // console.log(this.editMsg);
+      // return false;
       this.editMsg.forEach((v, i) => {
         if (v.attribute) {
           if (v.type == "reference" && v.Id) {
             data[v.attribute] = v.Id;
           } else if (v.type == "lookup" && v.content) {
-            let len = v.content.length - 1;
-            data[v.attribute] = v.content[len];
+            if (v.attribute == "Business_Type") {
+              // 将 id 转换为字符串内容在此处处理
+              // 这个 if 是为了适应 Business_Type 字段, 不然只需要 else 中的内容就行了
+              // 先把 id 转换成字符串
+              let newArr = [];
+              v.content.forEach((value, i) => {
+                v.lookupMsg.forEach((val, index) => {
+                  if (value == val.value) {
+                    if (val.label) {
+                      newArr.push(val.label);
+                    } else {
+                      newArr.push(undefined);
+                    }
+                  }
+                })
+              })
+              data[v.attribute] = newArr;
+            } else {
+              let len = v.content.length - 1;
+              data[v.attribute] = v.content[len];
+            }
           } else if (v.type == "date" && v.content) {
             data[v.attribute] = this.transformTime(v.content);
           }
@@ -169,8 +186,8 @@ export default {
           data[v.title] = v.content;
         }
       })
-      //console.log(data);
-      //return false;
+      // console.log(data);
+      // return false;
       // console.log(JSON.stringify(data));
       this.$http.put('/cardController/card', data).then(info => {
           // console.log(info);
@@ -210,7 +227,6 @@ export default {
     getHeight(){
       let clientH = document.documentElement.clientHeight;
       this.contHeight = (clientH - 64 - 74) + 'px';
-//      this.height = document.querySelector('#editContainer').offsetHeight - 74 + 'px';
     },
   }
 };

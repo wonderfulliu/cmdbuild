@@ -327,6 +327,7 @@ export default {
         this.getlookup();
       }
     },
+    // 获取该表的所有字段, 存入 session
     getTableAttribute() {
       let _this = this;
       let thead = sessionStorage.getItem(
@@ -344,7 +345,13 @@ export default {
       }
       this.isDisabled();
     },
+    // 判断是否切换表名, 切换, 则调用getTableHead的时候执行最下面函数, 否则不执行
+    ischangetableName(){
+      this.changetableName = true;
+    },
+    // 其他类型表头数据
     getTableHead(info) {
+      // 就是 this.getTableAttribute 的时候存入的表头数据
       let thead = sessionStorage.getItem("config_" + this.tableName + "_head");
       let fieldArr = sessionStorage.getItem("config_" + this.tableName + "_field");
       let end = {
@@ -438,10 +445,7 @@ export default {
         }
       } 
     },
-    // 判断是否切换表名, 切换, 则调用getTableHead的时候执行最下面函数, 否则不执行
-    ischangetableName(){
-      this.changetableName = true;
-    },
+    // 其他类型表格数据
     tableDataProce(info) {//================================================
       // console.log(info);
       let _this = this;
@@ -502,8 +506,9 @@ export default {
       _this.ConfigTdata = ConfigTdata;
       _this.loading = false; //加载完成时
     },
-    getTableData() {//表格数据获取
-      // this.pageNum = this.pageNums;
+    //表格数据获取
+    getTableData() {
+      // console.log(this.tableType);
       let _this = this;
       _this.loading = true; //加载中
       if (_this.tableType == "view") {
@@ -540,6 +545,7 @@ export default {
               _this.sort
           )
           .then((info) => {
+            // console.log(info);
             _this.getTableHead(info);
             _this.tableDataProce(info);
             this.pageDisabled();//解决搜索->不搜索时尾页禁用问题
@@ -554,6 +560,7 @@ export default {
     },
     // 点击表格的行
     getRecordInfo(res) {
+      // console.log(res);
       this.clickRow = true; //点击状态参数
       this.recordId = res.Id; //获取记录id
       let lookupdt = this.lookupInfo;
@@ -564,9 +571,6 @@ export default {
         //表头信息
         sessionStorage.getItem("config_" + this.tableName + "_attribute")
       );
-      // console.log(res);
-      // console.log(attr);//本行具体信息
-      // return false;
       // 找到字段对应的中文名
       attr.forEach(function(v, i) {
         for (let k in res) {
@@ -575,34 +579,22 @@ export default {
           }
         }
       });
-      // return false;
+      
       attr.forEach((v, i) => {
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
-          // console.log(v);
           let conStr = v.content;
-          // console.log(conStr);
           let conArry;
-          if (conStr != null) {
-            conArry = conStr.split('-');
-          } else {
-            conArry = [null];
-          }
-          v.content = findId(v.lookupMsg, conArry, 0, []);
-          function findId(obj, conArry, q, newArry){
-            for(let val in obj){
-              if(obj[val].label && obj[val].label == conArry[q]){
-                newArry.push(obj[val].value);
-                q++;
-                if(q<conArry.length){
-                  findId(obj[val].children, conArry, q, newArry);
-                }
-              } else if (!obj[val].label) {
-                newArry.push(obj[val].value);
-              }
+          // if (v.attribute == "Business_Type") {
+            
+          // } else {
+            if (conStr != null) {
+              conArry = conStr.split('-');
+            } else {
+              conArry = [null];
             }
-            return newArry;
-          }
+            v.content = this.findId(v.lookupMsg, conArry, 0, []);
+          // }
         } else if (v.type == "reference") {
           for (let ri = 0; ri < relatedt.length; ri++) {
             if (v.lr == relatedt[ri].domainname) {
@@ -620,6 +612,21 @@ export default {
       addData.titleMsg = attr;
       addData.Id = this.recordId;
       this.$store.commit("getaddMsg", addData);
+    },
+    // 返回 lookup 要渲染的数据
+    findId(obj, conArry, q, newArry){
+      for(let val in obj){
+        if(obj[val].label && obj[val].label == conArry[q]){
+          newArry.push(obj[val].value);
+          q++;
+          if(q<conArry.length){
+            findId(obj[val].children, conArry, q, newArry);
+          }
+        } else if (!obj[val].label) {
+          newArry.push(obj[val].value);
+        }
+      }
+      return newArry;
     },
     attributeCName(eName) {
       let _this = this;
@@ -686,45 +693,39 @@ export default {
         this.getTableData(this.tableName);
       }
     },
+    // 获取 lookup 数据类型和 reference 数据类型
     getlookup() {
-      //获取相关数据
-      //lookup
-      let _this = this;
-      _this.$http
-        .post(
-          "/relationController/getLookuplistByTable?table=" + _this.tableName
-        )
-        .then(function(info) {
-          let newlookup = {};
-          for(let i in info.data){
-            newlookup[i] = transformObj(info.data[i]);
-            function transformObj(arr){
-              let arrb = [];
-              arr.forEach(function(v, i){
-                let obja = {};
-                if(v.Description){
-                  obja.label = v.Description;
-                }
-                obja.value = v.Id;
-                if(v.child){
-                  obja.children =[];
-                  if(v.child.length != 0){
-                    obja.children = transformObj(v.child);
-                  }
-                }
-                arrb.push(obja);
-              });
-              return arrb;
-            };
+      // 获取 lookup 数据
+      this.$http.post("/relationController/getLookuplistByTable?table=" + this.tableName).then((info) => {
+        let newlookup = {};
+        for(let i in info.data){
+          newlookup[i] = this.transformObj(info.data[i]);
+        }
+        this.lookupInfo = newlookup;
+      });
+      // 获取 reference 数据 
+      this.$http.get("/relationController/getDomainList?table=" + this.tableName).then((res) => {
+        this.relationInfo = res.data;
+      });
+    },
+    // 转换 lookup 数据
+    transformObj(arr){
+      let arrb = [];
+      arr.forEach(function(v, i){
+        let obja = {};
+        if(v.Description){
+          obja.label = v.Description;
+        }
+        obja.value = v.Id;
+        if(v.child){
+          obja.children =[];
+          if(v.child.length != 0){
+            obja.children = transformObj(v.child);
           }
-          _this.lookupInfo = newlookup;
-        });
-      //relationTable
-      _this.$http
-        .get("/relationController/getDomainList?table=" + _this.tableName)
-        .then(function(res) {
-          _this.relationInfo = res.data;
-        });
+        }
+        arrb.push(obja);
+      });
+      return arrb;
     },
     // 模糊查询
     fuzzy() {
@@ -946,6 +947,9 @@ export default {
         let a = v.attribute;
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
+          if (v.attribute == "Business_Type") {
+            v.content = [];
+          }
         } else if (v.type == "reference") {
           for (let ri = 0; ri < relatedt.length; ri++) {
             if (v.lr == relatedt[ri].domainname) {
