@@ -32,17 +32,20 @@
         </Row>
       </Header>
       <Content :style="{height:contentBodyH}">
-        <div class="contentBody" >
+        <div class="contentBody" style="position: relative;">
           <Table border
                  stripe
                  size="small"
-                 :loading="tLoading"
                  :height="tableHeight"
                  :highlight-row="highlight"
                  :data="wfData"
                  @on-row-click="getRecordId"
                  :columns="wfColumns">
           </Table>
+          <Spin fix v-show="tLoading">
+            <Icon type="load-a" size=18 class="spinLoading"></Icon>
+            <div>Loading</div>
+          </Spin>
           <div style="line-height: 64px; height: 64px;" id="pagerCont">
             <Row>
               <Col :xs="{span:4,offset:1}" :sm="{span:9,offset:1}" :md="{span:12,offset:1}" :lg="{span:15,offset:1}" style="text-align: left">

@@ -40,17 +40,16 @@
               </router-link>
             </div>
             <div class="layout-user">
-              <MenuItem name="5" @click.native="usermanualDownload">
+              <MenuItem name="5" @click.native="usermanualDownload" v-if="clientW>1140">
                 <Button type="primary">
                   用户手册
                   <Icon type="archive"></Icon>
                 </Button>
               </MenuItem>
-              <MenuItem class="userInfo" name="5">
+              <MenuItem class="userInfo" name="5" v-if="clientW>1010">
                 <div class="buddha">
                   <Icon type="person"></Icon>
                 </div>
-
                 <div class="explain">
                   <p>{{ userName }}</p>
                   <p>{{ group }}</p>
@@ -63,7 +62,9 @@
           </Menu>
         </Header>
         <transition name="fade" mode="out-in">
-          <router-view></router-view>
+          <router-view :clientH="clientH"
+                       :clientW="clientW">
+          </router-view>
         </transition>
       </Layout>
     </div>
@@ -78,11 +79,21 @@
         userName: JSON.parse(sessionStorage.getItem('groupInfo')).user,
         group: JSON.parse(sessionStorage.getItem('groupInfo')).Description,
         path: '',
-        navActive:0
+        navActive:0,
+        //屏宽屏高
+        clientH: 0,//屏高
+        clientW: 0,//屏宽
       };
     },
     created(){
       this.getDashboardList();
+    },
+    mounted () {
+      let _this = this;
+      _this.clientSizeChange();
+      window.onresize = () => {
+        _this.clientSizeChange();
+      }
     },
     computed: {
       rotateIcon() {
@@ -118,6 +129,13 @@
           });
           sessionStorage.setItem("DashboardMenuList",JSON.stringify(newArr));
         })
+      },
+      clientSizeChange(){
+        this.clientH = document.documentElement.clientHeight;
+        this.clientW = document.documentElement.clientWidth;
+        if(this.clientW<1000){
+          console.log(this.clientW);
+        }
       }
   }
   }

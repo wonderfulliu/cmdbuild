@@ -74,6 +74,16 @@
 </template>
 <script>
 export default {
+  props: {
+    clientH:{
+      type: Number,
+      default: 0
+    },
+    clientW:{
+      type: Number,
+      default: 0
+    },
+  },
   data() {
     return {
       isCollapsed: false,
@@ -98,8 +108,6 @@ export default {
       pageNums: 1,//关系定位用的
       Id: null,
       //侧栏高度
-      clientH: 0,//屏高
-      clientW: 0,//屏宽
       treeContentH: '410px'
     };
   },
@@ -116,16 +124,18 @@ export default {
     }
   },
   mounted () {
-    let _this = this;
-    _this.sideMenuHeight();
-    window.onresize = () => {
-      _this.sideMenuHeight();
-    }
+    this.sideMenuHeight();
   },
   watch:{
     searchedMsg: function(){
       this.flag = true;
       this.gettableEname(this.ConfigTreeData, this.searchedMsg);
+    },
+    'clientH': function (newValue, oldValue) {
+      this.sideMenuHeight();
+    },
+    'clientW': function (newValue, oldValue) {
+      this.sideMenuHeight();
     },
   },
   methods: {
@@ -379,8 +389,6 @@ export default {
       this.searchedMsg = data.relationCtable;
     },
     sideMenuHeight(){
-      this.clientH = document.documentElement.clientHeight;
-      this.clientW = document.documentElement.clientWidth;
       this.treeContentH = this.clientH - 65-24-41*2+'px';
     },
     // 获取全局搜索中跳转过来的关系

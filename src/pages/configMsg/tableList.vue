@@ -2,10 +2,10 @@
   <Layout class="miniWindow" :style="{height:contentH}" style="overflow: hidden">
     <Header ref="conBhead" :style="{padding: 0}" class="layout-header-bar">
       <Row>
-        <Col span="1">
+        <Col :xs="{span:3}" :sm="{span:2}" :md="{span:1}" :lg="{span:1}">
           <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
         </Col>
-        <Col span="3">
+        <Col :xs="{span:6}" :sm="{span:3}" :md="{span:3}" :lg="{span:3}">
           <Dropdown class="fieldSearch" trigger="click" placement="bottom-start">
               <Button type="primary">
                 字段筛选
@@ -26,7 +26,7 @@
               </DropdownMenu>
           </Dropdown>
         </Col>
-        <Col span="12" offset="3">
+        <Col :xs="{span:8}" :sm="{span:12,offset:1}" :md="{span:12,offset:2}" :lg="{span:12,offset:2}">
           <Input v-model="configCondition" placeholder="Enter something..." @on-enter="fuzzy">
             <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
           </Input>
@@ -146,6 +146,7 @@
       </div>
     </Content>
     <!--模态框-->
+    <!--删除-->
     <Modal v-model="configDeleModal" width="360">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="information-circled"></Icon>
