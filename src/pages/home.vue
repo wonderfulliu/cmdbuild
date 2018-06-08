@@ -40,13 +40,13 @@
               </router-link>
             </div>
             <div class="layout-user">
-              <MenuItem name="5" @click.native="usermanualDownload" v-if="clientW>1140">
+              <MenuItem name="5" @click.native="usermanualDownload" v-if="screenWidth>1140">
                 <Button type="primary">
                   用户手册
                   <Icon type="archive"></Icon>
                 </Button>
               </MenuItem>
-              <MenuItem class="userInfo" name="5" v-if="clientW>1010">
+              <MenuItem class="userInfo" name="5" v-if="screenWidth>1010">
                 <div class="buddha">
                   <Icon type="person"></Icon>
                 </div>
@@ -62,8 +62,8 @@
           </Menu>
         </Header>
         <transition name="fade" mode="out-in">
-          <router-view :clientH="clientH"
-                       :clientW="clientW">
+          <router-view :clientH="screenHeight"
+                       :clientW="screenWidth">
           </router-view>
         </transition>
       </Layout>
@@ -81,8 +81,8 @@
         path: '',
         navActive:0,
         //屏宽屏高
-        clientH: 0,//屏高
-        clientW: 0,//屏宽
+        screenHeight: document.body.clientHeight,//屏高
+        screenWidth: document.body.clientWidth,//屏宽
       };
     },
     created(){
@@ -131,11 +131,8 @@
         })
       },
       clientSizeChange(){
-        this.clientH = document.documentElement.clientHeight;
-        this.clientW = document.documentElement.clientWidth;
-        if(this.clientW<1000){
-          console.log(this.clientW);
-        }
+        this.screenHeight = document.body.clientHeight;
+        this.screenWidth = document.body.clientWidth;
       }
   }
   }
