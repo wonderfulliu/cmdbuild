@@ -575,10 +575,10 @@ export default {
           }
         }
       });
-      console.log(res);
-      console.log(attr);
-      console.log(lookupdt);
-      return false;
+      // console.log(res);
+      // console.log(attr);
+      // console.log(lookupdt);
+      // return false;
       
       attr.forEach((v, i) => {
         // 这个是专门处理 BusinessType 这个字段, 以方便编辑的时候使用, 将汉字转换成 value
@@ -602,7 +602,6 @@ export default {
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
           let conStr = v.content;//null 或者是字符串或者是数字 下面的判断条件不够
-          // return false;
           let conArry;
           if (conStr != null) {
             conArry = conStr.split('-');
@@ -630,17 +629,17 @@ export default {
     },
     // 返回 lookup 要渲染的数据
     findId(obj, conArry, q, newArry){
-      for(let val in obj){
-        if(obj[val].label && obj[val].label == conArry[q]){
-          newArry.push(obj[val].value);
+      obj.forEach((v, i) => {
+        if(v.label && v.label == conArry[q]){
+          newArry.push(v.value);
           q++;
           if(q<conArry.length){
-            this.findId(obj[val].children, conArry, q, newArry);
+            this.findId(v.children, conArry, q, newArry);
           }
-        } else if (!obj[val].label) {
-          newArry.push(obj[val].value);
+        } else if (!v.label) {
+          // newArry.push(v.value);
         }
-      }
+      })
       return newArry;
     },
     attributeCName(eName) {
