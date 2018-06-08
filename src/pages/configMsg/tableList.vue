@@ -575,11 +575,6 @@ export default {
           }
         }
       });
-      // console.log(res);
-      // console.log(attr);
-      // console.log(lookupdt);
-      // return false;
-      
       attr.forEach((v, i) => {
         // 这个是专门处理 BusinessType 这个字段, 以方便编辑的时候使用, 将汉字转换成 value
         if (v.attribute == 'BusinessType') {

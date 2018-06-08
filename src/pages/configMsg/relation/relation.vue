@@ -4,6 +4,9 @@
       <Header style="padding: 0" class="layout-header-bar">
         <Form :label-width="80">
           <Row>
+            <Col span="2">
+              <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
+            </Col>
             <Col class="bread" span="7">
               <Breadcrumb>
                 <BreadcrumbItem to="/config/tableList">配置信息</BreadcrumbItem>
@@ -46,7 +49,7 @@
                   </DropdownMenu>
               </Dropdown>
             </Col>
-            <Col span="3" offset="7">
+            <Col span="3" offset="5">
               <Button type="ghost" title="返回" icon="reply" @click="back"></Button>
             </Col>
           </Row>
@@ -144,11 +147,25 @@ export default {
       tableHeight: '550',
     };
   },
-  props: [
-    'ConfigTreeData'
-  ],
+  props: {
+    ConfigTreeData: {
+      type: Array
+    },
+    collapsedSider: {
+      type: Function,
+      default: null
+    },
+    rotateIcon: {
+      type: Array,
+      default: null
+    },
+  },
   created() {
     this.getMsg();
+    // 获取下 relationTableCname
+    if (this.$store.state.relationTableCE) {
+      
+    }
   },
   methods: {
     // 获取到公共仓库的数据: 表Id 表名 关系表表名与内容---1
@@ -233,10 +250,13 @@ export default {
           now.push(obj);
         }
         this.now = now;
-        // console.log(this.now);
+        // console.log(this.relationTableCname);
         // 此处首次获取到this.now, 默认显示第一个关系表的纪录
-        if (this.now.length != 0) {
+        if (this.now.length != 0 && !this.$store.state.relationTableCE) {
           this.selectN(this.now[0].value);
+        } else {
+          this.selectN(this.$store.state.relationTableCE);
+          this.$store.commit('getRtcname', '');
         }
       } else {
         this.placeholder = '暂无数据';
@@ -262,11 +282,15 @@ export default {
     selectF(value){
       let relationTable = value.substring(0, value.length - 2);
       let NorOne = value.substring(value.length - 1, value.length);
+      let userea;
       this.domainListMsg.forEach((v, i) => {
         if (relationTable == v.relationTable) {
           this.domainname = v.domainname;//关系表名, 下面请求表格详细数据的时候要用
+          userea = v.domainname;
         }
       })
+      
+      this.$store.commit('getRtcname', userea);// 待编辑的关系表明存到公共仓库中, 方便添加完关系之后显示当前添加的页面
       this.getrefctMsg(relationTable, NorOne);
       this.getrefMsg(relationTable, NorOne);
     },
