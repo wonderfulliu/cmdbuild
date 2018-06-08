@@ -282,7 +282,6 @@ export default {
   created() {
     this.heightAdaptive();
     this.isgetTablename();
-    // console.log(this.$store.state.searchRelation);
     if (this.$store.state.searchRelation.pageNum) {
       this.pageNum = this.$store.state.searchRelation.pageNum;
     }
@@ -508,7 +507,6 @@ export default {
     },
     //表格数据获取
     getTableData() {
-      // console.log(this.tableType);
       let _this = this;
       _this.loading = true; //加载中
       if (_this.tableType == "view") {
@@ -545,7 +543,6 @@ export default {
               _this.sort
           )
           .then((info) => {
-            // console.log(info);
             _this.getTableHead(info);
             _this.tableDataProce(info);
             this.pageDisabled();//解决搜索->不搜索时尾页禁用问题
@@ -560,11 +557,9 @@ export default {
     },
     // 点击表格的行
     getRecordInfo(res) {
-      // console.log(res);
       this.clickRow = true; //点击状态参数
       this.recordId = res.Id; //获取记录id
-      let lookupdt = this.lookupInfo;
-      // console.log(lookupdt);//lookup数据
+      let lookupdt = this.lookupInfo; // 对象, lookup 类型的数据
       let relatedt = this.relationInfo;
       let addData = {};
       let attr = JSON.parse(
@@ -579,22 +574,41 @@ export default {
           }
         }
       });
+      console.log(res);
+      console.log(attr);
+      console.log(lookupdt);
+      return false;
       
       attr.forEach((v, i) => {
+        // 这个是专门处理 BusinessType 这个字段, 以方便编辑的时候使用, 将汉字转换成 value
+        if (v.attribute == 'BusinessType') {
+          v.lookupMsg = lookupdt[v.attribute];
+          if (v.content == null) {
+            v.content = [];
+          } else {
+            let arr = [];
+            v.content.split('、').forEach((val, index) => {
+              v.lookupMsg.forEach((value, j) => {
+                if (value.label == val) {
+                  arr.push(value.value);
+                }
+              })
+            })
+            v.content = arr;
+          }
+        }
+        // 这是处理 lookup 数据
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
-          let conStr = v.content;
+          let conStr = v.content;//null 或者是字符串或者是数字 下面的判断条件不够
+          // return false;
           let conArry;
-          // if (v.attribute == "Business_Type") {
-            
-          // } else {
-            if (conStr != null) {
-              conArry = conStr.split('-');
-            } else {
-              conArry = [null];
-            }
-            v.content = this.findId(v.lookupMsg, conArry, 0, []);
-          // }
+          if (conStr != null) {
+            conArry = conStr.split('-');
+          } else {
+            conArry = [null];
+          }
+          v.content = this.findId(v.lookupMsg, conArry, 0, []);
         } else if (v.type == "reference") {
           for (let ri = 0; ri < relatedt.length; ri++) {
             if (v.lr == relatedt[ri].domainname) {
@@ -620,7 +634,7 @@ export default {
           newArry.push(obj[val].value);
           q++;
           if(q<conArry.length){
-            findId(obj[val].children, conArry, q, newArry);
+            this.findId(obj[val].children, conArry, q, newArry);
           }
         } else if (!obj[val].label) {
           newArry.push(obj[val].value);
@@ -696,12 +710,18 @@ export default {
     // 获取 lookup 数据类型和 reference 数据类型
     getlookup() {
       // 获取 lookup 数据
+      // 表名为 WAN_Line 的中间有个字段是特例
+      let newlookup = {};
+      if (this.tableName == 'WAN_Line') {
+        this.$http.post('/relationController/lookupQuery' + '?lookup=WAN_LINE.BUSINESS_TYPE').then(info => {
+          newlookup.BusinessType = this.transformObj(info.data);
+        })
+      }
       this.$http.post("/relationController/getLookuplistByTable?table=" + this.tableName).then((info) => {
-        let newlookup = {};
         for(let i in info.data){
           newlookup[i] = this.transformObj(info.data[i]);
         }
-        this.lookupInfo = newlookup;
+        this.lookupInfo = newlookup; //这是个引用类型的数据
       });
       // 获取 reference 数据 
       this.$http.get("/relationController/getDomainList?table=" + this.tableName).then((res) => {
@@ -711,7 +731,7 @@ export default {
     // 转换 lookup 数据
     transformObj(arr){
       let arrb = [];
-      arr.forEach(function(v, i){
+      arr.forEach((v, i) => {
         let obja = {};
         if(v.Description){
           obja.label = v.Description;
@@ -720,7 +740,7 @@ export default {
         if(v.child){
           obja.children =[];
           if(v.child.length != 0){
-            obja.children = transformObj(v.child);
+            obja.children = this.transformObj(v.child);
           }
         }
         arrb.push(obja);
@@ -870,7 +890,6 @@ export default {
     },
     ctrlEdit() {
       if (this.clickRow == true) {
-        //将已选中行进行编辑
         this.$router.push({ path: "/config/cedit" }); //跳转至新增页面
       } else {
         this.$Message.error("您未选中行！");
@@ -945,9 +964,9 @@ export default {
       );
       attr.forEach(function(v, i) {
         let a = v.attribute;
-        if (v.type == "lookup") {
+        if (v.type == "lookup" || v.attribute == 'BusinessType') {
           v.lookupMsg = lookupdt[v.attribute];
-          if (v.attribute == "Business_Type") {
+          if (v.attribute == "BusinessType") {
             v.content = [];
           }
         } else if (v.type == "reference") {

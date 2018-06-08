@@ -435,7 +435,6 @@ export default {
     show() {
       if (this.isClick == true) {
         let newArrc = [];
-//        console.log(this.data);
         for (let i = 0; i < this.columns.length; i++) {
           let newObjc = {};
           newObjc.Description = this.columns[i].title;
@@ -495,36 +494,40 @@ export default {
     },
     // 获取lookup数据
     getSelect() {
+      let newlookup = {};
+      if (this.tableName == 'WAN_Line') {
+        this.$http.post('/relationController/lookupQuery' + '?lookup=WAN_LINE.BUSINESS_TYPE').then(info => {
+          newlookup.BusinessType = this.transformObj(info.data);
+        })
+      }
       let data = "?table=" + this.tableName;
-      this.$http
-        .post("/relationController/getLookuplistByTable" + data)
-        .then(info => {
-          if (info.status == 200) {
-            let newlookup = {};
-            for(let i in info.data){
-              newlookup[i] = transformObj(info.data[i]);
-              function transformObj(arr){
-                let arrb = [];
-                arr.forEach(function(v, i){
-                  let obja = {};
-                  if(v.Description){
-                    obja.label = v.Description;
-                  }
-                  obja.value = v.Id;
-                  if(v.child){
-                    obja.children =[];
-                    if(v.child.length != 0){
-                      obja.children = transformObj(v.child);
-                    }
-                  }
-                  arrb.push(obja);
-                });
-                return arrb;
-              };
-            }
-            this.lookupMsg = newlookup;
+      this.$http.post("/relationController/getLookuplistByTable" + data).then(info => {
+        if (info.status == 200) {
+          for(let i in info.data){
+            newlookup[i] = this.transformObj(info.data[i]);
           }
-        });
+          this.lookupMsg = newlookup;
+        }
+      });
+    },
+    // 处理 lookup 数据
+    transformObj(arr){
+      let arrb = [];
+      arr.forEach(function(v, i){
+        let obja = {};
+        if(v.Description){
+          obja.label = v.Description;
+        }
+        obja.value = v.Id;
+        if(v.child){
+          obja.children =[];
+          if(v.child.length != 0){
+            obja.children = transformObj(v.child);
+          }
+        }
+        arrb.push(obja);
+      });
+      return arrb;
     },
     // 下载功能
     exportData() {
@@ -558,8 +561,29 @@ export default {
           }
         }
         // 添加lookup数据
+        console.log(titleMsg);
+        console.log(this.lookupMsg);
+        return false;
         titleMsg.forEach((v, i) => {
-          if (v.type == "lookup") {
+          // 这个是专门处理 BusinessType 这个字段, 以方便编辑的时候使用, 将汉字转换成 value
+          if (v.attribute == 'BusinessType') {
+            v.lookupMsg = this.lookupMsg[v.attribute];
+            if (v.content == null) {
+              v.content = [];
+            } else {
+              let arr = [];
+              v.content.split('、').forEach((val, index) => {
+                v.lookupMsg.forEach((value, j) => {
+                  if (value.label == val) {
+                    arr.push(value.value);
+                  }
+                })
+              })
+              v.content = arr;
+            }
+          }
+          // 下面也要修改
+          if (v.type == "lookup" || v.attribute == 'BusinessType') {
             for (let k in this.lookupMsg) {
               if (k == v.attribute) {
                 v.lookupMsg = this.lookupMsg[k];
@@ -568,29 +592,16 @@ export default {
                 if(typeof v.content == 'string'){
                   conArry = conStr.split('-');
                 }else {
-                  conArry = conStr;
+                  conArry = [null];
                 }
-                v.content = findId(v.lookupMsg, conArry, 0, []);
-                function findId(obj, conArry, q, newArry){
-                  for(let val in obj){
-                    if(obj[val].label && obj[val].label == conArry[q]){
-                      newArry.push(obj[val].value);
-                      q++;
-                      if(q<conArry.length){
-                        findId(obj[val].children, conArry, q, newArry);
-                      }
-                    }
-                  }
-                  return newArry;
-                }
+                v.content = this.findId(v.lookupMsg, conArry, 0, []);
               }
             }
           }
           if (v.type == "reference") {
             this.relationTable.forEach((val, index) => {
               if (v.lr == val.domainname) {
-                v.relationTable =
-                  v.table == val.domainclass2 ? val.domainclass1 : val.domainclass2;
+                v.relationTable = v.table == val.domainclass2 ? val.domainclass1 : val.domainclass2;
               }
             });
           }
@@ -608,6 +619,19 @@ export default {
           content: '您未选中行!'
         })
       }
+    },
+    // 不知道处理啥的
+    findId(obj, conArry, q, newArry){
+      for(let val in obj){
+        if(obj[val].label && obj[val].label == conArry[q]){
+          newArry.push(obj[val].value);
+          q++;
+          if(q<conArry.length){
+            findId(obj[val].children, conArry, q, newArry);
+          }
+        }
+      }
+      return newArry;
     },
     // 点击添加的时候调用的函数
     add() {

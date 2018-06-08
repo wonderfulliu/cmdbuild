@@ -24,11 +24,11 @@
     <Content ref="conBbody"  class="contentForm" :style="{height:contHeight}" style="overflow-y: auto">
       <Form :label-width="100" class="formContainer">
         <FormItem :label="item.cname" v-for="(item, index) in addMsg" :key="index" v-if="item.title != 'Id'">
-          <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
-          <Select v-if="item.type == 'lookup' && item.attribute == 'Business_Type'" v-model="item.content" multiple filterable>
+          <Input v-if="item.type == 'varchar' && item.attribute != 'BusinessType'" v-model="item.content" placeholder="Enter something..."></Input>
+          <Select v-if="item.type == 'varchar' && item.attribute == 'BusinessType'" v-model="item.content" multiple filterable>
             <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.value">{{attr.label}}</Option>
           </Select>
-          <Cascader v-if="item.type == 'lookup' && item.attribute != 'Business_Type'" :data="item.lookupMsg" v-model="item.content">
+          <Cascader v-if="item.type == 'lookup'" :data="item.lookupMsg" v-model="item.content">
           </Cascader>
           <Row v-if="item.type == 'date'">
             <Col span="11">
@@ -168,28 +168,22 @@ export default {
       this.addMsg.forEach((v, i) => {
         if (v.attribute) {
           if (v.type == "lookup" && v.content) {
-            if (v.attribute == "Business_Type") {
-              // 将 id 转换为字符串内容在此处处理
-              // 这个 if 是为了适应 Business_Type 字段, 不然只需要 else 中的内容就行了
-              let newArr = [];
-              v.content.forEach((value, i) => {
-                v.lookupMsg.forEach((val, index) => {
-                  if (value == val.value) {
-                    if (val.label) {
-                      newArr.push(val.label);
-                    } else {
-                      newArr.push(undefined);
-                    }
+            let len = v.content.length - 1;
+            submitMsg[v.attribute] = v.content[len];
+          } else if (v.type == "varchar" && v.attribute == "BusinessType" && v.content) {
+            let newArr = [];
+            v.content.forEach((value, i) => {
+              v.lookupMsg.forEach((val, index) => {
+                if (value == val.value) {
+                  if (val.label) {
+                    newArr.push(val.label);
+                  } else {
+                    // newArr.push(undefined);
                   }
-                })
+                }
               })
-              submitMsg[v.attribute] = newArr;
-            } else {
-              let len = v.content.length - 1;
-              submitMsg[v.attribute] = v.content[len];
-            }
-            // let len = v.content.length - 1;
-            // submitMsg[v.attribute] = v.content[len];
+            })
+            submitMsg[v.attribute] = newArr.join('、');
           } else if (v.type == "date" && v.content) {//时间格式的数据
             submitMsg[v.attribute] = this.transformTime(v.content);
           } else if (v.type == "reference" && v.content) {//reference格式的数据
@@ -199,11 +193,8 @@ export default {
           }
         }
       })
-      // console.log(submitMsg);
-      // return false;
-      // let data = JSON.stringify(submitMsg);
+      
       this.$http.post('/cardController/card', submitMsg).then(info => {
-          // console.log(info);
           // 成功的回调
           if (info.status == 200 && info.data == 'ok') {
             this.$Message.success({
