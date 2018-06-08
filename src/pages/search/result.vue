@@ -6,6 +6,7 @@
         <Menu theme="dark"
               width="auto"
               :class="menuitemClasses"
+              :active-name="menuIndex"
               :style="{height:menuContentH,overflowY:'auto'}">
             <MenuItem :key="index"
                       :name="['1-']+[index+1]"
@@ -163,10 +164,11 @@ export default {
       isClick: false, //判断行是否被点击
       index: "" ,//存储被点击的行的序列(就是点击了哪一行)
       highlight: true,//选中行高亮
+      //设置
+      menuIndex: sessionStorage.getItem('searchMenuIndex'),    //侧栏默认选中对应索引
       firstCl: true,//首页是否禁用
       lastCl: false,//尾页是否禁用
-      // 点击侧边栏哪个表格
-      clickWhichone: 0,
+      clickWhichone: 0,// 点击侧边栏哪个表格
       menuContentH: "",//侧栏高度
       modalMaxHeight: "",//模态框内容高度
       //modal
@@ -182,6 +184,10 @@ export default {
     };
   },
   created() {
+    let searchMenuIndex = sessionStorage.getItem('searchMenuIndex')
+    if(!searchMenuIndex){
+      sessionStorage.setItem('searchMenuIndex', "1-1");
+    }
     this.getAuthority();
     this.getasideMsg();
     this.heightAdaptive();
@@ -203,6 +209,9 @@ export default {
   methods: {
     //点击侧栏获取表信息
     menuSelected(msg, index){
+      this.menuIndex = "1-" + (index + 1);
+      sessionStorage.setItem('searchMenuIndex', "1-" + (index + 1))
+      console.log(this.menuIndex);
       //console.log(msg.Description);//获取中文表名
       //console.log(msg.idElementClass);//获取英文表名
       // 把点击的表的序列存入公共仓库
@@ -495,16 +504,17 @@ export default {
     // 获取lookup数据
     getSelect() {
       let newlookup = {};
+      let _this = this;
       if (this.tableName == 'WAN_Line') {
         this.$http.post('/relationController/lookupQuery' + '?lookup=WAN_LINE.BUSINESS_TYPE').then(info => {
-          newlookup.BusinessType = this.transformObj(info.data);
+          newlookup.BusinessType = _this.transformObj(info.data);
         })
       }
       let data = "?table=" + this.tableName;
       this.$http.post("/relationController/getLookuplistByTable" + data).then(info => {
         if (info.status == 200) {
           for(let i in info.data){
-            newlookup[i] = this.transformObj(info.data[i]);
+            newlookup[i] = _this.transformObj(info.data[i]);
           }
           this.lookupMsg = newlookup;
         }
@@ -513,7 +523,7 @@ export default {
     // 处理 lookup 数据
     transformObj(arr){
       let arrb = [];
-      arr.forEach(function(v, i){
+      arr.forEach((v, i) => {
         let obja = {};
         if(v.Description){
           obja.label = v.Description;
@@ -522,7 +532,7 @@ export default {
         if(v.child){
           obja.children =[];
           if(v.child.length != 0){
-            obja.children = transformObj(v.child);
+            obja.children = this.transformObj(v.child);
           }
         }
         arrb.push(obja);

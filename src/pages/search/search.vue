@@ -68,6 +68,7 @@ export default {
               // return false;
               this.$store.commit('getsearchMsg', this.searchasideMsg);
               sessionStorage.setItem('searchMsg', JSON.stringify(this.searchasideMsg));
+              sessionStorage.setItem('searchMenuIndex', "1-1");
               this.$router.push({path: '/result'});
             }
           }
