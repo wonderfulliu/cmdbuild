@@ -22,12 +22,11 @@
         <Content class="contentForm" :style="{height: height}"  style="overflow-y: auto">
           <Form :label-width="150" class="formContainer">
             <FormItem :label="item.title" v-for="(item, index) in editMsg" :key="index" v-if="item.title != 'Id'">
-              <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
-              <!--<Select v-if="item.type == 'lookup'" v-model="item.content">
-                <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>
-              </Select>-->
-              <Cascader v-if="item.type == 'lookup'"
-                        :data="item.lookupMsg" v-model="item.content">
+              <Input v-if="item.type == 'varchar' && item.attribute != 'BusinessType'" v-model="item.content" placeholder="Enter something..."></Input>
+              <Select v-if="item.type == 'varchar' && item.attribute == 'BusinessType'" multiple filterable  v-model="item.content">
+                <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.value">{{attr.label}}</Option>
+              </Select>
+              <Cascader v-if="item.type == 'lookup'" :data="item.lookupMsg" v-model="item.content">
               </Cascader>
               <Row v-if="item.type == 'date'">
                 <Col span="11">
@@ -73,7 +72,7 @@ export default {
     // 获取公共仓库的要渲染的数据
     getaddMsg(){
       this.editMsg = this.$store.state.addMsg.titleMsg;//待渲染的数据
-      // console.log(this.editMsg);
+      console.log(this.editMsg);
       this.tableName = this.$store.state.addMsg.tableName;//表名
       this.tableCname = this.$store.state.addMsg.tableCname; //中文表名
       if (this.chooseMsg) {//如果有editTable中被选中的数据, 将变化的数据更新至双向绑定的数据
@@ -139,8 +138,21 @@ export default {
             data[v.attribute] = v.content[len];
           } else if (v.type == "date" && v.content) {
             data[v.attribute] = this.transformTime(v.content);
-          }
-          else if (v.type != "reference" && v.type != "lookup" && v.type != "date") {
+          } else if (v.type == "varchar" && v.attribute == "BusinessType" && v.content) {
+            let newArr = [];
+            v.content.forEach((value, i) => {
+              v.lookupMsg.forEach((val, index) => {
+                if (value == val.value) {
+                  if (val.label) {
+                    newArr.push(val.label);
+                  } else {
+                    // newArr.push(undefined);
+                  }
+                }
+              })
+            })
+            data[v.attribute] = newArr.join('、');
+          } else if (v.type != "reference" && v.type != "lookup" && v.type != "date" && v.attribute != "BusinessType") {
             data[v.attribute] = v.content;
           }
         } else {
