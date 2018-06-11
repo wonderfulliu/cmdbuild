@@ -211,7 +211,7 @@ export default {
     menuSelected(msg, index){
       this.menuIndex = "1-" + (index + 1);
       sessionStorage.setItem('searchMenuIndex', "1-" + (index + 1))
-      console.log(this.menuIndex);
+      // console.log(this.menuIndex);
       //console.log(msg.Description);//获取中文表名
       //console.log(msg.idElementClass);//获取英文表名
       // 把点击的表的序列存入公共仓库
@@ -299,7 +299,7 @@ export default {
       this.data = newcontentArr;
       this.loading = false;
     },
-      // 获取侧边栏数据
+    // 获取侧边栏数据
     getasideMsg() {
       //给侧边栏赋search页面传来的侧边栏数据
       // 应该是进入该表后遍历所有侧边栏数据, 显示selected的那一项
@@ -573,7 +573,7 @@ export default {
         // 添加lookup数据
         console.log(titleMsg);
         console.log(this.lookupMsg);
-        return false;
+        // return false;
         titleMsg.forEach((v, i) => {
           // 这个是专门处理 BusinessType 这个字段, 以方便编辑的时候使用, 将汉字转换成 value
           if (v.attribute == 'BusinessType') {
@@ -593,7 +593,7 @@ export default {
             }
           }
           // 下面也要修改
-          if (v.type == "lookup" || v.attribute == 'BusinessType') {
+          if (v.type == "lookup") {
             for (let k in this.lookupMsg) {
               if (k == v.attribute) {
                 v.lookupMsg = this.lookupMsg[k];
@@ -650,29 +650,21 @@ export default {
       // 2. 关系表名放置到对应的reference中
       // 处理掉表头最后的action
       let titleMsg = this.columns.slice(0, this.columns.length - 1);
+      // console.log(titleMsg);
+      // return false;
       // 这一步是将关系表名放置到对应的reference数据中, lookup数据放置到对应的lookup数据中
       titleMsg.forEach((v, i) => {
-        v.content = "";
         if (v.type == "reference") {
           this.relationTable.forEach(function(val, index) {
             if (v.lr == val.domainname) {
-              v.relationTable =
-                v.table == val.domainclass2
-                  ? val.domainclass1
-                  : val.domainclass2;
+              v.relationTable = v.table == val.domainclass2 ? val.domainclass1 : val.domainclass2;
             }
           });
         }
-        if (v.type == "lookup") {
-          for (let k in this.lookupMsg) {
-            if (k == v.attribute) {
-              v.lookupMsg = this.lookupMsg[k];
-              /*v.lookupMsg.forEach((val, index) => {
-                if (val.label && val.label == v.content) {
-                  v.content = val.value;
-                }
-              });*/
-            }
+        if (v.type == "lookup" || v.attribute == "BusinessType") {
+          v.lookupMsg = this.lookupMsg[v.attribute];
+          if (v.attribute == "BusinessType") {
+            v.content = [];
           }
         }
       });

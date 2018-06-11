@@ -22,12 +22,11 @@
       <Content class="contentForm" :style="{height: height}" style="overflow-y: auto">
         <Form :label-width="100" class="formContainer">
           <FormItem :label="item.title" v-for="(item, index) in addMsg" :key="index" v-if="item.title != 'Id'">
-            <Input v-if="item.type == 'varchar'" v-model="item.content" placeholder="Enter something..."></Input>
-            <!--<Select v-if="item.type == 'lookup'" v-model="item.content">
-              <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.Id">{{attr.Description}}</Option>
-            </Select>-->
-            <Cascader v-if="item.type == 'lookup'"
-                      :data="item.lookupMsg" v-model="item.content">
+            <Input v-if="item.type == 'varchar' && item.attribute != 'BusinessType'" v-model="item.content" placeholder="Enter something..."></Input>
+            <Select v-if="item.type == 'varchar' && item.attribute == 'BusinessType'" multiple filterable v-model="item.content">
+              <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.value">{{attr.label}}</Option>
+            </Select>
+            <Cascader v-if="item.type == 'lookup'" :data="item.lookupMsg" v-model="item.content">
             </Cascader>
             <Row v-if="item.type == 'date'">
               <Col span="11">
@@ -78,6 +77,7 @@ export default {
     // 获取公共仓库的要渲染的数据
     getaddMsg(){
       this.addMsg = this.$store.state.addMsg.titleMsg;//待渲染的数据
+      console.log(this.addMsg);
       this.tableName = this.$store.state.addMsg.tableName;//表名
       this.tableCname = this.$store.state.addMsg.tableCname; //中文表名
       if (this.chooseMsg) {//如果有editTable中被选中的数据, 将变化的数据更新至双向绑定的数据
@@ -144,17 +144,33 @@ export default {
             submitMsg[v.attribute] = this.transformTime(v.content);
           } else if (v.type == "reference" && v.content) {//reference格式的数据
             submitMsg[v.attribute] = v.Id;
-          } else { //其它数据类型可能还需要修改
+          } else if (v.type == "varchar" && v.attribute == "BusinessType" && v.content) {
+            let newArr = [];
+            v.content.forEach((value, i) => {
+              v.lookupMsg.forEach((val, index) => {
+                if (value == val.value) {
+                  if (val.label) {
+                    newArr.push(val.label);
+                  } else {
+                    // newArr.push(undefined);
+                  }
+                }
+              })
+            })
+            submitMsg[v.attribute] = newArr.join('、');
+          } else if(v.type != "reference" && v.type != "lookup" && v.type != "date" && v.attribute != "BusinessType") { 
+            //其它数据类型可能还需要修改
             submitMsg[v.attribute] = v.content;
           }
         }
       })
       // console.log(submitMsg);
+      // return false;
       // let data = JSON.stringify(submitMsg);
       this.$http.post('/cardController/card', submitMsg).then(info => {
           // 成功的回调
           if (info.status == 200 && info.data == 'ok') {
-            console.log(info);
+            // console.log(info);
             this.$Message.success({
               content: '添加成功',
             });
