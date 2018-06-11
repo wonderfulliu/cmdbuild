@@ -7,7 +7,7 @@
             <Col span="9" offset="1" style="text-align: left">
               <Breadcrumb>
                 <BreadcrumbItem to="/search">全局搜索</BreadcrumbItem>
-                <BreadcrumbItem to="/result">{{tableCname}}</BreadcrumbItem>
+                <BreadcrumbItem to="/search/result">{{tableCname}}</BreadcrumbItem>
                 <BreadcrumbItem>编辑</BreadcrumbItem>
               </Breadcrumb>
             </Col>
@@ -97,7 +97,7 @@ export default {
               relationTable: relationTable
             }
             this.$store.commit('getrefMsg', refMsg);//不论哪个函数先执行, 都会只执行一次
-            this.$router.push({path: 'editTable'});//两个数据都拿到之后再推送
+            this.$router.push({path: '/search/editTable'});//两个数据都拿到之后再推送
           }
         }
       });
@@ -115,7 +115,7 @@ export default {
               relationTable: relationTable
             }
             this.$store.commit('getrefMsg', refMsg);//不论哪个函数先执行, 都只会执行一次
-            this.$router.push({path: 'editTable'});//两个数据都拿到之后再推送
+            this.$router.push({path: '/search/editTable'});//两个数据都拿到之后再推送
           }
         }
       });
@@ -170,7 +170,7 @@ export default {
             content: '修改成功',
           });
           this.$store.commit('getchooseMsg', '');//取消编辑的时候, 清空editTable可能传的chooseMsg值
-          this.$router.push({path: '/result'});
+          this.$router.push({path: '/search/result'});
         } else if (info.status == 200 && info.data == 'faild') {
           this.$Message.error({
             content: '修改失败'
@@ -185,7 +185,7 @@ export default {
     },
     cancel() {
       this.$store.commit('getchooseMsg', '');//取消编辑的时候, 清空editTable可能传的chooseMsg值
-      this.$router.push({path: '/result'});
+      this.$router.push({path: '/search/result'});
     },
     //日期格式转化
     transformTime(time){

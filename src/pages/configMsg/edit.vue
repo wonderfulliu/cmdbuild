@@ -28,7 +28,10 @@
             <Select v-if="item.type == 'varchar' && item.attribute == 'BusinessType'" multiple filterable v-model="item.content">
               <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.value">{{attr.label}}</Option>
             </Select>
-            <Cascader v-if="item.type == 'lookup'" :data="item.lookupMsg" v-model="item.content">
+            <Cascader :data="item.lookupMsg"
+                      v-model="item.content"
+                      :class="{['cascade-'+item.content.length]:true}"
+                      v-if="item.type == 'lookup'">
             </Cascader>
             <Row v-if="item.type == 'date'">
               <Col span="11">
@@ -89,7 +92,7 @@ export default {
     getaddMsg(){
       // console.log(this.$store.state.addMsg);
       this.editMsg = this.$store.state.addMsg.titleMsg;//待渲染的数据
-      // console.log(this.editMsg);
+       console.log(this.editMsg);
       this.jiluId = this.$store.state.addMsg.Id;//获取记录id
       this.tableName = this.$store.state.addMsg.tableName;//表名
       this.tableCname = this.$store.state.addMsg.tableCname;//表中文名

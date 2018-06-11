@@ -38,6 +38,7 @@ import byself from '@/pages/workFlow/ways/byself'
 import byexcel from '@/pages/workFlow/ways/byexcel'
 // search
 import search from '@/pages/search/search'
+import searchOn from '@/pages/search/searchOn'
 import result from '@/pages/search/result'
 import edit from '@/pages/search/edit'
 import add from '@/pages/search/add'
@@ -156,55 +157,65 @@ export default new Router({
         {
           path: '/workflow',
           name: 'workFlow',
-          component: workflow
-        },
-        {
-          path: '/workflow/operate',
-          name: 'operate',
-          component: operate,
+          component: workflow,
           children: [
             {
-              path: 'byself',
-              name: 'byself',
-              component: byself
-            },
-            {
-              path: 'byexcel',
-              name: 'byexcel',
-              component: byexcel
-            },
+              path: '/operate',
+              name: 'operate',
+              component: operate,
+              children: [
+                {
+                  path: 'byself',
+                  name: 'byself',
+                  component: byself
+                },
+                {
+                  path: 'byexcel',
+                  name: 'byexcel',
+                  component: byexcel
+                },
+              ]
+            }
           ]
         },
         {
           path: '/search',
           name: 'search',
           component: search,
+          children: [
+            {
+              path: 'searchOn',
+              name: 'searchOn',
+              component: searchOn,
+            },
+            {
+              path: 'result',
+              name: 'result',
+              component: result,
+            },
+            {
+              path: 'edit',
+              name: 'edit',
+              component: edit
+            },
+            {
+              path: 'editTable',
+              name: 'editTable',
+              component: editTable
+            },
+            {
+              path: 'add',
+              name: 'add',
+              component: add
+            }
+          ]
         },
         {
           path: '/test',
           name: 'test',
           component: test
         },
-        {
-          path: '/result',
-          name: 'result',
-          component: result,
-        },
-        {
-          path: '/edit',
-          name: 'edit',
-          component: edit
-        },
-        {
-          path: '/editTable',
-          name: 'editTable',
-          component: editTable
-        },
-        {
-          path: '/add',
-          name: 'add',
-          component: add
-        }
+
       ]
     },
     // {

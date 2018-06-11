@@ -623,7 +623,7 @@ export default {
           thisjiluId: thisjiluId
         };
         this.$store.commit("getaddMsg", data); //将整合好的数据推至公共仓库
-        this.$router.push({ path: "/edit" }); //跳转至新增页面
+        this.$router.push({ path: "/search/edit" }); //跳转至新增页面
       } else {
         this.$Message.error({
           content: '您未选中行!'
@@ -683,7 +683,7 @@ export default {
       };
       //console.log(data);
       this.$store.commit("getaddMsg", data); //将整合好的数据推至公共仓库
-      this.$router.push({ path: "/add" }); //跳转至新增页面
+      this.$router.push({ path: "/search/add" }); //跳转至新增页面
     },
     // 关系记录跳转到对应表的所在的位置
     relationJump(){
