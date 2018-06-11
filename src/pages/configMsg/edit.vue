@@ -28,7 +28,10 @@
             <Select v-if="item.type == 'varchar' && item.attribute == 'BusinessType'" multiple filterable v-model="item.content">
               <Option v-for="(attr, i) in item.lookupMsg" :key="i" :value="attr.value">{{attr.label}}</Option>
             </Select>
-            <Cascader v-if="item.type == 'lookup'" :data="item.lookupMsg" v-model="item.content">
+            <Cascader :data="item.lookupMsg"
+                      v-model="item.content"
+                      :class="{['cascade-'+item.content.length]:true}"
+                      v-if="item.type == 'lookup'">
             </Cascader>
             <Row v-if="item.type == 'date'">
               <Col span="11">

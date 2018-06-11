@@ -14,7 +14,7 @@
                   全局搜索
                 </MenuItem>
               </router-link>
-              <router-link to="/config/tableList">
+              <router-link to="/config">
                 <MenuItem name="2">
                   <Icon type="home"></Icon>
                   配置信息
@@ -26,13 +26,13 @@
                   视图
                 </MenuItem>
               </router-link>
-              <!-- <router-link to="/workflow" exact>
+               <router-link to="/workflow">
                 <MenuItem name="4">
                   <Icon type="pin"></Icon>
                   工作流
                 </MenuItem>
-              </router-link> -->
-              <router-link to="/chart/dashboard">
+              </router-link>
+              <router-link to="/chart">
                 <MenuItem name="5">
                   <Icon type="stats-bars"></Icon>
                   Charts

@@ -113,16 +113,16 @@
           margin-right: 10px;
           //width: 560px;
           overflow: hidden;
-          a.router-link-exact-active{
+          /*a.router-link-exact-active{
             .ivu-menu-item{
               color: #fff;
               background-color: #122f4c;
             }
-          }
+          }*/
           a.router-link-active{
             .ivu-menu-item{
-              color: #fff;
-              background-color: #122f4c;
+              color: #fff!important;
+              background-color: #122f4c!important;
             }
           }
           .ivu-menu-item{
@@ -370,7 +370,7 @@ tr.ivu-table-row-highlight.ivu-table-row-hover{
 }
 
 .layout-logo {
-  width: 200px;
+  width: 210px;
   height: 36px;
   background: #23384e;
   border-radius: 3px;
@@ -456,6 +456,38 @@ tr.ivu-table-row-highlight.ivu-table-row-hover{
   }
 }
 
+//联动菜单
+.ivu-cascader-menu{
+  max-height: 180px;
+  height: auto;
+}
+
+$class-slug: cascade !default;
+@for $i from 1 through 3{
+  .#{$class-slug}-#{$i}{
+    .ivu-select-dropdown{
+      width: 100%;
+      div>span{
+          display: inline-block;
+          width: 100%;
+          text-align: left;
+          ul{
+            width: 100%/$i;
+            overflow: auto;
+            max-height: 200px;
+          }
+        }
+
+    }
+  }
+}
+
+
+
+
+
+
+
 .menuCtrl {
   margin: 4px 20px;
   line-height: 2;
@@ -493,4 +525,10 @@ tr.ivu-table-row-highlight.ivu-table-row-hover{
   50%  { transform: rotate(180deg);}
   to   { transform: rotate(360deg);}
 }
+
+
+
+
+
+
 

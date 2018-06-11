@@ -1,5 +1,6 @@
 <template>
   <Layout>
+    <Layout>
     <div id="relationContainer">
       <Header style="padding: 0" class="layout-header-bar">
         <Form :label-width="80">
@@ -61,6 +62,7 @@
         </div>
       </Content>
     </div>
+  </Layout>
   </Layout>
 </template>
 

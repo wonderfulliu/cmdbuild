@@ -276,7 +276,7 @@ export default {
       lastCl: false,//尾页是否禁用
       changetableName: false,//判断是否切换表格
       // 字段搜索相关
-      fieldData: [],//待渲染字段数据
+      fieldData: JSON.parse(sessionStorage.getItem("config_" + this.tableName + "_field")),//待渲染字段数据
       fielddataObj: {},//存储字段搜索的条件, 判断是否为空
     };
   },
@@ -596,6 +596,7 @@ export default {
         // 这是处理 lookup 数据
         if (v.type == "lookup") {
           v.lookupMsg = lookupdt[v.attribute];
+          v.cNum = this.findChildLen(v.lookupMsg,1,[]);
           let conStr = v.content;//null 或者是字符串或者是数字 下面的判断条件不够
           let conArry;
           if (conStr != null) {
@@ -621,6 +622,20 @@ export default {
       addData.titleMsg = attr;
       addData.Id = this.recordId;
       this.$store.commit("getaddMsg", addData);
+      console.log(addData);
+    },
+//这里
+    findChildLen(obj, n, arr) {
+      obj.forEach((v, i) => {
+//        console.log(v);
+        if(v.children && v.children.length>0){
+          n++;
+          this.findChildLen(v.children,n,[]);
+        }else {
+          console.log(n);
+        }
+      });
+      return 2;
     },
     // 返回 lookup 要渲染的数据
     findId(obj, conArry, q, newArry){

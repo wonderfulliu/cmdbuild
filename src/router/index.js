@@ -38,6 +38,7 @@ import byself from '@/pages/workFlow/ways/byself'
 import byexcel from '@/pages/workFlow/ways/byexcel'
 // search
 import search from '@/pages/search/search'
+import searchOn from '@/pages/search/searchOn'
 import result from '@/pages/search/result'
 import srelation from '@/pages/search/relation'
 import edit from '@/pages/search/edit'
@@ -157,39 +158,58 @@ export default new Router({
         {
           path: '/workflow',
           name: 'workFlow',
-          component: workflow
-        },
-        {
-          path: '/workflow/operate',
-          name: 'operate',
-          component: operate,
+          component: workflow,
           children: [
             {
-              path: 'byself',
-              name: 'byself',
-              component: byself
-            },
-            {
-              path: 'byexcel',
-              name: 'byexcel',
-              component: byexcel
-            },
+              path: '/operate',
+              name: 'operate',
+              component: operate,
+              children: [
+                {
+                  path: 'byself',
+                  name: 'byself',
+                  component: byself
+                },
+                {
+                  path: 'byexcel',
+                  name: 'byexcel',
+                  component: byexcel
+                },
+              ]
+            }
           ]
         },
         {
           path: '/search',
           name: 'search',
           component: search,
-        },
-        {
-          path: '/test',
-          name: 'test',
-          component: test
-        },
-        {
-          path: '/result',
-          name: 'result',
-          component: result,
+          children: [
+            {
+              path: 'searchOn',
+              name: 'searchOn',
+              component: searchOn,
+            },
+            {
+              path: 'result',
+              name: 'result',
+              component: result,
+            },
+            {
+              path: 'edit',
+              name: 'edit',
+              component: edit
+            },
+            {
+              path: 'editTable',
+              name: 'editTable',
+              component: editTable
+            },
+            {
+              path: 'add',
+              name: 'add',
+              component: add
+            }
+          ]
         },
         {
           path: '/srelation',
@@ -197,20 +217,10 @@ export default new Router({
           component: srelation,
         },
         {
-          path: '/edit',
-          name: 'edit',
-          component: edit
+          path: '/test',
+          name: 'test',
+          component: test
         },
-        {
-          path: '/editTable',
-          name: 'editTable',
-          component: editTable
-        },
-        {
-          path: '/add',
-          name: 'add',
-          component: add
-        }
       ]
     },
     // {

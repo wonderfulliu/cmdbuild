@@ -97,13 +97,16 @@
           float: left;
           margin-left: 30px;
           margin-right: 10px;
-          overflow: hidden; }
-          #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav a.router-link-exact-active .ivu-menu-item {
-            color: #fff;
-            background-color: #122f4c; }
+          overflow: hidden;
+          /*a.router-link-exact-active{
+            .ivu-menu-item{
+              color: #fff;
+              background-color: #122f4c;
+            }
+          }*/ }
           #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav a.router-link-active .ivu-menu-item {
-            color: #fff;
-            background-color: #122f4c; }
+            color: #fff !important;
+            background-color: #122f4c !important; }
           #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav .ivu-menu-item a {
             color: #e3e3e3; }
             #homeContainer .layout .ivu-layout .ivu-layout-header .layout-nav .ivu-menu-item a:hover {
@@ -249,7 +252,7 @@ tr.ivu-table-row-highlight.ivu-table-row-hover td {
   overflow: hidden; }
 
 .layout-logo {
-  width: 200px;
+  width: 210px;
   height: 36px;
   background: #23384e;
   border-radius: 3px;
@@ -312,6 +315,43 @@ tr.ivu-table-row-highlight.ivu-table-row-hover td {
 .fieldSearch .ivu-select-dropdown ul.ivu-dropdown-menu {
   overflow-y: auto;
   max-height: 400px; }
+
+.ivu-cascader-menu {
+  max-height: 180px;
+  height: auto; }
+
+.cascade-1 .ivu-select-dropdown {
+  width: 100%; }
+  .cascade-1 .ivu-select-dropdown div > span {
+    display: inline-block;
+    width: 100%;
+    text-align: left; }
+    .cascade-1 .ivu-select-dropdown div > span ul {
+      width: 100%;
+      overflow: auto;
+      max-height: 200px; }
+
+.cascade-2 .ivu-select-dropdown {
+  width: 100%; }
+  .cascade-2 .ivu-select-dropdown div > span {
+    display: inline-block;
+    width: 100%;
+    text-align: left; }
+    .cascade-2 .ivu-select-dropdown div > span ul {
+      width: 50%;
+      overflow: auto;
+      max-height: 200px; }
+
+.cascade-3 .ivu-select-dropdown {
+  width: 100%; }
+  .cascade-3 .ivu-select-dropdown div > span {
+    display: inline-block;
+    width: 100%;
+    text-align: left; }
+    .cascade-3 .ivu-select-dropdown div > span ul {
+      width: 33.3333333333%;
+      overflow: auto;
+      max-height: 200px; }
 
 .menuCtrl {
   margin: 4px 20px;
