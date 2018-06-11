@@ -39,6 +39,7 @@ import byexcel from '@/pages/workFlow/ways/byexcel'
 // search
 import search from '@/pages/search/search'
 import result from '@/pages/search/result'
+import srelation from '@/pages/search/relation'
 import edit from '@/pages/search/edit'
 import add from '@/pages/search/add'
 import editTable from '@/pages/search/editTable'
@@ -189,6 +190,11 @@ export default new Router({
           path: '/result',
           name: 'result',
           component: result,
+        },
+        {
+          path: '/srelation',
+          name: 'srelation',
+          component: srelation,
         },
         {
           path: '/edit',

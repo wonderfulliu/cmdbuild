@@ -51,7 +51,7 @@
                     <Button type="ghost" title="" icon="ios-plus-empty" @click="add" :disabled='isdisable'>新增</Button>
                     <Button type="ghost" title="" icon="ios-trash-outline" @click="remove" :disabled='isdisable'>删除</Button>
                     <Button type="ghost" title="" icon="ios-download-outline" @click="exportData">下载</Button>
-                    <Button type="ghost" title="" icon="location" @click="relationJump">跳转</Button>
+                    <Button type="ghost" title="" icon="location" @click="relationJump">关系</Button>
                     <!-- <Button type="ghost" title="历史" icon="ios-paper-outline" @click="ctrlHistory"></Button>
                     <Button type="ghost" title="关系" icon="ios-infinite" @click="ctrlRelete"></Button> -->
                   </ButtonGroup>
@@ -680,23 +680,33 @@ export default {
     // 关系记录跳转到对应表的所在的位置
     relationJump(){
       if (this.isClick == true) {
-        let relationCtable = '';
-        let pageNum = 1;
-        let jiluId = this.recordId;
+        // let relationCtable = '';
+        // let pageNum = 1;
+        // let jiluId = this.recordId;
         
-        let data = '?table=' + this.tableName + '&pageSize=20&id=' + this.recordId;
-        this.$http.get('/cardController/getPageCardByIndex' + data).then(info => {
-          if (info.status == 200) {
-            pageNum = info.data;
-            let msg = {
-              relationCtable: this.tableCname,//侧边栏搜索使用
-              pageNum: pageNum,// 分页跳转使用
-              jiluId: jiluId//最终定位使用
-            }
-            this.$store.commit('getsearchRelation', msg);
-            this.$router.push({ path: "/config/tableList" });
-          }
-        })
+        // let data = '?table=' + this.tableName + '&pageSize=20&id=' + this.recordId;
+        // this.$http.get('/cardController/getPageCardByIndex' + data).then(info => {
+        //   if (info.status == 200) {
+        //     pageNum = info.data;
+        //     let msg = {
+        //       relationCtable: this.tableCname,//侧边栏搜索使用
+        //       pageNum: pageNum,// 分页跳转使用
+        //       jiluId: jiluId//最终定位使用
+        //     }
+        //     this.$store.commit('getsearchRelation', msg);
+        //     this.$router.push({ path: "/config/tableList" });
+        //   }
+        // })
+        //将跳转到关系页面  表名 记录id 已获取, 传递到下一个页面发送请求数据
+        let data = {
+          tableName: this.tableName, //表名
+          Id: this.recordId, //记录Id
+          disabled: this.isdisable,//登录人员对该关系的权限也要传递过去
+        }; 
+        console.log(data);
+        // return false;
+        this.$store.commit("getrelationMsg", data);
+        this.$router.push({ path: "/config/relation" });
       } else {
         this.$Message.error({
           content: '您未选中行!'
