@@ -1,9 +1,11 @@
 <template>
     <div id="searchAll">
-      <transition name="fade" mode="out-in">
-        <router-view>
-        </router-view>
-      </transition>
+      <Layout>
+        <transition name="fade" mode="out-in">
+          <router-view>
+          </router-view>
+        </transition>
+      </Layout>
     </div>
 </template>
 <script>
@@ -14,6 +16,8 @@ export default {
     };
   },
   created() {
+  },
+  mounted () {
     this.$router.push({ path: "/search/searchOn"});
   },
   methods: {
@@ -23,5 +27,7 @@ export default {
 </script>
 
 <style lang="scss">
-
+  #searchAll {
+    height: 100%;
+  }
 </style>
