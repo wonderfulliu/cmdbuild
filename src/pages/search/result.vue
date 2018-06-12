@@ -704,7 +704,6 @@ export default {
           disabled: this.isdisable,//登录人员对该关系的权限也要传递过去
         }; 
         console.log(data);
-        // return false;
         this.$store.commit("getrelationMsg", data);
         this.$router.push({ path: "/config/relation" });
       } else {

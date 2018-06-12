@@ -14,7 +14,7 @@
                   全局搜索
                 </MenuItem>
               </router-link>
-              <router-link to="/config">
+              <router-link to="/config/tableList">
                 <MenuItem name="2">
                   <Icon type="home"></Icon>
                   配置信息
