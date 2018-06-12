@@ -624,15 +624,15 @@ export default {
       this.$store.commit("getaddMsg", addData);
       console.log(addData);
     },
-//这里
+    //这里
     findChildLen(obj, n, arr) {
       obj.forEach((v, i) => {
-//        console.log(v);
+        // console.log(v);
         if(v.children && v.children.length>0){
           n++;
           this.findChildLen(v.children,n,[]);
         }else {
-          console.log(n);
+          // console.log(n);
         }
       });
       return 2;
