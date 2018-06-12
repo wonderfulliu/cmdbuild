@@ -127,8 +127,8 @@
            @on-cancel="chooseSceneCancel">
       <div class="modalBody">
         <RadioGroup v-model="sceneGroup" vertical>
-          <Radio :label="sceneItem.Id"
-                 v-for="(sceneItem,index) in sceneData" :key="index">{{ sceneItem.Situation }}</Radio>
+          <Radio :label="sceneItem.Situation"
+                 v-for="(sceneItem,index) in sceneType" :key="index">{{ sceneItem.Situation }}</Radio>
         </RadioGroup>
       </div>
     </Modal>
@@ -161,7 +161,8 @@ export default {
       sceneGroup: '',  //单选按钮组v-model值
       //页面设置
       clientW: '',
-      sceneData: [],  //场景数据
+      sceneType: [],  //场景分类
+      sceneDateAll: [], //场景数据
       currentScene: {},//当前场景信息
     }
   },
@@ -224,7 +225,6 @@ export default {
           .get('/cardController/getCardList?table=Modify&pageNum='+
                   this.pageNum+'&pageSize='+this.pageSize)
           .then(info => {
-            console.log("获取数据成功");
             this.totalPage = info.data.totalPage;
             this.totalRecord = info.data.totalRecord;
             let thead = JSON.parse(sessionStorage.getItem("Modify_thead"));
@@ -373,16 +373,16 @@ export default {
     chooseSceneOK(){
       if(this.sceneGroup) {
         //单选框组的值   this.sceneGroup
-        console.log(this.sceneData);
-        this.sceneData.forEach((value,index) => {
-          if(this.sceneGroup == value.Id){
-            this.$store.commit('getcurrentScene', value); //将获取的信息存入vuex 传入operate.vue
-//            console.log(this.$store.state.currentScene);
+        let sceneArr = [];
+        this.sceneDateAll.forEach((value,index) => {
+          if(this.sceneGroup == value.Situation){
+            sceneArr.push(value);
           }
         });
+        this.$store.commit('getcurrentScene', sceneArr); //将获取的信息存入vuex 传入operate.vue
+        console.log(this.$store.state.currentScene);
         //当前行的标识
         //传值并跳转页面
-        return false;
         this.$router.push({path: '/workflow/operate/byself'});
       }else {
         this.$Message.error("请选择场景");
@@ -401,10 +401,12 @@ export default {
     //场景列表
     sceneList() {
       let group = 'net'; //获取组名，后续要从session中获取
-      let sceneData = JSON.parse(sessionStorage.getItem('SceneData' + group));
-      if(sceneData){
-        //console.log(sceneData);
-        this.sceneData = sceneData;
+      let sceneType = JSON.parse(sessionStorage.getItem('sceneType_' + group));
+      let sceneDateAll = JSON.parse(sessionStorage.getItem('sceneDateAll_' + group));
+      if(sceneType){
+        //console.log(sceneType);
+        this.sceneType = sceneType;
+        this.sceneDateAll = sceneDateAll;
       }else{
         this.getSceneData();
       }
@@ -416,10 +418,13 @@ export default {
       this.$http
               .post('/cardController/attribubtesFuzzyQuery?tableName=WorkflowSituation&condition='+condition)
               .then(info => {
-                let data = info.data.list;
-                let newData = this.removeRepetitive(data);//数据去重
-                sessionStorage.setItem('SceneData' + group,JSON.stringify(newData));
-                this.sceneData = newData;
+                sessionStorage.setItem('sceneDateAll_' + group,JSON.stringify(info.data.list));
+                this.sceneDateAll = JSON.parse(sessionStorage.getItem('sceneDateAll_' + group));
+                console.log(this.sceneDateAll);
+                let newData = this.removeRepetitive(info.data.list);//数据去重
+                sessionStorage.setItem('sceneType_' + group,JSON.stringify(newData));
+                this.sceneType = JSON.parse(sessionStorage.getItem('sceneType_' + group));
+                console.log(this.sceneType);
               });
     },
     //数据去重
