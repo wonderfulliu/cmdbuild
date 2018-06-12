@@ -178,6 +178,20 @@ export default {
     }
   },
   methods: {
+    //获取表头字段详细信息
+    getAttributeList(){
+      let _this = this;
+      let thead = sessionStorage.getItem(
+              "config_Modify_attribute"
+      );
+      if (!thead) {
+        _this.$http
+                .post("/cardController/getAttributeList", { table: "Modify" })
+                .then(info => {
+          sessionStorage.setItem("config_Modify_attribute",JSON.stringify(info.data));
+      });
+      }
+    },
     //获取变更表数据
     getDataList() {
       this.tLoading = true;
@@ -209,7 +223,8 @@ export default {
         this.$http
           .get('/cardController/getCardList?table=Modify&pageNum='+
                   this.pageNum+'&pageSize='+this.pageSize)
-          .then(info =>{
+          .then(info => {
+            console.log("获取数据成功");
             this.totalPage = info.data.totalPage;
             this.totalRecord = info.data.totalRecord;
             let thead = JSON.parse(sessionStorage.getItem("Modify_thead"));
@@ -224,6 +239,8 @@ export default {
           });
       }else {
         //获取到搜索条件this.searchCondition
+        console.log("带搜索条件获取数据");
+        return false;
         this.$http
             .post('/cardController/fuzzyQuery?tableName=Modify&condition=' + this.searchCondition +
                 '&pageNum=' + this.pageNum +
@@ -241,23 +258,6 @@ export default {
               }
               this.getTableData(info.data);
             });
-      }
-    },
-    //获取表头字段详细信息
-    getAttributeList(){
-      let _this = this;
-      let thead = sessionStorage.getItem(
-              "config_Modify_attribute"
-      );
-      if (!thead) {
-        _this.$http
-                .post("/cardController/getAttributeList", { table: "Modify" })
-                .then(function(info) {
-                  sessionStorage.setItem(
-                          "config_Modify_attribute",
-                          JSON.stringify(info.data)
-                  );
-                });
       }
     },
     //英文名转换中文名
@@ -358,15 +358,25 @@ export default {
         this.tLoading = false; //加载完成时
       }
     },
+    // 获取当前行详细信息
+    initTableColumn(columnName){
+      for(let i = 0; i < columnName.length; i++){
+        if(!columnName[i].render) {
+          this.$set(columnName[i], 'ellipsis', true);
+          this.$set(columnName[i], 'render', (h, params) => {
+            return h('span', {attrs: {title: params.row[params.column.key]}}, params.row[params.column.key]);
+        });
+        }
+      }
+    },
     //模态框-选择场景确认
     chooseSceneOK(){
       if(this.sceneGroup) {
         //单选框组的值   this.sceneGroup
-        console.log(this.sceneGroup);
+        console.log(this.sceneData);
         this.sceneData.forEach((value,index) => {
           if(this.sceneGroup == value.Id){
-//          this.$emit('currentScene', value);
-//            this.$store.commit('getCurrentScene', value);//将获取的信息存入vuex
+            this.$store.commit('getcurrentScene', value); //将获取的信息存入vuex 传入operate.vue
 //            console.log(this.$store.state.currentScene);
           }
         });
@@ -393,11 +403,10 @@ export default {
       let group = 'net'; //获取组名，后续要从session中获取
       let sceneData = JSON.parse(sessionStorage.getItem('SceneData' + group));
       if(sceneData){
-        console.log(sceneData);
+        //console.log(sceneData);
         this.sceneData = sceneData;
       }else{
         this.getSceneData();
-        this.sceneList();
       }
     },
     //获取场景数据
@@ -407,10 +416,11 @@ export default {
       this.$http
               .post('/cardController/attribubtesFuzzyQuery?tableName=WorkflowSituation&condition='+condition)
               .then(info => {
-        let data = info.data.list;
-      let newData = this.removeRepetitive(data);//数据去重
-      sessionStorage.setItem('SceneData' + group,JSON.stringify(newData));
-    });
+                let data = info.data.list;
+                let newData = this.removeRepetitive(data);//数据去重
+                sessionStorage.setItem('SceneData' + group,JSON.stringify(newData));
+                this.sceneData = newData;
+              });
     },
     //数据去重
     removeRepetitive(data) {
@@ -424,7 +434,6 @@ export default {
       }
       return data;
     },
-    
     ctrlHistory(){
       if(this.recordId == ''){
         this.$Message.error("请选择一条记录！");
@@ -488,18 +497,7 @@ export default {
       this.clientW = document.documentElement.clientWidth;
       this.contentbodyH = clientH - 140 + 'px';
       this.tableHeight = clientH - 215; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
-    },
-    // 获取当前行详细信息
-    initTableColumn(columnName){
-      for(let i = 0; i < columnName.length; i++){
-        if(!columnName[i].render) {
-          this.$set(columnName[i], 'ellipsis', true);
-          this.$set(columnName[i], 'render', (h, params) => {
-            return h('span', {attrs: {title: params.row[params.column.key]}}, params.row[params.column.key]);
-          });
-        }
-      }
-    },
+    }
   }
 }
 </script>
