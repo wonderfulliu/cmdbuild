@@ -33,6 +33,7 @@ import dashboard from '@/pages/chart/dashboard'
 import view from '@/pages/view/view'
 // 工作流
 import workflow from '@/pages/workFlow/workFlow'
+import wfList from '@/pages/workFlow/wfList'
 import operate from '@/pages/workFlow/operate'
 import byself from '@/pages/workFlow/ways/byself'
 import byexcel from '@/pages/workFlow/ways/byexcel'
@@ -161,7 +162,12 @@ export default new Router({
           component: workflow,
           children: [
             {
-              path: '/operate',
+              path: 'wfList',
+              name: 'wfList',
+              component: wfList
+            },
+            {
+              path: 'operate',
               name: 'operate',
               component: operate,
               children: [

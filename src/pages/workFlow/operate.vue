@@ -92,6 +92,7 @@ export default {
   padding: 20px 15px;
   background-color: #f5f7f9;
   .steps {
+    margin: auto;
     width: 60%;
     margin-bottom: 35px;
   }

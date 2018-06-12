@@ -32,6 +32,7 @@ const store = new Vuex.Store({
     refrelationTable: '',//存储关系表名
     addMsg: '',//新增数据时, 传递的待渲染的数据
     refMsg: '',
+    currentScene: '',//存储当前场景信息(workFlow)
     // 以下是relation组件传递的信息
     relationMsg: '',
     domainlistMsg: '',
@@ -86,6 +87,9 @@ const store = new Vuex.Store({
     },
     getRtcname(state, val){
       state.relationTableCE = val;
+    },
+    getcurrentScene(state, val) {
+      state.currentScene = val;
     },
   }
 })
