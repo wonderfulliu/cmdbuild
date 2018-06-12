@@ -205,7 +205,7 @@ export default {
           this.tableName = eName; //获取表英文名
           this.tableCname = obj[0].title; //获取表中文名
           this.Mode = obj[0].Mode;
-          // this.$router.push({ path: "/config/tableList"}); //刚进入config页面, 处理完侧边栏数据, 展开第一个选项后, 在这里跳到tableList页面
+          this.$router.push({ path: "/config/tableList"}); //刚进入config页面, 处理完侧边栏数据, 展开第一个选项后, 在这里跳到tableList页面
         }
       }
       return obj;

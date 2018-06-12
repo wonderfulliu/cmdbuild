@@ -1,8 +1,8 @@
 <template>
-  <Layout class="miniWindow">
+  <Layout class="miniWindow wfList">
     <Header ref="conBhead" :style="{padding: 0}" class="layout-header-bar">
       <Row>
-        <!--<Col span="2" offset="1">
+        <Col span="2" offset="1">
           <Dropdown class="fieldSearch" trigger="click" placement="bottom-start">
             <Button type="primary">
               字段筛选
@@ -12,7 +12,7 @@
               <div id="field">
                 <Dropdown trigger="click" placement="right" v-for="(item, index) in fieldData" :key="index" >
                   <DropdownItem>
-                    <Checkbox v-model="item.flag" @on-change="fieldSearch"></Checkbox>{{item.cName}}
+                    <Checkbox v-model="item.flag" @on-change="wlfieldSearch"></Checkbox>{{item.cName}}
                     <Icon type="ios-arrow-right"></Icon>
                   </DropdownItem>
                   <DropdownMenu slot="list" style="padding-left: 10px;padding-right: 10px;">
@@ -22,10 +22,10 @@
               </div>
             </DropdownMenu>
           </Dropdown>
-        </Col>-->
+        </Col>
         <Col span="12" offset="6">
-          <Input v-model="searchCondition" placeholder="Enter something..." @on-enter="getDataList">
-            <Button slot="append" type="info" icon="ios-search" @click="getDataList">搜索</Button>
+          <Input v-model="searchCondition" placeholder="Enter something..." @on-enter="wlsearch">
+            <Button slot="append" type="info" icon="ios-search" @click="wlsearch">搜索</Button>
           </Input>
         </Col>
       </Row>
@@ -39,7 +39,8 @@
                :highlight-row="highlight"
                :data="wfData"
                @on-row-click="getRecordId"
-               :columns="wfColumns">
+               :columns="wfColumns"
+               no-data-text="">
         </Table>
         <Spin fix v-show="tLoading">
           <Icon type="load-a" size=18 class="spinLoading"></Icon>
@@ -127,8 +128,8 @@
            @on-cancel="chooseSceneCancel">
       <div class="modalBody">
         <RadioGroup v-model="sceneGroup" vertical>
-          <Radio :label="sceneItem.Id"
-                 v-for="(sceneItem,index) in sceneData" :key="index">{{ sceneItem.Situation }}</Radio>
+          <Radio :label="sceneItem.Situation"
+                 v-for="(sceneItem,index) in sceneType" :key="index">{{ sceneItem.Situation }}</Radio>
         </RadioGroup>
       </div>
     </Modal>
@@ -161,8 +162,40 @@ export default {
       sceneGroup: "", //单选按钮组v-model值
       //页面设置
       clientW: "",
-      sceneData: [], //场景数据
-      currentScene: {} //当前场景信息
+      sceneType: [], //场景分类
+      sceneDateAll: [], //场景数据
+      currentScene: {}, //当前场景信息
+      end: {
+        title: "操作",
+        key: "action",
+        fixed: "right",
+        width: 80,
+        align: "center",
+        render: (h, params) => {
+          return h("div", [
+            h(
+              "Button",
+              {
+                props: {
+                  type: "primary",
+                  size: "small"
+                },
+                style: {},
+                on: {
+                  click: () => {
+                    this.recordId = params.row.Id;
+                    this.modalScene = true;
+                  }
+                }
+              },
+              "场景"
+            )
+          ]);
+        }
+      },//最后的操作栏
+      // 字段搜索相关
+      fieldData: [], //渲染的字段
+      fieldDataobj: {}, //存储表示搜索的字段
     };
   },
   created() {
@@ -196,34 +229,6 @@ export default {
     //获取变更表数据
     getDataList() {
       this.tLoading = true;
-      let end = {
-        title: "操作",
-        key: "action",
-        fixed: "right",
-        width: 80,
-        align: "center",
-        render: (h, params) => {
-          return h("div", [
-            h(
-              "Button",
-              {
-                props: {
-                  type: "primary",
-                  size: "small"
-                },
-                style: {},
-                on: {
-                  click: () => {
-                    this.recordId = params.row.Id;
-                    this.modalScene = true;
-                  }
-                }
-              },
-              "场景"
-            )
-          ]);
-        }
-      };
       if (this.searchCondition == "") {
         this.$http
           .get(
@@ -233,23 +238,22 @@ export default {
               this.pageSize
           )
           .then(info => {
-            // console.log("获取数据成功");
             this.totalPage = info.data.totalPage;
             this.totalRecord = info.data.totalRecord;
             let thead = JSON.parse(sessionStorage.getItem("Modify_thead"));
+            let fieldArr = JSON.parse(sessionStorage.getItem("Modify_fieldArr"));
+            this.fieldData = fieldArr;
             if (!thead) {
               this.getTHeadData(info.data);
             } else {
-              thead.push(end);
+              thead.push(this.end);
               this.wfColumns = thead;
               this.initTableColumn(this.wfColumns);
             }
             this.getTableData(info.data);
+            this.pageDisabled();// 在这和下面各写一个解决了只有一页时尾页跳转不禁用的问题
           });
       } else {
-        //获取到搜索条件this.searchCondition
-        // console.log("带搜索条件获取数据");
-        // return false;
         this.$http
           .post(
             "/cardController/fuzzyQuery?tableName=Modify&condition=" +
@@ -262,23 +266,58 @@ export default {
           .then(info => {
             this.totalPage = info.data.totalPage;
             this.totalRecord = info.data.totalRecord;
-            // 都要获取表头数据, 如果是搜索功能, 那么不用再次获取表头数据
-            // let thead = JSON.parse(sessionStorage.getItem("Modify_thead"));
-            // if (!thead) {
-            //   this.getTHeadData(info.data);
-            // } else {
-            //   thead.push(end);
-            //   this.wfColumns = thead;
-            //   this.initTableColumn(this.wfColumns);
-            // }
-            //当搜索功能为空的时候, 显示为空, 而不是一直加载中
+            //当搜索功能为空的时候, 显示为空, 而不是一直加载中, 这里不考虑从别的菜单跳过来的情况, 跳过来走的一定是上面的请求
             if (info.data.list.length == 0) {
               this.wfData = info.data.list;
               this.tLoading = false;
             } else {
               this.getTableData(info.data);
+              this.pageDisabled();
             }
           });
+      }
+    },
+    wlfieldSearch(){
+      this.pageNum = 1;
+      this.fieldSearch();
+    },
+    // 字段搜索相关
+    fieldSearch(flag){
+      this.tLoading = true;
+      // 选择出: 处于选中状态 && 搜索内容不为空 的内容发送给后台
+      let dataObj = {};
+      this.fieldData.forEach((v, i) => {
+        if (v.flag && v.value !== "") {
+          dataObj[v.eName] = v.value;
+        }
+      })
+      this.fieldDataobj = dataObj;
+      // console.log(this.fieldData);
+      // 每次搜索前将双向绑定的字段数据存入 sessionStorage, 以便从 sessionStorage 中取的时候依旧带着条件
+      sessionStorage.setItem("Modify_fieldArr", JSON.stringify(this.fieldData));
+      // console.log(dataObj);
+      // 如果分 dataObj 是否为空进行搜索, 为空时, 偶速锁条件全部消失, 如果不分, 那么为空时显示返回的内容不一样, 现在是按照不分写的
+      let data = 'tableName=Modify' + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=' + this.pageSize;
+      this.$http.post('/cardController/attribubtesFuzzyQuery', data).then(info => {
+        // console.log(info);
+        this.totalPage = info.data.totalPage;
+        this.totalRecord = info.data.totalRecord;
+        // 要分返回数据为空或者不为空的时候
+        if (info.data.list.length != 0) {
+          this.getTableData(info.data);
+          this.pageDisabled();
+        } else {
+          // 返回的数据为空的时候, 要清除 loading 状态
+          this.wfData = info.data.list;
+          this.pageDisabled();
+          this.tLoading = false;
+        }
+      })
+    },
+    //字段搜索，当输入框点击回车时
+    fsInput(flag){
+      if(flag){
+        this.wlfieldSearch();
       }
     },
     //英文名转换中文名
@@ -304,50 +343,29 @@ export default {
       let width = theadWidth / len > 150 ? theadWidth / len : 150;
       return width;
     },
-    //获取表头数据
+    //将获取到的"表头"数据处理为可以渲染的数据
     getTHeadData(info) {
-      let end = {
-        title: "操作",
-        key: "action",
-        fixed: "right",
-        width: 80,
-        align: "center",
-        render: (h, params) => {
-          return h("div", [
-            h(
-              "Button",
-              {
-                props: {
-                  type: "primary",
-                  size: "small"
-                },
-                style: {},
-                on: {
-                  click: () => {
-                    this.recordId = params.row.Id;
-                    this.modalScene = true;
-                  }
-                }
-              },
-              "场景"
-            )
-          ]);
-        }
-      };
       if (info.list.length != 0) {
         let arrA = Object.keys(info.list[0]);
         let arrObj = [];
+        let fieldArr = [];//表头字段搜索
         arrA.forEach((v, i) => {
           let oTemp = {};
+          let field = {};
           let markName = this.attributeCName(v);
           let cname;
           if (markName != null) {
             cname = markName.cname;
+            field.eName = v;//字段英文名
+            field.cName = cname;//字段中文名
+            field.value = '';//双向绑定到搜索框的值
+            field.flag = false;//选中状态
             oTemp.title = cname;
             oTemp.key = v;
             oTemp.ellipsis = true;
             oTemp.position = markName.position;
             arrObj.push(oTemp);
+            fieldArr.push(field);
           }
         });
         let len = arrObj.length; //记录表头数量
@@ -363,12 +381,15 @@ export default {
         });
         let newArr = arrObj;
         sessionStorage.setItem("Modify_thead", JSON.stringify(arrObj));
-        newArr.push(end);
+        sessionStorage.setItem("Modify_fieldArr", JSON.stringify(fieldArr));
+        newArr.push(this.end);
         this.wfColumns = newArr;
         this.initTableColumn(this.wfColumns);
+        this.fieldData = fieldArr;
+        // console.log(this.fieldData);
       }
     },
-    //获取表格数据
+    //将获取到的"表格"数据处理为可以渲染的数据
     getTableData(info) {
       if (info.list.length != 0) {
         let tData = info.list;
@@ -383,7 +404,7 @@ export default {
         this.tLoading = false; //加载完成时
       }
     },
-    // 获取当前行详细信息
+    // 悬停时显示当前单元格详细信息
     initTableColumn(columnName) {
       for (let i = 0; i < columnName.length; i++) {
         if (!columnName[i].render) {
@@ -402,16 +423,16 @@ export default {
     chooseSceneOK() {
       if (this.sceneGroup) {
         //单选框组的值   this.sceneGroup
-        console.log(this.sceneData);
-        this.sceneData.forEach((value, index) => {
-          if (this.sceneGroup == value.Id) {
-            this.$store.commit("getcurrentScene", value); //将获取的信息存入vuex 传入operate.vue
-            //            console.log(this.$store.state.currentScene);
+        let sceneArr = [];
+        this.sceneDateAll.forEach((value, index) => {
+          if (this.sceneGroup == value.Situation) {
+            sceneArr.push(value);
           }
         });
+        this.$store.commit("getcurrentScene", sceneArr); //将获取的信息存入vuex 传入operate.vue
+        console.log(this.$store.state.currentScene);
         //当前行的标识
         //传值并跳转页面
-        return false;
         this.$router.push({ path: "/workflow/operate/byself" });
       } else {
         this.$Message.error("请选择场景");
@@ -429,10 +450,14 @@ export default {
     //场景列表
     sceneList() {
       let group = "net"; //获取组名，后续要从session中获取
-      let sceneData = JSON.parse(sessionStorage.getItem("SceneData" + group));
-      if (sceneData) {
-        //console.log(sceneData);
-        this.sceneData = sceneData;
+      let sceneType = JSON.parse(sessionStorage.getItem("sceneType_" + group));
+      let sceneDateAll = JSON.parse(
+        sessionStorage.getItem("sceneDateAll_" + group)
+      );
+      if (sceneType) {
+        //console.log(sceneType);
+        this.sceneType = sceneType;
+        this.sceneDateAll = sceneDateAll;
       } else {
         this.getSceneData();
       }
@@ -447,10 +472,20 @@ export default {
             condition
         )
         .then(info => {
-          let data = info.data.list;
-          let newData = this.removeRepetitive(data); //数据去重
-          sessionStorage.setItem("SceneData" + group, JSON.stringify(newData));
-          this.sceneData = newData;
+          sessionStorage.setItem(
+            "sceneDateAll_" + group,
+            JSON.stringify(info.data.list)
+          );
+          this.sceneDateAll = JSON.parse(
+            sessionStorage.getItem("sceneDateAll_" + group)
+          );
+          // console.log(this.sceneDateAll);
+          let newData = this.removeRepetitive(info.data.list); //数据去重
+          sessionStorage.setItem("sceneType_" + group, JSON.stringify(newData));
+          this.sceneType = JSON.parse(
+            sessionStorage.getItem("sceneType_" + group)
+          );
+          // console.log(this.sceneType);
         });
     },
     //数据去重
@@ -486,11 +521,20 @@ export default {
         console.log("ctrlDownload");
       }
     },
+    // 搜索
+    wlsearch(){
+      this.pageNum = 1;
+      this.getDataList();
+    },
     // 分页
     pageChange(page) {
       this.pageNum = page;
       this.pageDisabled();
-      this.getDataList();
+      if (Object.keys(this.fieldDataobj).length != 0) {
+        this.fieldSearch();
+      } else {
+        this.getDataList();
+      }
     },
     // 首页尾页禁用于否
     pageDisabled() {
@@ -514,13 +558,21 @@ export default {
     pageFirst() {
       this.pageNum = 1;
       this.pageDisabled();
-      this.getDataList();
+      if (Object.keys(this.fieldDataobj).length != 0) {
+        this.fieldSearch();
+      } else {
+        this.getDataList();
+      }
     },
     //禁用跳到尾页
     pageLast() {
       this.pageNum = this.totalPage;
       this.pageDisabled();
-      this.getDataList();
+      if (Object.keys(this.fieldDataobj).length != 0) {
+        this.fieldSearch();
+      } else {
+        this.getDataList();
+      }
     },
     // 高度自适应
     heightAdaptive() {
@@ -528,10 +580,33 @@ export default {
       this.clientW = document.documentElement.clientWidth;
       this.contentbodyH = clientH - 140 + "px";
       this.tableHeight = clientH - 215; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
-    }
+    },
   }
 };
 </script>
 
-<style>
+<style lang="scss">
+.wfList{
+  .fieldSearch{
+    line-height: 0;
+    .ivu-select-dropdown{
+      .ivu-dropdown-menu{
+        .ivu-dropdown{
+          text-align: left;
+          .ivu-dropdown-rel{
+            label{
+              float: left;
+            }
+            i{
+              float: right;
+            }
+            .ivu-dropdown-item{
+              width: 180px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
 </style>
