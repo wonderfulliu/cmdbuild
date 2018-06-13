@@ -169,6 +169,13 @@
               border-color: #4ac2e6;
               border-top-left-radius: 0;
               border-bottom-left-radius: 0; }
+        #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-header .ivu-steps.ivu-steps-horizontal {
+          margin: 20px auto; }
+        #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-header .ivu-steps-item.ivu-steps-status-process .ivu-steps-tail > i {
+          background-color: transparent;
+          display: none; }
+        #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-header .ivu-steps .ivu-steps-tail > i {
+          background: transparent; }
       #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content {
         background: #fff;
         margin-top: 10px;
@@ -179,6 +186,43 @@
           margin: 0 auto; }
           #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .formContainer .ivu-select {
             text-align: left; }
+        #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .way {
+          height: 64px;
+          line-height: 64px; }
+          #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .way .wayTitle {
+            font-size: 14px;
+            font-family: 'MicroSoft YaHei';
+            color: #666; }
+          #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .way .ivu-select-item {
+            padding: 0; }
+            #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .way .ivu-select-item a {
+              display: block;
+              height: 30px;
+              line-height: 30px; }
+          #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .way .ivu-select-item-selected > a {
+            color: #fff; }
+        #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .successPrompt h2 {
+          line-height: 64px;
+          font-family: 'MicroSoft YaHei';
+          padding-top: 10%;
+          font-weight: normal; }
+          #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .successPrompt h2 .ivu-icon {
+            color: #00A000;
+            font-size: 32px;
+            margin-right: 10px; }
+          #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .successPrompt h2 span {
+            color: #585858;
+            font-size: 28px; }
+        #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .btnGroup {
+          height: 64px;
+          line-height: 64px; }
+          #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .btnGroup div.ivu-btn-group .ivu-btn-primary[disabled] {
+            color: #d4ebff;
+            background-color: #7cacd6;
+            border-color: #64a0d4; }
+          #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .btnGroup div.ivu-btn-group button:nth-child(2) {
+            width: 100px;
+            margin: 0 -1px; }
 
 .ivu-menu-dark {
   background: #2a3f54; }
