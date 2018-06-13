@@ -8,13 +8,13 @@
               <a id="logo" href="#/search"><img src="../../static/logo.png" alt="LOGO"></a>
             </div>
             <div class="layout-nav">
-              <router-link to="/search">
+              <router-link to="/search/searchOn">
                 <MenuItem name="1" >
                   <Icon type="search"></Icon>
                   全局搜索
                 </MenuItem>
               </router-link>
-              <router-link to="/config">
+              <router-link to="/config/tableList">
                 <MenuItem name="2">
                   <Icon type="home"></Icon>
                   配置信息
@@ -26,13 +26,13 @@
                   视图
                 </MenuItem>
               </router-link>
-               <router-link to="/workflow">
+               <router-link to="/workflow/wfList">
                 <MenuItem name="4">
                   <Icon type="pin"></Icon>
                   工作流
                 </MenuItem>
               </router-link>
-              <router-link to="/chart">
+              <router-link to="/chart/dashboard">
                 <MenuItem name="5">
                   <Icon type="stats-bars"></Icon>
                   Charts
