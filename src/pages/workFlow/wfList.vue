@@ -196,12 +196,14 @@ export default {
       // 字段搜索相关
       fieldData: [], //渲染的字段
       fieldDataobj: {}, //存储表示搜索的字段
+      mode: '', //本表格的权限
     };
   },
   created() {
     this.getAttributeList();
     this.getDataList();
     this.sceneList();
+    this.Authority();
   },
   mounted() {
     let _this = this;
@@ -293,8 +295,8 @@ export default {
       })
       this.fieldDataobj = dataObj;
       // console.log(this.fieldData);
-      // 每次搜索前将双向绑定的字段数据存入 sessionStorage, 以便从 sessionStorage 中取的时候依旧带着条件
-      sessionStorage.setItem("Modify_fieldArr", JSON.stringify(this.fieldData));
+      // 每次搜索前将双向绑定的字段数据存入 sessionStorage, 以便从别的 mune 中跳回来的时候从 sessionStorage 中取依旧带着条件
+      // sessionStorage.setItem("Modify_fieldArr", JSON.stringify(this.fieldData));
       // console.log(dataObj);
       // 如果分 dataObj 是否为空进行搜索, 为空时, 偶速锁条件全部消失, 如果不分, 那么为空时显示返回的内容不一样, 现在是按照不分写的
       let data = 'tableName=Modify' + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=' + this.pageSize;
@@ -319,6 +321,11 @@ export default {
       if(flag){
         this.wlfieldSearch();
       }
+    },
+    // 搜索
+    wlsearch(){
+      this.pageNum = 1;
+      this.getDataList();
     },
     //英文名转换中文名
     attributeCName(eName) {
@@ -444,6 +451,7 @@ export default {
       //清空当前行的标识信息
       this.recordId = "";
     },
+    // 点击表格一行的时候触发
     getRecordId(res) {
       this.recordId = res.Id;
     },
@@ -507,24 +515,36 @@ export default {
         console.log("ctrlHistory");
       }
     },
+    // 关系
     ctrlRelete() {
       if (this.recordId == "") {
         this.$Message.error("请选择一条记录！");
       } else {
-        console.log("ctrlRelete");
+        //将跳转到关系页面  表名 记录id 已获取, 传递到下一个页面发送请求数据
+        let data = {
+          tableName: "Modify", //表名
+          Id: this.recordId, //记录Id
+          mode: this.mode //本表权限
+        }; 
+        this.$store.commit("getrelationMsg", data);//关系用的都是一个公共仓库
+        this.$router.push({path: '/workflow/wfrelation'})
       }
     },
+    // 下载
     ctrlDownload() {
-      if (this.recordId == "") {
-        this.$Message.error("请选择一条记录！");
-      } else {
-        console.log("ctrlDownload");
+      let search = this.searchCondition;
+      let field = Object.keys(this.fieldDataobj).length;
+      let url = "/cardController/downLoadExcel?table=";
+      if (!search && !field) {
+        // 全集搜索和字段搜索全部为空的时候
+        window.open(url + "Modify", "_self");
+      } else if (search) {
+        // 有限下载搜索
+        window.open(url + "Modify" + '&condition=' + this.searchCondition, "_self");
+      } else if (field) {
+        // 没有搜索的情况下再下载字段搜索
+        window.open(url + "Modify" + '&condition=' + JSON.stringify(this.fieldDataobj), "_self");
       }
-    },
-    // 搜索
-    wlsearch(){
-      this.pageNum = 1;
-      this.getDataList();
     },
     // 分页
     pageChange(page) {
@@ -581,8 +601,19 @@ export default {
       this.contentbodyH = clientH - 140 + "px";
       this.tableHeight = clientH - 215; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
     },
+    // 表格权限
+    Authority(){
+      let mode = JSON.parse(sessionStorage.getItem("Mode"));
+      mode.forEach((v, i) => {
+        if (v.table_name == 'Modify') {
+          this.mode = v.Mode;
+        }
+      })
+    },
   }
 };
+// 可能出现的问题: 
+// 1. 字段搜索和全局搜索同时出现的时候, 因为接口不一样, 所以显示的内容不一样, 建议只能进行一种搜索, 进行一种搜索时, 禁用另一种搜索
 </script>
 
 <style lang="scss">

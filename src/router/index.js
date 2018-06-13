@@ -37,6 +37,8 @@ import wfList from '@/pages/workFlow/wfList'
 import operate from '@/pages/workFlow/operate'
 import byself from '@/pages/workFlow/ways/byself'
 import byexcel from '@/pages/workFlow/ways/byexcel'
+import wfrelation from '@/pages/workFlow/relation/relation'
+import wfrelationtable from '@/pages/workFlow/relation/relationtable'
 // search
 import search from '@/pages/search/search'
 import searchOn from '@/pages/search/searchOn'
@@ -165,6 +167,16 @@ export default new Router({
               path: 'wfList',
               name: 'wfList',
               component: wfList
+            },
+            {
+              path: 'wfrelation',
+              name: 'wfrelation',
+              component: wfrelation
+            },
+            {
+              path: 'wfrelationtable',
+              name: 'wfrelationtable',
+              component: wfrelationtable
             },
             {
               path: 'operate',
