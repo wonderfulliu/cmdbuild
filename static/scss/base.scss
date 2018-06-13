@@ -250,6 +250,18 @@
                 }
               }
             }
+            .ivu-steps.ivu-steps-horizontal{
+              margin: 20px auto;
+            }
+
+            .ivu-steps-item.ivu-steps-status-process .ivu-steps-tail > i {
+              background-color: transparent;
+              display: none;
+            }
+            .ivu-steps .ivu-steps-tail > i {
+              background: transparent;
+            }
+
           }
           .ivu-layout-content{
             background: #fff;
@@ -263,6 +275,62 @@
               margin: 0 auto;
               .ivu-select{
                 text-align: left;
+              }
+            }
+            .way {
+              //overflow: hidden;
+              height: 64px;
+              line-height: 64px;
+              .wayTitle{
+                font-size: 14px;
+                font-family: 'MicroSoft YaHei';
+                color: #666;
+              }
+              .ivu-select-item{
+                padding: 0;
+                a{
+                  display: block;
+                  height: 30px;
+                  line-height: 30px;
+                }
+              }
+              .ivu-select-item-selected > a {
+                color: #fff;
+              }
+            }
+            .successPrompt{
+              h2{
+                line-height: 64px;
+                font-family: 'MicroSoft YaHei';
+                padding-top: 10%;
+                font-weight: normal;
+                .ivu-icon{
+                  color: #00A000;
+                  font-size: 32px;
+                  margin-right: 10px;
+                }
+                span{
+                  color: #585858;
+                  font-size: 28px;
+                }
+              }
+              p{
+
+              }
+            }
+            .btnGroup{
+              height: 64px;
+              line-height: 64px;
+              div.ivu-btn-group{
+                .ivu-btn-primary[disabled]{
+                  color: #d4ebff;
+                  background-color: #7cacd6;
+                  border-color: #64a0d4;
+                }
+                button:nth-child(2){
+                  width: 100px;
+                  margin: 0 -1px;
+                }
               }
             }
           }
@@ -520,6 +588,10 @@ $class-slug: cascade !default;
   50%  { transform: rotate(180deg);}
   to   { transform: rotate(360deg);}
 }
+
+//workFlow
+
+
 
 
 
