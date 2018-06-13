@@ -622,7 +622,7 @@ export default {
       addData.titleMsg = attr;
       addData.Id = this.recordId;
       this.$store.commit("getaddMsg", addData);
-      console.log(addData);
+      // console.log(addData);
     },
     //这里
     findChildLen(obj, n, arr) {
@@ -1185,8 +1185,7 @@ export default {
       this.tableHeight = this.clientH - 222; //64:导航高；140：包括搜索, margin-top, 分页所在区域高
       this.modalMaxHeight = this.clientH - 300 + 'px';
     },
-  },
-  computed: {}
+  }
 };
 </script>
 

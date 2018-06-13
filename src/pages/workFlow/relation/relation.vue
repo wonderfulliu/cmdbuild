@@ -4,12 +4,9 @@
       <Header style="padding: 0" class="layout-header-bar">
         <Form :label-width="80">
           <Row>
-            <Col span="2">
-              <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" type="navicon-round" size="24"></Icon>
-            </Col>
             <Col class="bread" span="7">
               <Breadcrumb>
-                <BreadcrumbItem to="/config/tableList">配置信息</BreadcrumbItem>
+                <BreadcrumbItem to="/workflow/wfList">工作流</BreadcrumbItem>
                 <!-- 原表名 -->
                 <BreadcrumbItem v-if="tableCname" to="">{{tableCname}}</BreadcrumbItem>
                 <!-- 关系表名 -->
@@ -18,11 +15,6 @@
               </Breadcrumb>
             </Col>
             <Col span="3">
-              <!-- <FormItem label="查看:">
-                <Select @on-change="selectN" :placeholder="placeholder" v-model="selectNow" clearable filterable not-found-text>
-                  <Option v-for="(item, index) in now" :value="item.value" :key="index">{{ item.label }} </Option>
-                </Select>
-              </FormItem> -->
               <Dropdown class="fieldSearch" style="margin-left: 20px" trigger="click" @on-click="selectN">
                   <Button type="primary">
                       查看
@@ -34,11 +26,6 @@
               </Dropdown>
             </Col>
             <Col span="3" offset="1">
-              <!-- <FormItem label="新增:">
-                <Select @on-change="selectF" label-in-value v-model="selectFuture" clearable filterable>
-                  <Option v-for="(item, index) in future" :value="item.value" :key="index">{{ item.label }}</Option>
-                </Select>
-              </FormItem>  -->
               <Dropdown class="fieldSearch" style="margin-left: 20px" trigger="click" @on-click="selectF">
                   <Button type="primary">
                       新增
@@ -49,7 +36,7 @@
                   </DropdownMenu>
               </Dropdown>
             </Col>
-            <Col span="3" offset="5">
+            <Col span="3" offset="7">
               <Button type="ghost" title="返回" icon="reply" @click="back"></Button>
             </Col>
           </Row>
@@ -162,10 +149,6 @@ export default {
   },
   created() {
     this.getMsg();
-    // 获取下 relationTableCname
-    if (this.$store.state.relationTableCE) {
-      
-    }
   },
   methods: {
     // 获取到公共仓库的数据: 表Id 表名 关系表表名与内容---1
@@ -176,7 +159,7 @@ export default {
       this.tableName = this.preMsg.tableName;//原表表名
       this.tableCname = this.EtoC(this.CEtableMsg, this.tableName);
       this.tableId = this.preMsg.Id;//原表的纪录的Id
-      this.isdisable = this.preMsg.disabled;//关系的权限状态
+      this.isdisable = this.preMsg.mode == "r" ? true : false;
       this.getrelationMsg();//获取到表名和id后在请求已经关联的表和相应的记录
     },
     // 获取和选中记录有关系表的表和表中有关系的记录
@@ -251,11 +234,12 @@ export default {
           now.push(obj);
         }
         this.now = now;
-        // console.log(this.relationTableCname);
         // 此处首次获取到this.now, 默认显示第一个关系表的纪录
         if (this.now.length != 0 && !this.$store.state.relationTableCE) {
+          // 默认显示第一个
           this.selectN(this.now[0].value);
         } else {
+          // 显示 relationTable 传来的
           this.selectN(this.$store.state.relationTableCE.domainname);
           this.$store.commit('getRtcname', '');
         }
@@ -268,6 +252,7 @@ export default {
         ]
       }
     },
+    // ==============================================进入组件一直执行到这里
     // 查看下拉框变化时触发---3
     selectN(value){
       this.domainListMsg.forEach((v, i) => {
@@ -337,7 +322,7 @@ export default {
               tableId: this.tableId
             };
             this.$store.commit("getrefMsg", refMsg); //不论哪个函数先执行, 都会只执行一次
-            this.$router.push({ path: "/config/relationTable" }); //两个数据都拿到之后再推送
+            this.$router.push({ path: "/workflow/wfrelationtable" }); //两个数据都拿到之后再推送
           }
         }
       });
@@ -357,7 +342,7 @@ export default {
               tableId: this.tableId
             };
             this.$store.commit("getrefMsg", refMsg); //不论哪个函数先执行, 都只会执行一次
-            this.$router.push({ path: "/config/relationTable" }); //两个数据都拿到之后再推送
+            this.$router.push({ path: "/workflow/wfrelationtable" }); //两个数据都拿到之后再推送
           }
         }
       });
@@ -451,7 +436,7 @@ export default {
             jiluId: jiluId//最终定位使用
           }
           this.$emit('sTof', msg);
-          this.$router.push({ path: "/config/tableList" });
+          this.$router.push({ path: "/workflow/wfList" });
         }
       })
     },
@@ -472,7 +457,7 @@ export default {
     },
     // 返回按钮
     back() {
-      this.$router.push({path: '/config/tableList'});
+      this.$router.push({path: '/workflow/wfList'});
     },
     // 获取对应表的英文名
     gettableEname(tableMenu, tableCname){

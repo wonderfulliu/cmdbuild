@@ -7,8 +7,8 @@
             <h3 style="text-align: left; font-weight: 400">关系表: &nbsp;&nbsp;<span style="font-weight: 700">{{FrelationTableCname}}</span></h3>
           </Col>
           <Col :xs="12" :sm="12" :md="10" :lg="11">
-            <Input v-model="searchMsg" @on-enter="search" placeholder="Enter something...">
-              <Button slot="append" type="info" icon="ios-search" @click="search">搜索</Button>
+            <Input v-model="searchMsg" @on-enter="wfsearch" placeholder="Enter something...">
+              <Button slot="append" type="info" icon="ios-search" @click="wfsearch">搜索</Button>
             </Input>
           </Col>
           <Col :xs="14" :sm="12" :md="8" :lg="7">
@@ -131,6 +131,7 @@ export default {
     // 获取中文表头和表格详细数据
     getrefMsg() {
       let refMsg = this.$store.state.refMsg;
+
       this.relationTable = refMsg.relationTable;
       this.reftitleMsg = refMsg.reftitleMsg;
       this.reftableMsg = refMsg.reftableMsg;
@@ -143,7 +144,7 @@ export default {
       this.dataProcess(this.reftitleMsg, this.reftableMsg);
       this.tableName = this.$store.state.relationMsg.tableName;
       this.recordId = this.$store.state.relationMsg.Id;
-      this.isdisable = this.$store.state.relationMsg.disabled;
+      this.isdisable = this.$store.state.relationMsg.mode;
     },
     //刚进入该页面时表格数据的处理
     dataProcess(titleMsg, tableMsg) {
@@ -172,8 +173,6 @@ export default {
 
       // 设置每个td的宽度(写在此处)
       let width = 150;
-      //判断返回的表格数据是否有Id
-      // let flag = this.hasId(dataArr[0]);
       //获取表头
       let newtitleArr = []; //存储最终要给columns的表头数据
       newtitleArr.push(start);
@@ -186,22 +185,13 @@ export default {
         v.ellipsis = true;
         newtitleArr.push(v);
       });
-
-      let theadWidth = document.querySelector('#configContainer').offsetWidth - 17 - 240 - 100 - 50;
+      let theadWidth = document.documentElement.clientWidth - 17 - 100 - 50;
       width = theadWidth / j > 150 ? theadWidth / j : 150;
-
+      
       titleMsg.forEach(function(v, i) {
         v.width = width;
       });
       
-      // if (flag) {
-      //   var Id = {
-      //     title: "Id",
-      //     key: "Id",
-      //     width: 100
-      //   };
-      //   newtitleArr.push(Id);
-      // }
       this.columns = newtitleArr;
 
       // 渲染表格数据
@@ -234,19 +224,10 @@ export default {
       this.data = newtableArr;
       this.loading = false;
     },
-    // 判断返回的数据中是否包含Id
-    hasId(info) {
-      let flag = false;
-      for (var k in info) {
-        if (k == "Id") {
-          flag = true;
-        }
-      }
-      return flag;
-    },
     // --------------------------------------
     // 获取模态框中的reference数据
     getreferenceData() {
+      this.loading = true;
       let data = "?table=" + this.relationTable + '&domain=' + this.domainname + "&pageNum=" + this.pageNum;
       this.$http.get("/cardController/getRelationCardList" + data).then(info => {
         if (info.status == 200) {
@@ -254,9 +235,14 @@ export default {
         }
       });
     },
+    // 点击搜索按钮时触发的函数
+    wfsearch(){
+      this.pageNum = 1;
+      this.pageDisabled();
+      this.search();
+    },
     // 搜索功能
     search() {
-      // console.log(this.relationTable);
       this.loading = true;
       let data = {
         tableName: this.relationTable,
@@ -357,9 +343,6 @@ export default {
     },
     // 多选
     selectN(selection, index){
-      // console.log(selection);
-      // console.log(this.relationTable);
-      // console.log(this.domainlistMsg);
       let data = {};
       let records = [];
       this.domainlistMsg.forEach((v, i) => {
@@ -404,7 +387,7 @@ export default {
             disabled: this.isdisable,//登录人员对该关系的权限也要传递过去
           };
           this.$store.commit("getrelationMsg", data);
-          this.$router.push({ path: "/config/relation" });
+          this.$router.push({ path: "/workflow/wfrelation" });
         }
       });
     },
@@ -426,6 +409,7 @@ export default {
         }
       })
     },
+    // -------------------------下面没啥问题
     // 取消按钮
     cancel() {
       this.$router.go(-1);
@@ -441,36 +425,47 @@ export default {
     pageChange(page) {
       this.pageNum = page;
       this.pageDisabled();
-      this.loading = true;
-      this.getreferenceData();
+      if (this.searchMsg) {
+        this.search();
+      } else {
+        this.getreferenceData();
+      }
     },
     // 首页尾页禁用于否
     pageDisabled(){
-      if (this.pageNum == 1 && this.totalPage == 1) {
+      if (this.pageNum == 1) {
         this.firstCl = true;
-        this.lastCl = true;
-      } else if (this.pageNum == 1 && this.totalPage != 1) {
-        this.firstCl = true;
-        this.lastCl = false;
-      } else if (this.pageNum == this.totalPage && this.totalPage != 1) {
-        this.firstCl = false;
-        this.lastCl = true;
+        if (this.totalPage == 1) {
+          this.lastCl = true;
+        } else {
+          this.lastCl = false;
+        }
       } else {
         this.firstCl = false;
-        this.lastCl = false;
+        if (this.totalPage == this.pageNum) {
+          this.lastCl = true;
+        } else {
+          this.lastCl = false;
+        }
       }
     },
     pageFirst() {
       this.pageNum = 1;
       this.pageDisabled();
-      this.loading = true;
-      this.getreferenceData();
+      if (this.searchMsg) {
+        this.search();
+      } else {
+        this.getreferenceData();
+      }
     },
     pageLast() {
       this.pageNum = this.totalPage;
       this.pageDisabled();
-      this.loading = true;
-      this.getreferenceData();
+      if (this.searchMsg) {
+        this.search();
+      } else {
+        this.getreferenceData();
+      }
     },
   }
 };
