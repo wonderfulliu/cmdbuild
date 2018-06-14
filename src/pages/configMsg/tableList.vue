@@ -916,7 +916,7 @@ export default {
         this.$Message.error("您未选中行！");
       }
     },
-    ctrlRelete() { 
+    ctrlRelete() {
       if (this.clickRow == true) {
         //将跳转到关系页面  表名 记录id 已获取, 传递到下一个页面发送请求数据
         let data = {

@@ -11,8 +11,9 @@ import Vuex from 'vuex'
 import echarts from "echarts"
 import '../static/scss/base.css'   //公共样式
 import util from "./assets/common/util" //公共 js
-import CountDown from './components/count-down';
+import CountDown from './components/count-down'
 
+ 
 Vue.config.productionTip = false
 Vue.use(iView)
 Vue.use(Vuex)
@@ -41,6 +42,7 @@ const store = new Vuex.Store({
     clickWhichone: 0,
     searchRelation: '',//全局搜索页面跳转的时候传递的信息
     relationTableCE: '', //关系页面中的relationTableCname
+    historyId: '', //工作流中跳转 history 的时候存储的记录的 Id
   },
   mutations: {//里面放方法
     getMode(state, val){
@@ -91,6 +93,9 @@ const store = new Vuex.Store({
     },
     getcurrentScene(state, val) {
       state.currentScene = val;
+    },
+    gethistoryId(state, val){
+      state.historyId = val;
     },
   }
 })

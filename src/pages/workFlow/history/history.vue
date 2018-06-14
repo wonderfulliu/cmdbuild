@@ -4,14 +4,11 @@
       <Row>
         <Col span="9" offset="1" style="text-align: left">
         <Breadcrumb>
-          <BreadcrumbItem to="/config/tableList">配置信息</BreadcrumbItem>
-          <BreadcrumbItem to="/config/tableList">{{tableCname}}</BreadcrumbItem>
+          <BreadcrumbItem to="/workflow/wfList">工作流</BreadcrumbItem>
+          <BreadcrumbItem to="/workflow/wfList">{{tableCname}}</BreadcrumbItem>
           <BreadcrumbItem>历史{{ titleName }}</BreadcrumbItem>
         </Breadcrumb>
         </Col>
-        <!--<Col span="1">
-          <Icon @click.native="collapsedSider" :class="rotateIcon" class="menuCtrl" :style="{margin: '4px 20px'}" type="navicon-round" size="24"></Icon>
-        </Col>-->
         <Col span="14" style="text-align: right">
         <ButtonGroup>
           <Button type="info" @click="gethistoryInfo" :class="{'active': ctrlBtnA}">信息</Button>
@@ -41,7 +38,6 @@
               共 {{ totalBar }} 条
               </Col>
               <Col span="2">
-              <!-- <Button type="text" icon="chevron-left" @click="pageFirst" :disabled="firstCl" title="首页"></Button> -->
               <button title="首页"
                       type="button"
                       class="pageBtn"
@@ -60,7 +56,6 @@
                     @on-change="pageChange"></Page>
               </Col>
               <Col span="2">
-              <!-- <Button type="text" icon="chevron-right" @click="pageLast" :disabled="lastCl" title="尾页"></Button> -->
               <button title="尾页"
                     type="button"
                     class="pageBtn"
@@ -87,7 +82,7 @@
             {{ key }} : {{ val.value }}
           </li>
         </ul>
-      </div>
+      </div> 
       <div slot="footer">
         <Button type="primary" @click="ViewModalCancel">关闭</Button>
       </div>
@@ -97,28 +92,13 @@
 
 <script>
   export default {
-    props: {
-      //表名
-      tableName:{
-        type: String,
-        required: true
-      },
-      tableCname: {
-        type: String,
-        required: true
-      },
-      //记录id
-      recordId: {
-        type: Number,
-        required: true
-      }
-
-    },
     data () {
       return {
         columnData: [], //表头
         tableData: [],  //表数据
-        tableCname: '',//表中文名
+        tableName: 'Modify', //表英文名
+        tableCname: '变更表',//表中文名
+        recordId: '', //记录 Id
         HistoryViewData: {},
         historyId: '',
         //配置
@@ -134,7 +114,7 @@
         loading: true,
         //modal
         HistoryViewModal: false,
-        modalMaxHeight: '', 
+        modalMaxHeight: '',
         hisLoading: true,
         firstCl: true,//首页是否禁用
         lastCl: true,//尾页是否禁用
@@ -144,6 +124,7 @@
       }
     },
     created: function(){
+      this.recordId = this.$store.state.historyId;
       this.gethistoryInfo();
       this.getHeight();
     },
@@ -164,28 +145,27 @@
     methods:{
       //历史信息记录
       gethistoryInfo(){
-        let _this = this;
-        _this.loading = true;
-        _this.ctrlBtnA = true;
-        _this.ctrlBtnB = false;
-        _this.titleName = '信息';
+        this.loading = true;
+        this.ctrlBtnA = true;
+        this.ctrlBtnB = false;
+        this.titleName = '信息';
         let odata = [];
-        _this.$http
+        this.$http
           .post('/cardController/cardHistory?table=' +
-            _this.tableName +
+            this.tableName +
             '&id=' +
-            _this.recordId +
+            this.recordId +
             '&pageNum=' +
-            _this.pageNum +
+            this.pageNum +
             '&pageSize=20')
-          .then(function(info){
-            _this.totalBar = info.data.totalRecord;
-            _this.totalPage = info.data.totalPage;
+          .then((info) => {
+            this.totalBar = info.data.totalRecord;
+            this.totalPage = info.data.totalPage;
             let opt = info.data.list[0];
             odata = info.data.list;
-            odata.forEach(function(v ,i){
-              v.BeginDate = _this.formatDateTime(v.BeginDate);
-              v.EndDate = _this.formatDateTime(v.EndDate);
+            odata.forEach((v ,i) => {
+              v.BeginDate = this.formatDateTime(v.BeginDate);
+              v.EndDate = this.formatDateTime(v.EndDate);
             });
             let arra = [];
             for(let k in opt){
@@ -194,9 +174,9 @@
                 key: k
               });
             }
-            _this.columnData = _this.operationBtn(arra);    //表头
-            _this.tableData = info.data.list;  //数据
-            _this.loading = false;
+            this.columnData = this.operationBtn(arra);    //表头
+            this.tableData = info.data.list;  //数据
+            this.loading = false;
           });
       },
       //历史关系记录
@@ -221,6 +201,7 @@
                 key: k
               });
             }
+            
             odata.forEach(function(v , i){
               if(typeof v.IdDomain == 'object'){
                 v.IdDomain = v.IdDomain.value;

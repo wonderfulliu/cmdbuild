@@ -221,6 +221,7 @@ export default {
         _this.$http
           .post("/cardController/getAttributeList", { table: "Modify" })
           .then(info => {
+            console.log(info);
             sessionStorage.setItem(
               "config_Modify_attribute",
               JSON.stringify(info.data)
@@ -508,11 +509,14 @@ export default {
       }
       return data;
     },
+    // 历史
     ctrlHistory() {
       if (this.recordId == "") {
+        // this.util.unselectedLine();
         this.$Message.error("请选择一条记录！");
       } else {
-        console.log("ctrlHistory");
+        this.$store.commit('gethistoryId', this.recordId);
+        this.$router.push({path: '/workflow/wfhistory'});
       }
     },
     // 关系
@@ -527,7 +531,7 @@ export default {
           mode: this.mode //本表权限
         }; 
         this.$store.commit("getrelationMsg", data);//关系用的都是一个公共仓库
-        this.$router.push({path: '/workflow/wfrelation'})
+        this.$router.push({path: '/workflow/wfrelation'});
       }
     },
     // 下载
