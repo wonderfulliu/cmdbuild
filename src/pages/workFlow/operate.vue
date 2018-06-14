@@ -33,7 +33,7 @@
         <h2>
           <Icon type="checkmark-circled"></Icon><span>该流程已完成!</span>
         </h2>
-        <p>您将在 <CountDown :second="5"></CountDown> 秒后离开此页面</p>
+        <p>您将在 <CountDown :count="5"></CountDown> 秒后离开此页面</p>
       </div>
       <div class="btnGroup">
         <ButtonGroup shape="circle">

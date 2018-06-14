@@ -1,44 +1,48 @@
 <template>
-    <span :style="{color:fontColor}">{{second}}</span>
+    <span :style="{color:fontColor}">{{ newCount+1 }}</span>
 </template>
 
 <script>
-    const defaultSecond = 5;
-    const defatltColor = '#ff8733';
     export default {
         name: 'CountDown',
         props: {
-            second: {
+            count: {
                 type: Number,
-                default: defaultSecond
+                default: 5
             },
             fontColor: {
                 type: String,
-                default: defatltColor
+                default: '#ff8733'
             }
         },
         data () {
             return {
-
+                newCount: this.count
             }
         },
-        mounted () {
-            setInterval(this.countDown, 1000);
+        created () {
+            if ( this.timeOut ) {
+                clearTimeout(this.timeOut);
+            }
+            this.countDown();
         },
         methods: {
-            //倒计时  --秒
-             countDown() {
-                 //second--为初始值
-                 if (this.second > 0) {
-                    this.second--;
-                 }else{
-                    this.overRun();
-                 }
-
-             },
-             overRun(){
-                 this.$router.push({ path: "/workflow/wfList" }); //跳转至新增页面
-             }
+            countDown() {
+                // 这里是一个http的异步请求
+                if(this.newCount>0){
+                    this.newCount--;
+                }else {
+                    this.$router.push({ path: "/workflow/wfList" }); //跳转至列表页
+                }
+                if ( this.$route.path == '/workflow/operate/byself' ) {
+                    let _this = this;
+                    this.timeOut = setTimeout(() => {
+                                _this.countDown();
+                }, 1000);
+                } else {
+                    this.timeOut = '';
+                }
+            },
         }
     }
 </script>

@@ -127,6 +127,7 @@
            @on-ok="chooseSceneOK"
            @on-cancel="chooseSceneCancel">
       <div class="modalBody">
+        <p v-if="sceneType.length==0">暂无数据</p>
         <RadioGroup v-model="sceneGroup" vertical>
           <Radio :label="sceneItem.Situation"
                  v-for="(sceneItem,index) in sceneType" :key="index">{{ sceneItem.Situation }}</Radio>
@@ -458,7 +459,8 @@ export default {
     },
     //场景列表
     sceneList() {
-      let group = "net"; //获取组名，后续要从session中获取
+      let groupInfo = JSON.parse(sessionStorage.getItem("groupInfo"));
+      let group = groupInfo.Code; //从session中获取组名
       let sceneType = JSON.parse(sessionStorage.getItem("sceneType_" + group));
       let sceneDateAll = JSON.parse(
         sessionStorage.getItem("sceneDateAll_" + group)
@@ -473,8 +475,10 @@ export default {
     },
     //获取场景数据
     getSceneData() {
-      let group = "net";
-      let condition = '{"Group":"网络组"}';
+      let groupInfo = JSON.parse(sessionStorage.getItem("groupInfo"));
+      let groupeName = groupInfo.Code;
+      let groupcName = groupInfo.Description;
+      let condition = '{"Group":'+ groupcName +'}';
       this.$http
         .post(
           "/cardController/attribubtesFuzzyQuery?tableName=WorkflowSituation&condition=" +
@@ -482,17 +486,17 @@ export default {
         )
         .then(info => {
           sessionStorage.setItem(
-            "sceneDateAll_" + group,
+            "sceneDateAll_" + groupeName,
             JSON.stringify(info.data.list)
           );
           this.sceneDateAll = JSON.parse(
-            sessionStorage.getItem("sceneDateAll_" + group)
+            sessionStorage.getItem("sceneDateAll_" + groupeName)
           );
           // console.log(this.sceneDateAll);
           let newData = this.removeRepetitive(info.data.list); //数据去重
-          sessionStorage.setItem("sceneType_" + group, JSON.stringify(newData));
+          sessionStorage.setItem("sceneType_" + groupeName, JSON.stringify(newData));
           this.sceneType = JSON.parse(
-            sessionStorage.getItem("sceneType_" + group)
+            sessionStorage.getItem("sceneType_" + groupeName)
           );
           // console.log(this.sceneType);
         });
