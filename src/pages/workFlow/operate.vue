@@ -33,7 +33,7 @@
         <h2>
           <Icon type="checkmark-circled"></Icon><span>该流程已完成!</span>
         </h2>
-        <p>您将在 <span style="color: #ff8733">5</span> 秒后离开此页面</p>
+        <p>您将在 <CountDown :second="5"></CountDown> 秒后离开此页面</p>
       </div>
       <div class="btnGroup">
         <ButtonGroup shape="circle">
@@ -71,6 +71,7 @@ export default {
       currentScene: [], //步骤信息中所有数据
       currentTableEName: '',  //当前步骤对应表英文名
       currentType: '', //类型
+      secondCount: 5, //秒数计数初始值
     };
   },
   watch: {
@@ -92,6 +93,7 @@ export default {
     window.onresize = () => {
       _this.heightAdaptive();
     }
+//    setInterval(this.countDown, 1000);
   },
   methods: {
     // 监控当前步骤编号的变化 控制按钮是否禁用
@@ -142,6 +144,16 @@ export default {
       }
 
     },
+    /*//倒计时  --秒
+    countDown(second) {
+      //second--为初始值
+      if (this.secondCount > 0) {
+        this.secondCount--;
+      }else{
+        this.$router.push({ path: "/workflow/wfList" }); //跳转至新增页面
+      }
+
+    },*/
     // 高度自适应
     heightAdaptive() {
       let clientH = document.documentElement.clientHeight;

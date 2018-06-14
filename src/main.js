@@ -11,6 +11,7 @@ import Vuex from 'vuex'
 import echarts from "echarts"
 import '../static/scss/base.css'   //公共样式
 import util from "./assets/common/util" //公共 js
+import CountDown from './components/count-down';
 
 Vue.config.productionTip = false
 Vue.use(iView)
@@ -97,6 +98,9 @@ const store = new Vuex.Store({
 // this.$store.commit('getlookupMsg', val);
 //另一个组件通过以下方法就可以获取, searchMsg就是要获取的数据
 // this.$store.state.lookupMsg
+
+//倒计时
+Vue.component('CountDown',CountDown);
 
 Vue.component('Chart',{
   name: 'Chart',
