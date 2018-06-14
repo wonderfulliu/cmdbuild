@@ -23,7 +23,7 @@
             </DropdownMenu>
           </Dropdown>
         </Col>
-        <Col span="12" offset="6">
+        <Col span="12" offset="3">
           <Input v-model="searchCondition" placeholder="Enter something..." @on-enter="wlsearch">
             <Button slot="append" type="info" icon="ios-search" @click="wlsearch">搜索</Button>
           </Input>
@@ -481,7 +481,7 @@ export default {
       let condition = '{"Group":'+ groupcName +'}';
       this.$http
         .post(
-          "/cardController/attribubtesFuzzyQuery?tableName=WorkflowSituation&condition=" +
+          "/cardController/attribubtesFuzzyQuery?tableName=WorkflowSituation&pageSize=50&condition=" +
             condition
         )
         .then(info => {
@@ -492,13 +492,13 @@ export default {
           this.sceneDateAll = JSON.parse(
             sessionStorage.getItem("sceneDateAll_" + groupeName)
           );
-          // console.log(this.sceneDateAll);
+           console.log(this.sceneDateAll);
           let newData = this.removeRepetitive(info.data.list); //数据去重
           sessionStorage.setItem("sceneType_" + groupeName, JSON.stringify(newData));
           this.sceneType = JSON.parse(
             sessionStorage.getItem("sceneType_" + groupeName)
           );
-          // console.log(this.sceneType);
+           console.log(this.sceneType);
         });
     },
     //数据去重
