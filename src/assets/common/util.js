@@ -6,7 +6,6 @@ export default {
   // 1. 提示信息
   //  1. 未选中行提示
   unselectedLine(){
-    console.log(this);
     this.$Message.warning({
       content: '尚未选中行',
       duration: 1.5

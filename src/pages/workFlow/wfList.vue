@@ -221,7 +221,7 @@ export default {
         _this.$http
           .post("/cardController/getAttributeList", { table: "Modify" })
           .then(info => {
-            console.log(info);
+            // console.log(info);
             sessionStorage.setItem(
               "config_Modify_attribute",
               JSON.stringify(info.data)
