@@ -169,19 +169,19 @@
         <Row v-if="configViewData.length >= 20">
           <Col span="12">
           <ul>
-            <li v-if="index%2==0" v-for="(item ,index) in configViewData" :key="index">{{ item.Description }} : {{ item.value }}</li>
+            <li v-if="index%2==0" v-for="(item ,index) in configViewData" :key="index"><label>{{ item.Description }}</label> : <span>{{ item.value }}</span></li>
           </ul>
           </Col>
           <Col span="12">
           <ul>
-            <li v-if="index%2!=0" v-for="(item ,index) in configViewData" :key="index">{{ item.Description }} : {{ item.value }}</li>
+            <li v-if="index%2!=0" v-for="(item ,index) in configViewData" :key="index"><label>{{ item.Description }}</label> : <span>{{ item.value }}</span></li>
           </ul>
           </Col>
         </Row>
         <Row v-if="configViewData.length < 20">
           <Col span="24">
             <ul>
-              <li v-for="(item ,index) in configViewData" :key="index">{{ item.Description }} : {{ item.value }}</li>
+              <li v-for="(item ,index) in configViewData" :key="index"><label>{{ item.Description }}</label> : <span>{{ item.value }}</span></li>
             </ul>
           </Col>
         </Row>
