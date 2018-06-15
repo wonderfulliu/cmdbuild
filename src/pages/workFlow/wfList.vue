@@ -223,10 +223,7 @@ export default {
           .post("/cardController/getAttributeList", { table: "Modify" })
           .then(info => {
             // console.log(info);
-            sessionStorage.setItem(
-              "config_Modify_attribute",
-              JSON.stringify(info.data)
-            );
+            sessionStorage.setItem("config_Modify_attribute",JSON.stringify(info.data));
           });
       }
     },
@@ -244,8 +241,8 @@ export default {
           .then(info => {
             this.totalPage = info.data.totalPage;
             this.totalRecord = info.data.totalRecord;
-            let thead = JSON.parse(sessionStorage.getItem("Modify_thead"));
-            let fieldArr = JSON.parse(sessionStorage.getItem("Modify_fieldArr"));
+            let thead = JSON.parse(sessionStorage.getItem("config_Modify_thead"));
+            let fieldArr = JSON.parse(sessionStorage.getItem("config_Modify_fieldArr"));
             this.fieldData = fieldArr;
             if (!thead) {
               this.getTHeadData(info.data);
@@ -389,8 +386,8 @@ export default {
           return Number(a.position) - Number(b.position);
         });
         let newArr = arrObj;
-        sessionStorage.setItem("Modify_thead", JSON.stringify(arrObj));
-        sessionStorage.setItem("Modify_fieldArr", JSON.stringify(fieldArr));
+        sessionStorage.setItem("config_Modify_thead", JSON.stringify(arrObj));
+        sessionStorage.setItem("config_Modify_fieldArr", JSON.stringify(fieldArr));
         newArr.push(this.end);
         this.wfColumns = newArr;
         this.initTableColumn(this.wfColumns);
