@@ -8,8 +8,19 @@
         <Step title="完成"></Step>
       </Steps>
     </Header>
-    <Content :style="{height:contentBodyH}">
+    <Content><!-- :style="{height:contentBodyH}" -->
       <div v-if="!nextBtnDisabled" :style="{height:contentTabsH}">
+        <Tabs type="card" v-model="currentTab">
+          <TabPane label="手动新增/修改CI内容" name="tab1">手动新增/修改CI内容</TabPane>
+          <TabPane label="Excel批量新增/修改CI内容" name="tab2">Excel批量新增/修改CI内容</TabPane>
+          <ButtonGroup v-if="currentTab=='tab1'" size="small" slot="extra">
+            <Button type="ghost">增加</Button>
+            <Button type="ghost">修改</Button>
+            <Button type="ghost">删除</Button>
+          </ButtonGroup>
+        </Tabs>
+
+        <!--
         <div class="way">
           <Row>
             <Col span="8" style="text-align: right;">
@@ -24,10 +35,11 @@
           </Row>
         </div>
         <div class="content">
-          <!-- 放置上传下载组件或者手动录入组件 -->
+          &lt;!&ndash; 放置上传下载组件或者手动录入组件 &ndash;&gt;
           <router-view :Type="currentType"
                        :TableEName="currentTableEName"></router-view>
         </div>
+        -->
       </div>
       <div class="successPrompt" v-if="nextBtnDisabled" :style="{height:contentTabsH}">
         <h2>
@@ -67,6 +79,8 @@ export default {
       way: "byself", //录入的方式
       preBtnDisabled: false, //上一步是否禁用
       nextBtnDisabled: false, //下一步是否禁用
+
+      currentTab: '',//标签页
       //数据
       currentScene: [], //步骤信息中所有数据
       currentTableEName: '',  //当前步骤对应表英文名
@@ -96,6 +110,7 @@ export default {
 //    setInterval(this.countDown, 1000);
   },
   methods: {
+
     // 监控当前步骤编号的变化 控制按钮是否禁用
     currentChange() {
       let maxStepNum = this.currentScene.length;  //最大步骤数  步骤数从0开始
@@ -144,16 +159,7 @@ export default {
       }
 
     },
-    /*//倒计时  --秒
-    countDown(second) {
-      //second--为初始值
-      if (this.secondCount > 0) {
-        this.secondCount--;
-      }else{
-        this.$router.push({ path: "/workflow/wfList" }); //跳转至新增页面
-      }
 
-    },*/
     // 高度自适应
     heightAdaptive() {
       let clientH = document.documentElement.clientHeight;

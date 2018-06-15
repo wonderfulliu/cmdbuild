@@ -161,7 +161,7 @@
       </div>
     </Modal>
     <!-- 显示详情 -->
-    <Modal v-model="configViewModal" :closable="false">
+    <Modal v-model="configViewModal" :closable="false" width="80%">
       <p slot="header">
         <span>查看记录</span>
       </p>
@@ -169,19 +169,53 @@
         <Row v-if="configViewData.length >= 20">
           <Col span="12">
           <ul>
-            <li v-if="index%2==0" v-for="(item ,index) in configViewData" :key="index"><label>{{ item.Description }}</label> : <span>{{ item.value }}</span></li>
+            <li :key="index"
+                v-if="index%2==0"
+                v-for="(item ,index) in configViewData">
+              <Row>
+                <Col span="6">
+                  <label :title="item.Description">{{ item.Description }} :</label>
+                </Col>
+                <Col span="17">
+                  <span>{{ item.value }}</span>
+                </Col>
+              </Row>
+              <!-- -->
+            </li>
           </ul>
           </Col>
           <Col span="12">
           <ul>
-            <li v-if="index%2!=0" v-for="(item ,index) in configViewData" :key="index"><label>{{ item.Description }}</label> : <span>{{ item.value }}</span></li>
+            <li :key="index"
+                v-if="index%2!=0"
+                v-for="(item ,index) in configViewData">
+              <Row>
+                <Col span="6">
+                  <label :title="item.Description">{{ item.Description }} :</label>
+                </Col>
+                <Col span="17">
+                  <span>{{ item.value }}</span>
+                </Col>
+              </Row>
+            </li>
           </ul>
           </Col>
         </Row>
         <Row v-if="configViewData.length < 20">
           <Col span="24">
             <ul>
-              <li v-for="(item ,index) in configViewData" :key="index"><label>{{ item.Description }}</label> : <span>{{ item.value }}</span></li>
+              <li :key="index"
+                  class="clearfloat"
+                  v-for="(item ,index) in configViewData">
+                <Row>
+                  <Col span="6">
+                    <label :title="item.Description">{{ item.Description }} :</label>
+                  </Col>
+                  <Col span="17">
+                    <span>{{ item.value }}</span>
+                  </Col>
+                </Row>
+              </li>
             </ul>
           </Col>
         </Row>

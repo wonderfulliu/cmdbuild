@@ -39,6 +39,11 @@
     border-color: #285e8d;
   }
 }
+
+/*清除浮动*/
+.clearfloat:after{display:block;clear:both;content:"";visibility:hidden;height:0}
+.clearfloat{zoom:1}
+
 //分页组件中首尾页图标
 .pageBtn{
   margin: 0;
@@ -567,6 +572,15 @@ $class-slug: cascade !default;
         li{
           padding: 2px;
           margin-bottom: 2px;
+          .ivu-col:first-child{
+            text-align: right;
+            white-space:nowrap;
+            text-overflow:ellipsis;
+          }
+          .ivu-col:last-child{
+            word-wrap: break-word;
+            margin-left: 10px
+          }
           &:hover{
             background-color: #f4f4f4;
           }
