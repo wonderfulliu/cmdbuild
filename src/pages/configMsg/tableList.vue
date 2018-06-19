@@ -325,6 +325,7 @@ export default {
     'pageNums': function(newValue, oldValue){
       this.pageNum = this.pageNums;
     },
+    // 其他类型的表格数据
     'tableName': function(newValue, oldValue){
       this.clearSort();
       this.getTableAttribute();
@@ -332,6 +333,7 @@ export default {
       this.getlookup();
       this.ischangetableName();
     },
+    // view 类型的表格数据
     'funcionName': function(newValue, oldValue){
       this.clearSort();
       this.getTableData();
@@ -346,7 +348,7 @@ export default {
     },
   },
   methods: {
-    // 切换表的时候清空排序的字段名和排序的规则
+    // 切换表的时候清空排序的字段名和排序的规则(某一个字段排序)
     clearSort(){
       this.sortAttribute = '';
       this.sort = '';
@@ -361,27 +363,73 @@ export default {
         this.getlookup();
       }
     },
+    // 判断是否切换表名, 切换, 则调用getTableHead的时候执行最下面函数, 否则不执行
+    ischangetableName(){
+      this.changetableName = true;
+    },
     // 获取该表的所有字段, 存入 session
     getTableAttribute() {
-      let _this = this;
       let thead = sessionStorage.getItem(
-        "config_" + _this.tableName + "_attribute"
+        "config_" + this.tableName + "_attribute"
       );
       if (!thead) {
-        _this.$http
-          .post("/cardController/getAttributeList", { table: _this.tableName })
-          .then(function(info) {
+        this.$http
+          .post("/cardController/getAttributeList", { table: this.tableName })
+          .then((info) => {
+            console.log(info);
+            // return false;
             sessionStorage.setItem(
-              "config_" + _this.tableName + "_attribute",
+              "config_" + this.tableName + "_attribute",
               JSON.stringify(info.data)
             );
           });
       }
       this.isDisabled();
     },
-    // 判断是否切换表名, 切换, 则调用getTableHead的时候执行最下面函数, 否则不执行
-    ischangetableName(){
-      this.changetableName = true;
+    //表格数据获取
+    getTableData() {
+      this.loading = true; //加载中
+      if (this.tableType == "view") {
+        this.$http
+          .post(
+            "/viewController/getViewCardList?funcionName=" +
+              this.funcionName +
+              "&pageNum=" +
+              this.pageNum +
+              "&pageSize=" +
+              this.pageSize +
+              "&sortAttribute=" +
+              this.sortAttribute +
+              "&sort=" +
+              this.sort
+          )
+          .then((info) => {
+            console.log(info);
+            this.getViewTableHead(info);
+            this.viewDataProce(info);
+            this.pageDisabled();//解决搜索->不搜索时尾页禁用问题
+          });
+      } else {
+        this.$http
+          .get(
+            "/cardController/getCardList?table=" +
+              this.tableName +
+              "&pageNum=" +
+              this.pageNum +
+              "&pageSize=" +
+              this.pageSize +
+              "&sortAttribute=" +
+              this.sortAttribute +
+              "&sort=" +
+              this.sort
+          )
+          .then((info) => {
+            console.log(info);
+            this.getTableHead(info);
+            this.tableDataProce(info);
+            this.pageDisabled();//解决搜索->不搜索时尾页禁用问题
+          });
+      }
     },
     // 其他类型表头数据
     getTableHead(info) {
@@ -480,7 +528,7 @@ export default {
       } 
     },
     // 其他类型表格数据
-    tableDataProce(info) {//================================================
+    tableDataProce(info) {
       // console.log(info);
       let _this = this;
       _this.totalPage = info.data.totalPage;
@@ -498,6 +546,7 @@ export default {
         }
       });
       _this.ConfigTdata = ConfigTdata;
+      // console.log(_this.ConfigTdata);
       _this.loading = false; //加载完成时
     },
     //view类型表头数据
@@ -521,7 +570,7 @@ export default {
       _this.initTableColumn(_this.ConfigThead);
     },
     //view类型表数据处理
-    viewDataProce(info){//=====================================================
+    viewDataProce(info){
       let _this = this;
       _this.totalPage = info.data.totalPage;
       _this.totalBar = info.data.totalRecord;
@@ -539,49 +588,6 @@ export default {
       });
       _this.ConfigTdata = ConfigTdata;
       _this.loading = false; //加载完成时
-    },
-    //表格数据获取
-    getTableData() {
-      this.loading = true; //加载中
-      if (this.tableType == "view") {
-        this.$http
-          .post(
-            "/viewController/getViewCardList?funcionName=" +
-              this.funcionName +
-              "&pageNum=" +
-              this.pageNum +
-              "&pageSize=" +
-              this.pageSize +
-              "&sortAttribute=" +
-              this.sortAttribute +
-              "&sort=" +
-              this.sort
-          )
-          .then((info) => {
-            this.getViewTableHead(info);
-            this.viewDataProce(info);
-            this.pageDisabled();//解决搜索->不搜索时尾页禁用问题
-          });
-      } else {
-        this.$http
-          .get(
-            "/cardController/getCardList?table=" +
-              this.tableName +
-              "&pageNum=" +
-              this.pageNum +
-              "&pageSize=" +
-              this.pageSize +
-              "&sortAttribute=" +
-              this.sortAttribute +
-              "&sort=" +
-              this.sort
-          )
-          .then((info) => {
-            this.getTableHead(info);
-            this.tableDataProce(info);
-            this.pageDisabled();//解决搜索->不搜索时尾页禁用问题
-          });
-      }
     },
     // 字段排序
     sorting(s){

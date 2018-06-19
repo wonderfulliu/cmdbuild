@@ -70,7 +70,7 @@
       </transition>
     </Layout>
   </div>
-
+ 
 </template>
 <script>
 export default {

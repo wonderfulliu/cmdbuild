@@ -180,7 +180,8 @@ export default {
           data[v.title] = v.content;
         }
       })
-      
+      // console.log(data);
+      // return false;
       this.$http.put('/cardController/card', data).then(info => {
           // console.log(info);
         // 成功的回调
