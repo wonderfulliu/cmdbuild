@@ -15,7 +15,7 @@
                   <div id="field">
                     <Dropdown trigger="click" placement="right" v-for="(item, index) in fieldData" :key="index" >
                         <DropdownItem>
-                          <Checkbox v-model="item.flag" @on-change="fieldSearch"></Checkbox>{{item.cName}}
+                          <Checkbox v-model="item.flag" @on-change="tlfieldSearch"></Checkbox>{{item.cName}}
                           <Icon type="ios-arrow-right"></Icon>
                         </DropdownItem>
                         <DropdownMenu slot="list" style="padding-left: 10px;padding-right: 10px;">
@@ -27,8 +27,8 @@
           </Dropdown>
         </Col>
         <Col :xs="{span:8}" :sm="{span:12,offset:1}" :md="{span:12,offset:2}" :lg="{span:12,offset:2}">
-          <Input v-model="configCondition" placeholder="Enter something..." @on-enter="fuzzy">
-            <Button slot="append" type="info" icon="ios-search" @click="fuzzy">搜索</Button>
+          <Input v-model="configCondition" placeholder="Enter something..." @on-enter="tlfuzzy">
+            <Button slot="append" type="info" icon="ios-search" @click="tlfuzzy">搜索</Button>
           </Input>
         </Col>
       </Row>
@@ -542,44 +542,43 @@ export default {
     },
     //表格数据获取
     getTableData() {
-      let _this = this;
-      _this.loading = true; //加载中
-      if (_this.tableType == "view") {
-        _this.$http
+      this.loading = true; //加载中
+      if (this.tableType == "view") {
+        this.$http
           .post(
             "/viewController/getViewCardList?funcionName=" +
-              _this.funcionName +
+              this.funcionName +
               "&pageNum=" +
-              _this.pageNum +
+              this.pageNum +
               "&pageSize=" +
-              _this.pageSize +
+              this.pageSize +
               "&sortAttribute=" +
-              _this.sortAttribute +
+              this.sortAttribute +
               "&sort=" +
-              _this.sort
+              this.sort
           )
           .then((info) => {
-            _this.getViewTableHead(info);
-            _this.viewDataProce(info);
+            this.getViewTableHead(info);
+            this.viewDataProce(info);
             this.pageDisabled();//解决搜索->不搜索时尾页禁用问题
           });
       } else {
-        _this.$http
+        this.$http
           .get(
             "/cardController/getCardList?table=" +
-              _this.tableName +
+              this.tableName +
               "&pageNum=" +
-              _this.pageNum +
+              this.pageNum +
               "&pageSize=" +
-              _this.pageSize +
+              this.pageSize +
               "&sortAttribute=" +
-              _this.sortAttribute +
+              this.sortAttribute +
               "&sort=" +
-              _this.sort
+              this.sort
           )
           .then((info) => {
-            _this.getTableHead(info);
-            _this.tableDataProce(info);
+            this.getTableHead(info);
+            this.tableDataProce(info);
             this.pageDisabled();//解决搜索->不搜索时尾页禁用问题
           });
       }
@@ -704,14 +703,13 @@ export default {
     // 分页
     pageChange(page) {
       this.pageNum = page;
-      this.pageDisabled();
-      if (this.searchMsg != '') {
+      if (this.configCondition) {
         this.fuzzy();
-      }else if (JSON.stringify(this.fielddataObj) != "{}") {
+      }else if (Object.keys(this.fielddataObj).length) {
         // 说明有字段搜索
         this.fieldSearch();
       } else {
-        this.getTableData(this.tableName);
+        this.getTableData();
       }
     },
     // 首页尾页禁用于否
@@ -730,25 +728,99 @@ export default {
     pageFirst() {
       this.pageNum = 1;
       this.pageDisabled();
-      if (this.searchMsg != '') {
+      if (this.configCondition) {
         this.fuzzy();
-      }else if (JSON.stringify(this.fielddataObj) != "{}") {
+      }else if (Object.keys(this.fielddataObj).length) {
         // 说明有字段搜索
         this.fieldSearch();
       } else {
-        this.getTableData(this.tableName);
+        this.getTableData();
       }
     },
     pageLast() {
       this.pageNum = this.totalPage;
       this.pageDisabled();
-      if (this.searchMsg != '') {
+      if (this.configCondition) {
         this.fuzzy();
-      }else if (JSON.stringify(this.fielddataObj) != "{}") {
+      }else if (Object.keys(this.fielddataObj).length) {
         // 说明有字段搜索
         this.fieldSearch();
       } else {
-        this.getTableData(this.tableName);
+        this.getTableData();
+      }
+    },
+    //字段搜索，当输入框点击回车时
+    fsInput(flag){
+      if(flag){
+        this.fieldSearch();
+      }
+    },
+    // 调用的字段搜索
+    tlfieldSearch(){
+      this.pageNum = 1;
+      this.fieldSearch();
+    },
+    // 只是单纯的字段搜索, 不定义 pageNum
+    fieldSearch(){
+      this.loading = true;
+      let dataObj = {};
+      // 选择出: 处于选中状态 && 搜索内容不为空 的内容发送给后台
+      this.fieldData.forEach((v, i) => {
+        if (v.flag && v.value !== "") {
+          dataObj[v.eName] = v.value;
+        }
+      })
+      this.fielddataObj = dataObj;
+      if (Object.keys(dataObj).length) {
+        let data = 'tableName=' + this.tableName + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=' + this.pageSize;
+        this.$http.post('/cardController/attribubtesFuzzyQuery', data).then(info => {
+          // 正常处理数据
+          if (info.data.list.length) {
+            if (this.tableType == "view") {
+              this.getViewTableHead(info);
+              this.viewDataProce(info);
+              this.pageDisabled();//解决搜索->不搜索时尾页禁用问题
+            } else {
+              this.getTableHead(info);
+              this.tableDataProce(info);
+              this.pageDisabled();//解决搜索->不搜索时尾页禁用问题
+            }
+          } else {
+            // 这个表示没查到数据
+            this.ConfigTdata = [];
+            this.loading = false;
+          }
+        })
+      } else {
+        this.getTableData();
+      }
+    },
+    tlfuzzy(){
+      this.pageNum = 1;// 每次查询的时候, 要去的页面都改为第一页, 可以防止当页数较大时进行搜索页面出现的问题
+      this.fuzzy();
+    },
+    // 只处理模糊查询的逻辑, 页面控制的逻辑在写入的函数上控制
+    fuzzy() {
+      this.loading = true; //加载中
+      if (this.configCondition) {
+        this.$http.post("cardController/fuzzyQuery?tableName=" + this.tableName + "&condition=" + this.configCondition + "&pageNum=" + this.pageNum + "&pageSize=" + this.pageSize)
+        .then((info) => {
+          this.totalBar = info.data.totalRecord;
+          this.totalPage = info.data.totalPage;
+          this.pageDisabled();
+          let ConfigTdata = info.data.list;
+          ConfigTdata.forEach((v, i) => {
+            for (let i in v) {
+              if (v[i] != null && typeof v[i] == "object") {
+                v[i] = v[i].Description;
+              }
+            }
+          });
+          this.ConfigTdata = ConfigTdata;
+          this.loading = false; //加载完成时
+        });
+      } else {
+        this.getTableData();
       }
     },
     // 获取 lookup 数据类型和 reference 数据类型
@@ -790,38 +862,6 @@ export default {
         arrb.push(obja);
       });
       return arrb;
-    },
-    // 模糊查询
-    fuzzy() {
-      let _this = this;
-      _this.loading = true; //加载中
-      let result = _this.$http
-        .post(
-          "cardController/fuzzyQuery?tableName=" +
-            _this.tableName +
-            "&condition=" +
-            _this.configCondition +
-            "&pageNum=" +
-            _this.pageNum +
-            "&pageSize=" +
-            _this.pageSize
-        )
-        .then(function(info) {
-          _this.totalBar = info.data.totalRecord;
-          _this.totalPage = info.data.totalPage;
-          _this.pageDisabled();
-          let ConfigTdata = info.data.list;
-          ConfigTdata.forEach(function(v, i) {
-            for (let i in v) {
-              if (v[i] != null && typeof v[i] == "object") {
-                v[i] = v[i].Description;
-              }
-            }
-          });
-          // console.log(ConfigTdata);
-          _this.ConfigTdata = ConfigTdata;
-          _this.loading = false; //加载完成时
-        });
     },
     ctrlView(recordId) {
       let _this = this;
@@ -965,48 +1005,46 @@ export default {
       }
     }, 
     configDele() {
-      let _this = this;
-      _this.deleLoading = true;
-      _this.$http
+      this.deleLoading = true;
+      this.$http
         .delete(
           "/cardController/card?table=" +
-            _this.tableName +
+            this.tableName +
             "&&Id=" +
-            _this.recordId
+            this.recordId
         )
-        .then(function(info) {
+        .then((info) => {
           if (info.data == 'ok') {
-            _this.deleLoading = false;
-            _this.configDeleModal = false;
-            _this.getTableData();
-            _this.$Message.success("删除成功");
+            this.deleLoading = false;
+            this.configDeleModal = false;
+            this.getTableData();
+            this.$Message.success("删除成功");
           } else if (info.data == 'failed') {
             this.$Message.error('删除失败');
           }
-          console.log(_this.configCondition);
-          if (_this.configCondition) {
-            _this.fuzzy();
+          console.log(this.configCondition);
+          if (this.configCondition) {
+            this.fuzzy();
           }
         })
-        .catch(function(error) {
-          _this.deleLoading = false;
-          _this.configDeleModal = false;
-          _this.getTableData();
-          _this.$Message.error("删除失败");
-          if (_this.configCondition) {
-            _this.fuzzy();
+        .catch((error) => {
+          this.deleLoading = false;
+          this.configDeleModal = false;
+          this.getTableData();
+          this.$Message.error("删除失败");
+          if (this.configCondition) {
+            this.fuzzy();
           }
         });
     },
     configAdd() {
-      let _this = this;
-      let lookupdt = _this.lookupInfo;
-      let relatedt = _this.relationInfo;
+      let lookupdt = this.lookupInfo;
+      let relatedt = this.relationInfo;
       let addData = {};
       let attr = JSON.parse(
-        sessionStorage.getItem("config_" + _this.tableName + "_attribute")
+        sessionStorage.getItem("config_" + this.tableName + "_attribute")
       );
-      attr.forEach(function(v, i) {
+      attr.forEach((v, i) => {
         let a = v.attribute;
         if (v.type == "lookup" || v.attribute == 'BusinessType') {
           v.lookupMsg = lookupdt[v.attribute];
@@ -1016,7 +1054,7 @@ export default {
         } else if (v.type == "reference") {
           for (let ri = 0; ri < relatedt.length; ri++) {
             if (v.lr == relatedt[ri].domainname) {
-              if (relatedt[ri].domainclass1 == _this.tableName) {
+              if (relatedt[ri].domainclass1 == this.tableName) {
                 v.relationTable = relatedt[ri].domainclass2;
               } else {
                 v.relationTable = relatedt[ri].domainclass1;
@@ -1025,11 +1063,11 @@ export default {
           }
         }
       });
-      addData.tableName = _this.tableName;
+      addData.tableName = this.tableName;
       addData.tableCname = this.tableCname;
       addData.titleMsg = attr;
       // console.log(addData);
-      _this.$store.commit("getaddMsg", addData);
+      this.$store.commit("getaddMsg", addData);
       //跳转到添加页
       this.$router.push({ path: "/config/cadd" });
     },
@@ -1076,120 +1114,6 @@ export default {
             });
           }
         });
-    },
-    //字段搜索，当输入框点击回车时
-    fsInput(flag){
-      if(flag){
-        this.fieldSearch();
-      }
-    },
-    // 字段搜索
-    fieldSearch(flag){
-      this.loading = true;
-      let dataObj = {};
-      // 选择出: 处于选中状态 && 搜索内容不为空 的内容发送给后台
-      this.fieldData.forEach((v, i) => {
-        if (v.flag && v.value !== "") {
-          dataObj[v.eName] = v.value;
-        }
-      })
-      // console.log(dataObj);
-      this.fielddataObj = dataObj;
-      if (JSON.stringify(dataObj) != "{}") {
-        let data = 'tableName=' + this.tableName + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=' + this.pageSize;
-        this.$http.post('/cardController/attribubtesFuzzyQuery', data).then(info => {
-          if (info.data.totalPage < info.data.pageNum) {
-            this.pageNum = 1;
-            this.pageDisabled();
-            data = 'tableName=' + this.tableName + '&condition=' + JSON.stringify(dataObj) + '&pageNum=' + this.pageNum + '&pageSize=' + this.pageSize;
-            // 重新发送请求, 并且处理数据
-            this.$http.post('/cardController/attribubtesFuzzyQuery', data).then(info => {
-              // 正常处理数据
-              if (info.data.list.length != 0) {
-                //获取表头数据：
-                let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
-                let arrObj = [];
-                arrA.forEach((v, i) => {
-                  let oTemp = {};
-                  let markName = this.attributeCName(v);
-                  let cname;
-                  if (markName != null) {
-                    cname = markName.cname;
-                    oTemp.title = cname;
-                    oTemp.key = v;
-                    oTemp.position = markName.position;
-                    oTemp.ellipsis = true;
-                    oTemp.sortable = true;
-                    arrObj.push(oTemp);
-                  }
-                });
-                let len = arrObj.length; //记录表头数量
-                let width = this.fieldWidth(".contentBody .ivu-table-header", len);
-                arrObj.forEach((v, i) => {
-                  v.width = width;
-                });
-
-                // 表头字段排序
-                arrObj.sort(function(a, b) {
-                  return Number(a.position) - Number(b.position);
-                });
-
-                let newArr = arrObj;
-                this.ConfigThead = newArr;
-                this.initTableColumn(this.ConfigThead);
-                this.tableDataProce(info);
-              } else {
-                // 这个表示没查到数据
-                this.ConfigTdata = [];
-                this.loading = false;
-              }
-            })
-          } else {
-            // 正常处理数据
-            if (info.data.list.length != 0) {
-              //获取表头数据：
-              let arrA = Object.keys(info.data.list[0]); //获取对象内所有属性
-              let arrObj = [];
-              arrA.forEach((v, i) => {
-                let oTemp = {};
-                let markName = this.attributeCName(v);
-                let cname;
-                if (markName != null) {
-                  cname = markName.cname;
-                  oTemp.title = cname;
-                  oTemp.key = v;
-                  oTemp.position = markName.position;
-                  oTemp.ellipsis = true;
-                  oTemp.sortable = true;
-                  arrObj.push(oTemp);
-                }
-              });
-              let len = arrObj.length; //记录表头数量
-              let width = this.fieldWidth(".contentBody .ivu-table-header", len);
-              arrObj.forEach((v, i) => {
-                v.width = width;
-              });
-
-              // 表头字段排序
-              arrObj.sort(function(a, b) {
-                return Number(a.position) - Number(b.position);
-              });
-
-              let newArr = arrObj;
-              this.ConfigThead = newArr;
-              this.initTableColumn(this.ConfigThead);
-              this.tableDataProce(info);
-            } else {
-              // 这个表示没查到数据
-              this.ConfigTdata = [];
-              this.loading = false;
-            }
-          }
-
-        })
-      } else {
-        this.getTableData();
-      }
     },
     // 增删改查按钮禁用于否
     isDisabled() {
