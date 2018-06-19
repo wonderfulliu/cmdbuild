@@ -8,45 +8,10 @@
         <Step title="完成"></Step>
       </Steps>
     </Header>
-    <Content><!-- :style="{height:contentBodyH}" -->
-      <div v-if="!nextBtnDisabled" :style="{height:contentTabsH}">
-        <Tabs type="card" v-model="currentTab">
-          <TabPane label="手动新增/修改CI内容" name="tab1">手动新增/修改CI内容</TabPane>
-          <TabPane label="Excel批量新增/修改CI内容" name="tab2">Excel批量新增/修改CI内容</TabPane>
-          <ButtonGroup v-if="currentTab=='tab1'" size="small" slot="extra">
-            <Button type="ghost">增加</Button>
-            <Button type="ghost">修改</Button>
-            <Button type="ghost">删除</Button>
-          </ButtonGroup>
-        </Tabs>
-
-        <!--
-        <div class="way">
-          <Row>
-            <Col span="8" style="text-align: right;">
-              <label class="wayTitle">请选择录入方式</label>
-            </Col>
-            <Col span="8">
-              <Select v-model="way" style="margin-left: 20px">
-                <Option value="byself"><router-link to="/workflow/operate/byself">手动新增/修改CI内容</router-link></Option>
-                <Option value="byexcel"><router-link to="/workflow/operate/byexcel">Excel批量新增/修改CI内容</router-link></Option>
-              </Select>
-            </Col>
-          </Row>
-        </div>
-        <div class="content">
-          &lt;!&ndash; 放置上传下载组件或者手动录入组件 &ndash;&gt;
-          <router-view :Type="currentType"
-                       :TableEName="currentTableEName"></router-view>
-        </div>
-        -->
-      </div>
-      <div class="successPrompt" v-if="nextBtnDisabled" :style="{height:contentTabsH}">
-        <h2>
-          <Icon type="checkmark-circled"></Icon><span>该流程已完成!</span>
-        </h2>
-        <p>您将在 <CountDown :count="5"></CountDown> 秒后离开此页面</p>
-      </div>
+    <Content :style="{height:contentBodyH}">
+      <router-view :Type="currentType"
+                   :tabShow="nextBtnDisabled"
+                   :TableEName="currentTableEName"></router-view>
       <div class="btnGroup">
         <ButtonGroup shape="circle">
           <Button type="primary" @click="step('pre')" :disabled="preBtnDisabled">
@@ -72,20 +37,19 @@ export default {
     return {
       //页面样式
       contentBodyH: '', // .contentBody高度
-      tableHeight: '',  //表格的高度
-      contentTabsH: '',  //选项卡的高度
+//      tableHeight: '',  //表格的高度
+//      contentTabsH: '',  //选项卡的高度
       //参数配置
       current: 0, //到第几步了
       way: "byself", //录入的方式
       preBtnDisabled: false, //上一步是否禁用
       nextBtnDisabled: false, //下一步是否禁用
 
-      currentTab: '',//标签页
+//      currentTab: 'tab1',//标签页
       //数据
       currentScene: [], //步骤信息中所有数据
       currentTableEName: '',  //当前步骤对应表英文名
       currentType: '', //类型
-      secondCount: 5, //秒数计数初始值
     };
   },
   watch: {
@@ -100,6 +64,12 @@ export default {
     this.currentChange();
     this.getStepTableName();
   },
+  /*computed: {
+    btnGroupShow() {
+      console.log(this.currentTab);
+      return this.currentTab == 'tab1'?true:false
+    }
+  },*/
   mounted () {
     this.way = this.$route.name;
     let _this = this;
@@ -165,8 +135,8 @@ export default {
       let clientH = document.documentElement.clientHeight;
       this.clientW = document.documentElement.clientWidth;
       this.contentbodyH = clientH - 140 + 'px';
-      this.contentTabsH = clientH - 205 + 'px';
-      this.tableHeight = clientH - 215;
+//      this.contentTabsH = clientH - 205 + 'px';
+//      this.tableHeight = clientH - 215;
     }
   }
 };

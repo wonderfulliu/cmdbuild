@@ -320,7 +320,14 @@
                 }
               }
               p{
-
+                color: #bfbfbf;
+                .orange{
+                  color: #ec8842;
+                  :hover{
+                    color: #e97b37;
+                    text-decoration: underline;
+                  }
+                }
               }
             }
             .btnGroup{
@@ -604,8 +611,17 @@ $class-slug: cascade !default;
 }
 
 //workFlow
+//标签页
+.ivu-tabs-bar{
+  margin-bottom: 0;
+}
 
-
+.ivu-tabs .ivu-tabs-tabpane {
+  padding-top: 15px;
+  border-left: 1px solid #dddee1;
+  border-right: 1px solid #dddee1;
+  border-bottom: 1px solid #dddee1;
+}
 
 
 

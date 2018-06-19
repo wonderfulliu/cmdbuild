@@ -35,11 +35,12 @@ import view from '@/pages/view/view'
 import workflow from '@/pages/workFlow/workFlow'
 import wfList from '@/pages/workFlow/wfList'
 import operate from '@/pages/workFlow/operate'
-import byself from '@/pages/workFlow/ways/byself'
-import byexcel from '@/pages/workFlow/ways/byexcel'
+import subOperate from '@/pages/workFlow/subOperate'
 import wfrelation from '@/pages/workFlow/relation/relation'
 import wfrelationtable from '@/pages/workFlow/relation/relationtable'
 import wfhistory from '@/pages/workFlow/history/history'
+import wfRecordAdd from '@/pages/workFlow/recordOperate/add'
+import wfRecordAlter from '@/pages/workFlow/recordOperate/alter'
 // search
 import search from '@/pages/search/search'
 import searchOn from '@/pages/search/searchOn'
@@ -183,6 +184,14 @@ export default new Router({
               path: 'wfrelationtable',
               name: 'wfrelationtable',
               component: wfrelationtable
+            },{
+              path: 'wfRecordAdd',
+              name: 'wfRecordAdd',
+              component: wfRecordAdd
+            },{
+              path: 'wfRecordAlter',
+              name: 'wfRecordAlter',
+              component: wfRecordAlter
             },
             {
               path: 'operate',
@@ -190,15 +199,10 @@ export default new Router({
               component: operate,
               children: [
                 {
-                  path: 'byself',
-                  name: 'byself',
-                  component: byself
-                },
-                {
-                  path: 'byexcel',
-                  name: 'byexcel',
-                  component: byexcel
-                },
+                  path: 'subOperate',
+                  name: 'subOperate',
+                  component: subOperate
+                }
               ]
             }
           ]

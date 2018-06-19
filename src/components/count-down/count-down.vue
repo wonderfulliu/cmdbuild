@@ -34,7 +34,7 @@
                 }else {
                     this.$router.push({ path: "/workflow/wfList" }); //跳转至列表页
                 }
-                if ( this.$route.path == '/workflow/operate/byself' ) {
+                if ( this.$route.path == '/workflow/operate/subOperate' ) {
                     let _this = this;
                     this.timeOut = setTimeout(() => {
                                 _this.countDown();

@@ -439,7 +439,7 @@ export default {
         console.log(this.$store.state.currentScene);
         //当前行的标识
         //传值并跳转页面
-        this.$router.push({ path: "/workflow/operate/byself" });
+        this.$router.push({ path: "/workflow/operate/subOperate" });
       } else {
         this.$Message.error("请选择场景");
       }

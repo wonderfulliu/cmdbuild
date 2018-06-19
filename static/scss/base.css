@@ -225,6 +225,13 @@
           #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .successPrompt h2 span {
             color: #585858;
             font-size: 28px; }
+        #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .successPrompt p {
+          color: #bfbfbf; }
+          #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .successPrompt p .orange {
+            color: #ec8842; }
+            #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .successPrompt p .orange :hover {
+              color: #e97b37;
+              text-decoration: underline; }
         #homeContainer .layout .ivu-layout .ivu-layout .ivu-layout .ivu-layout-content .btnGroup {
           height: 64px;
           line-height: 64px; }
@@ -445,5 +452,13 @@ tr.ivu-table-row-highlight.ivu-table-row-hover td {
     transform: rotate(180deg); }
   to {
     transform: rotate(360deg); } }
+.ivu-tabs-bar {
+  margin-bottom: 0; }
+
+.ivu-tabs .ivu-tabs-tabpane {
+  padding-top: 15px;
+  border-left: 1px solid #dddee1;
+  border-right: 1px solid #dddee1;
+  border-bottom: 1px solid #dddee1; }
 
 /*# sourceMappingURL=base.css.map */
